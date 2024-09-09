@@ -14,10 +14,12 @@ models:
   - name: flux1-dev.safetensors
     address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
     commit: 0ef5fff
+    bearer: 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
     location: models/unet/
   - name: ae.safetensors
     address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors
     commit: 0ef5fff
+    bearer: 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
     location: models/vae/
   - name: clip_l.safetensors
     address: https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors
