@@ -1,0 +1,29 @@
+params:
+  - name: prompt
+    type: string
+  - name: steps
+    type: number
+    min: 5
+    max: 30
+    step: 1
+  - name: seed
+    type: number
+    step: 1
+custom_nodes:
+models:
+  - name: flux1-dev.safetensors
+    address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
+    commit: 0ef5fff
+    location: models/unet/
+  - name: ae.safetensors
+    address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors
+    commit: 0ef5fff
+    location: models/vae/
+  - name: clip_l.safetensors
+    address: https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors
+    commit: 2f74b39
+    location: models/clip/
+  - name: t5xxl_fp16.safetensors
+    address: https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors
+    commit: 2f74b39
+    location: models/clip/
