@@ -1,18 +1,26 @@
 params:
   - name: prompt
     type: string
+  - name: image
+    type: media
+    media_type: image
   - name: model
-    type: select
-    options:
-      - name: Flux Schnell
-        value: flux1-schnell.safetensors
-      - name: Flux Dev
-        value: flux1-dev.safetensors
+  type: select
+  options:
+    - name: Flux Schnell
+      value: flux1-schnell.safetensors
+    - name: Flux Dev
+      value: flux1-dev.safetensors
   - name: steps
     type: number
     min: 5
     max: 30
     step: 1
+  - name: denoising
+    type: number
+    min: 0
+    max: 1
+    step: .01
   - name: seed
     type: number
     step: 1
