@@ -1,4 +1,4 @@
-name: : Flux (Image to Image)
+name: Flux (Image to Image)
 params:
   - name: prompt
     type: string
@@ -6,12 +6,12 @@ params:
     type: media
     media_type: image
   - name: model
-  type: select
-  options:
-    - name: Flux Schnell
-      value: flux1-schnell.safetensors
-    - name: Flux Dev
-      value: flux1-dev.safetensors
+    type: select
+    options:
+      - name: Flux Schnell
+        value: flux1-schnell.safetensors
+      - name: Flux Dev
+        value: flux1-dev.safetensors
   - name: steps
     type: number
     min: 5
