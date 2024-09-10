@@ -1,3 +1,4 @@
+name: : Flux (Image to Image)
 params:
   - name: prompt
     type: string
