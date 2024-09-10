@@ -1,0 +1,77 @@
+name: Image to Video
+params:
+custom_nodes:
+  - name: comfyui_controlnet_aux
+    address: https://github.com/Fannovel16/comfyui_controlnet_aux
+    commit: 302a389
+    location: custom_nodes/
+  - name: comfyui_frame_interpolation
+    address: https://github.com/Fannovel16/ComfyUI-Frame-Interpolation
+    commit: 483dfe6
+    location: custom_nodes/
+  - name: comfyui_wd14_tagger
+    address: https://github.com/pythongosssss/ComfyUI-WD14-Tagger
+    commit: 4f1a857
+    location: custom_nodes/
+    additional_requirements:
+      - description: need to upgrade onnxruntime
+        command: pip install --upgrade onnxruntime
+  - name: comfyui_comfyroll_customnodes
+    address: https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes
+    commit: d78b780
+    location: custom_nodes/
+  - name: comfyui_ipadapter_plus
+    address: https://github.com/cubiq/ComfyUI_IPAdapter_plus
+    commit: 20bfeb6
+    location: custom_nodes/
+  - name: comfyui_advanced_controlnet
+    address: https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
+    commit: 74d0c56
+    location: custom_nodes/
+  - name: comfyui_animatediff_evolved
+    address: https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved
+    commit: 83fe8d4
+    location: custom_nodes/
+  - name: comfyui_videohelpersuite
+    address: https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite
+    commit: 0376e57
+    location: custom_nodes/
+  - name: comfyui_essentials
+    address: https://github.com/cubiq/ComfyUI_essentials
+    commit: 99aad72
+    location: custom_nodes/
+models:
+  - name: DreamShaper_8LCM.safetensors
+    address: https://civitai.com/api/download/models/252914?type=Model&format=SafeTensor&size=pruned&fp=fp16
+    commit: A4F3E1526C5DC4FCBE342F5C410D83AE202C7A415FCEFCBB92E0F93FCD0A87C3
+    location: models/checkpoints/
+  - name: CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors
+    address: https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors
+    commit: 018e402
+    location: models/clip_vision/
+  - name: CLIP-ViT-bigG-14-laion2B-39B-b160k.safetensors
+    address: https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/image_encoder/model.safetensors
+    commit: 018e402
+    location: models/clip_vision/
+  - name: AnimateLCM_sd15_t2v_lora.safetensors
+    address: https://huggingface.co/wangfuyun/AnimateLCM/resolve/main/AnimateLCM_sd15_t2v_lora.safetensors
+    commit: 6cdc714
+    locations:
+      - location: models/loras/
+      - location: custom_nodes/ComfyUI-AnimateDiff-Evolved/models
+  - name: multiple
+    addresses:
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_PanLeft.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_PanRight.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_RollingAnticlockwise.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_RollingClockwise.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_TiltDown.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_TiltUp.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_ZoomIn.ckpt
+      - address: https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_ZoomOut.ckpt
+    commit: 6cdc714
+    location: models/animatediff_motion_lora/
+  - name: control_v11f1e_sd15_tile_fp16.safetensors
+    address: https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors/resolve/main/control_v11f1e_sd15_tile_fp16.safetensors
+    commit: e05625a
+    location: models/controlnet/

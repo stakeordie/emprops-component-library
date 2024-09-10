@@ -1,0 +1,399 @@
+{
+  "4": {
+    "inputs": {
+      "stop_at_clip_layer": -2,
+      "clip": [
+        "97",
+        1
+      ]
+    },
+    "class_type": "CLIPSetLastLayer",
+    "_meta": {
+      "title": "CLIP Set Last Layer"
+    }
+  },
+  "7": {
+    "inputs": {
+      "seed": [
+        "119",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "lcm",
+      "scheduler": "sgm_uniform",
+      "denoise": 1,
+      "model": [
+        "89",
+        0
+      ],
+      "positive": [
+        "91",
+        0
+      ],
+      "negative": [
+        "91",
+        1
+      ],
+      "latent_image": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "32": {
+    "inputs": {
+      "ckpt_name": "DreamShaper_8LCM.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "36": {
+    "inputs": {
+      "image": "reticula_src_040_512x512.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "40": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "scale_by": 1.5,
+      "samples": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "LatentUpscaleBy",
+    "_meta": {
+      "title": "Upscale Latent By"
+    }
+  },
+  "41": {
+    "inputs": {
+      "seed": [
+        "119",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1.5,
+      "sampler_name": "lcm",
+      "scheduler": "sgm_uniform",
+      "denoise": 0.55,
+      "model": [
+        "89",
+        0
+      ],
+      "positive": [
+        "91",
+        0
+      ],
+      "negative": [
+        "91",
+        1
+      ],
+      "latent_image": [
+        "40",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "43": {
+    "inputs": {
+      "samples": [
+        "41",
+        0
+      ],
+      "vae": [
+        "32",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "47": {
+    "inputs": {
+      "images": [
+        "109",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "52": {
+    "inputs": {
+      "model": [
+        "97",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "58": {
+    "inputs": {},
+    "_meta": {}
+  },
+  "59": {
+    "inputs": {
+      "image": [
+        "36",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "60": {
+    "inputs": {
+      "model": [
+        "52",
+        0
+      ],
+      "ipadapter": [
+        "52",
+        1
+      ],
+      "image": [
+        "36",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "IPAdapterTiled"
+    }
+  },
+  "63": {
+    "inputs": {
+      "positive": [
+        "120",
+        0
+      ],
+      "negative": [
+        "121",
+        0
+      ],
+      "control_net": [
+        "66",
+        0
+      ],
+      "image": [
+        "79",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "66": {
+    "inputs": {},
+    "_meta": {}
+  },
+  "79": {
+    "inputs": {
+      "image": [
+        "36",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "89": {
+    "inputs": {
+      "model": [
+        "60",
+        0
+      ],
+      "context_options": [
+        "58",
+        0
+      ],
+      "motion_lora": [
+        "90",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "90": {
+    "inputs": {
+      "prev_motion_lora": [
+        "124",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "91": {
+    "inputs": {
+      "positive": [
+        "63",
+        0
+      ],
+      "negative": [
+        "63",
+        1
+      ],
+      "control_net": [
+        "94",
+        0
+      ],
+      "image": [
+        "95",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "94": {
+    "inputs": {},
+    "_meta": {}
+  },
+  "95": {
+    "inputs": {
+      "image": [
+        "36",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "96": {
+    "inputs": {
+      "lora_name": "mj6-10_LoRA.safetensors",
+      "strength_model": 0.35000000000000003,
+      "strength_clip": 1,
+      "model": [
+        "32",
+        0
+      ],
+      "clip": [
+        "32",
+        1
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "97": {
+    "inputs": {
+      "lora_name": "AnimateLCM_sd15_t2v_lora.safetensors",
+      "strength_model": 0.35000000000000003,
+      "strength_clip": 1,
+      "model": [
+        "96",
+        0
+      ],
+      "clip": [
+        "96",
+        1
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "102": {
+    "inputs": {
+      "width": [
+        "114",
+        0
+      ],
+      "height": [
+        "114",
+        1
+      ],
+      "batch_size": 36
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Batch Size"
+    }
+  },
+  "109": {
+    "inputs": {
+      "frames": [
+        "43",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "114": {
+    "inputs": {
+      "image": [
+        "123",
+        0
+      ]
+    },
+    "_meta": {}
+  },
+  "119": {
+    "inputs": {},
+    "_meta": {}
+  },
+  "120": {
+    "inputs": {
+      "text": [
+        "59",
+        0
+      ],
+      "clip": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "121": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "123": {
+    "inputs": {
+      "sharpen_radius": 1,
+      "sigma": 1,
+      "alpha": 1,
+      "image": [
+        "36",
+        0
+      ]
+    },
+    "class_type": "ImageSharpen",
+    "_meta": {
+      "title": "ImageSharpen"
+    }
+  },
+  "124": {
+    "inputs": {},
+    "_meta": {}
+  }
+}
