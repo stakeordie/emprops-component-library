@@ -1,0 +1,59 @@
+comfyinfo:
+  commit: "c7427375ee27f3a57d9d945d3217436ef43fb53f"
+  version
+name: Ollama LLM Integration
+description: Integrates Ollama LLM capabilities into ComfyUI for text generation and processing.
+params:
+  - name: text_string_prompt
+    type: string
+    description: The main prompt text for the LLM
+  - name: text_string_instruct
+    type: string
+    description: Additional instructions for the LLM to process the main prompt
+  - name: debug
+    type: select
+    options:
+      - name: Enable
+        value: enable
+      - name: Disable
+        value: disable
+    description: Enable or disable debug mode for Ollama generation
+  - name: ollama_url
+    type: string
+    description: URL of the Ollama server (e.g., http://127.0.0.1:11434)
+  - name: ollama_model
+    type: select
+    options:
+      - name: llama3:latest
+        value: llama3:latest
+      - name: llama 3.1 8B
+        value: llama2:8b
+      - name: llama 3.1 70B
+        value: llama2:70b
+    description: Select the Ollama model to use
+  - name: seed
+    type: number
+    description: Seed for the Ollama generation process
+  - name: keep_alive
+    type: select
+    options:
+      - name: "No"
+        value: "0"
+      - name: "Yes"
+        value: "1"
+    description: Keep the Ollama connection alive
+custom_nodes:
+  - name: ComfyUI-Custom-Scripts
+    address: https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+    commit: 626e001
+    location: custom_nodes/
+  - name: ComfyUI-OLLAMA
+    address: https://github.com/stavsap/comfyui-ollama
+    commit: !$commit!
+    location: custom_nodes/
+    additional_requirements:
+      - description: Install Ollama
+        command: curl -fsSL https://ollama.com/install.sh | sh
+  - name: ComfyUI-Helper-Nodes
+    address: https://github.com/teward/ComfyUI-Helper-Nodes
+    location: custom_nodes/

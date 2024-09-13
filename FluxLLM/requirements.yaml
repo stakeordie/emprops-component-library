@@ -1,0 +1,102 @@
+comfyinfo:
+  commit: "9f4daca"
+name: Ollama LLM Integration
+description: Integrates Ollama LLM capabilities into ComfyUI for text generation and processing.
+params:
+models:
+  - name: llama3.1
+    commands:
+      - command: curl -fsSL https://ollama.com/install.sh | sh   
+      - command: pm2 start --nama ollama "ollama serve"
+      - command: ollama pull llama3.1:latest
+      - command: ollama pull llava-llama3:latest
+  - name: flux1-dev.safetensors
+    address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
+    command: wget --header="Authorization: Bearer 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" https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
+    commit: 0ef5fff
+    bearer: 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
+    location: models/diffusion_models/
+- name: ae.safetensors
+    address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors
+    command: wget --header="Authorization: Bearer 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" https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors
+    commit: 0ef5fff
+    bearer: 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
+    location: models/vae/
+- name: LexicaDAT2_otf
+  address: https://drive.google.com/uc?export=download&confirm=1&id=1Vx4kqcpPKfUpYSFpK_0XRZ7h64nosraW
+  command: gdown https://drive.google.com/uc?id=1Vx4kqcpPKfUpYSFpK_0XRZ7h64nosraW
+  location: models/vae/
+- name: 4xFaceUpDAT
+  address: https://drive.google.com/uc?export=download&confirm=1&id=1d3wPbtjFcgCkWAMVFQalOuQHdiNmfc5i
+  command: gdown https://drive.google.com/uc?id=1d3wPbtjFcgCkWAMVFQalOuQHdiNmfc5i
+custom_nodes:
+  - name: ComfyUI-Impact-Pack
+    commit: c3eed09
+    address: https://github.com/ltdrdata/ComfyUI-Impact-Pack.git
+    location: custom_nodes/
+    command: git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && cd ComfyUI-Impact-Pack && git reset --hard c3eed09
+  - name: ComfyUI-Custom-Scripts
+    address: https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git
+    command: git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git && pip install -r ComfyUI-Custom-Scripts/requirements.txt
+    commit: 626e001
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git
+    command: git clone https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git
+    commit: 70083f5
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes.git
+    command: git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes.git && pip install -r ComfyUI_Comfyroll_CustomNodes/requirements.txt
+    commit: d78b780
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/evanspearman/ComfyMath.git
+    command: git clone https://github.com/evanspearman/ComfyMath.git && pip install -r ComfyMath/requirements.txt
+    commit: 939bb81
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/theUpsider/ComfyUI-Logic.git
+    command: git clone https://github.com/theUpsider/ComfyUI-Logic.git
+    commit: 42d4f3d
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/rgthree/rgthree-comfy.git
+    command: git clone https://github.com/rgthree/rgthree-comfy.git && pip install -r rgthree-comfy/requirements.txt
+    commit: cae8e2a
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/cubiq/ComfyUI_essentials.git
+    command: git clone https://github.com/cubiq/ComfyUI_essentials.git && pip install -r ComfyUI_essentials/requirements.txt
+    commit: 99aad72
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/kijai/ComfyUI-KJNodes.git
+    command: git clone https://github.com/kijai/ComfyUI-KJNodes.git && pip install -r ComfyUI-KJNodes/requirements.txt
+    commit: 7aa591b
+    location: custom_nodes/                            
+  - name: 
+    address: https://github.com/kijai/ComfyUI-Florence2.git
+    command: git clone https://github.com/kijai/ComfyUI-Florence2.git && pip install -r ComfyUI-Florence2/requirements.txt
+    commit: f59d5c3
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/kijai/ComfyUI-segment-anything-2.git
+    command: git clone https://github.com/kijai/ComfyUI-segment-anything-2.git && pip install -r ComfyUI-segment-anything-2/requirements.txt
+    commit: 05496ca
+    location: custom_nodes/          
+  - name: 
+    address: https://github.com/chflame163/ComfyUI_LayerStyle.git
+    command: git clone https://github.com/chflame163/ComfyUI_LayerStyle.git && pip install -r ComfyUI_LayerStyle/requirements.txt
+    commit: f2f8c16
+    location: custom_nodes/          
+  - name: 
+    address: https://github.com/stavsap/comfyui-ollama.git
+    command: git clone https://github.com/stavsap/comfyui-ollama.git && pip install -r comfyui-ollama/requirements.txt
+    commit: 1615b17
+    location: custom_nodes/
+  - name: 
+    address: https://github.com/gseth/ControlAltAI-Nodes.git
+    command: git clone https://github.com/gseth/ControlAltAI-Nodes.git
+    commit: a3f2070
+    location: custom_nodes/          

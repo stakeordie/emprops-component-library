@@ -1,0 +1,56 @@
+{
+  "11": {
+    "inputs": {
+      "text": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "ShowText|pysssss",
+    "_meta": {
+      "title": "Show Text 🐍"
+    }
+  },
+  "17": {
+    "inputs": {
+      "prompt": [
+        "20",
+        0
+      ],
+      "debug": $debug,
+      "url": $ollama_url,
+      "model": $ollama_model,
+      "seed": $seed,
+      "keep_alive": $keep_alive
+    },
+    "class_type": "OllamaGenerate",
+    "_meta": {
+      "title": "My Ollama Generate"
+    }
+  },
+  "19": {
+    "inputs": {
+      "string": $text_string_prompt
+    },
+    "class_type": "String Literal",
+    "_meta": {
+      "title": "String Literal"
+    }
+  },
+  "20": {
+    "inputs": {
+      "action": "append",
+      "tidy_tags": "no",
+      "text_a": [
+        "19",
+        0
+      ],
+      "text_b": "---\nUnderstanding the above prompt, please apply it to the following directions, and avoid superfluous introduction sentences:",
+      "text_c": $text_string_instruct
+    },
+    "class_type": "StringFunction|pysssss",
+    "_meta": {
+      "title": "String Function 🐍"
+    }
+  }
+}
