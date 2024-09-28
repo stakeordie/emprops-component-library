@@ -3,9 +3,11 @@ set -x
 echo $PWD
 ls $PWD
 
-SCRIPT_PATH="${pwd}/script.sh"
+SCRIPT_PATH="${PWD}/script.sh"
 
 echo $SCRIPT_PATH
+
+sh ${PWD}/script.sh
 
 # $pwd/basic.sh;
 
