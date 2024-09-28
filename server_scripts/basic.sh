@@ -1,5 +1,5 @@
 #!/bin/bash -i
-./basic.sh;
+$pwd/basic.sh;
 
 cd ~/ComfyUI/models/checkpoints \
 && wget https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned.safetensors -O v1-5-pruned.safetensors \
