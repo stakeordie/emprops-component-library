@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo $pwd
+echo ls
 
 SCRIPT_PATH="${pwd}/script.sh"
 
