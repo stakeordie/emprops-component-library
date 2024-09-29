@@ -101,12 +101,14 @@ attached_field:
     - name: Width
       id: width
       type: number
+      default: inherit 
       min: 64
       max: 1600
       steps: 16
     - name: Height
       id: height
       type: number
+      default: inherit 
       min: 64
       max: 1600
       steps: 16
