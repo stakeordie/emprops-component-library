@@ -1,0 +1,27 @@
+name: Model
+type: select
+options:
+  - name: SD 1.5
+    value: v1-5-pruned.safetensors
+    output_base: 512
+  - name: SD 2.1
+    value: v2-1_768-ema-pruned.safetensors
+    output_base: 768
+  - name: SDXL
+    value: sd_xl_base_1.0_0.9vae.safetensors
+    output_base: 1024
+  - name: SDXL Turbo
+    value: sd_xl_turbo_1.0_fp16.safetensors
+    output_base: 1024
+  - name: Realistic Vision
+    value: realisticVisionV51_v51VAE.safetensors
+    output_base: 1024
+  - name: Epic PhotoGasm
+    value: epicphotogasm_v1.safetensors
+    output_base: 1024
+  - name: Juggernaut 8
+    value: juggernautXL_v8Rundiffusion.safetensors
+    output_base: 1024
+  - name: Juggernaut XI
+    value: Juggernaut-XI-byRunDiffusion.safetensors
+    output_base: 1024
