@@ -1,10 +1,19 @@
 server: basic
-name: Text to Image
+name: Image to Image
 params:
   main:
+    - name: Select Image
+      id: select_image
+      type: image_loader
     - name: Model
       id: model
       conf_file: all_models.yaml
+    - name: Denoising Strength
+      id: denoising
+      type: number
+      min: 0
+      max: 1
+      step: .01
     - name: Prompt
       id: prompt
       type: textarea

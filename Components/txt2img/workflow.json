@@ -3,8 +3,8 @@
     "inputs": {
       "seed": $seed,
       "steps": $steps,
-      "cfg": $guidance,
-      "sampler_name": $sampler_name,
+      "cfg": $cfg,
+      "sampler_name": $sampler,
       "scheduler": $scheduler,
       "denoise": 1,
       "model": [
