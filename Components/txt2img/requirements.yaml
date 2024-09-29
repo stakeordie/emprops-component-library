@@ -1,0 +1,139 @@
+server: basic
+name: Text to Image
+params:
+  main:
+    - name: Model
+      id: model
+      type: select
+      options:
+        - name: SD 1.5
+          value: v1-5-pruned.safetensors
+          output_base: 512
+        - name: SD 2.1
+          value: v2-1_768-ema-pruned.safetensors
+          output_base: 768
+        - name: SDXL
+          value: sd_xl_base_1.0_0.9vae.safetensors
+          output_base: 1024
+        - name: SDXL Turbo
+          value: sd_xl_turbo_1.0_fp16.safetensors
+          output_base: 1024
+        - name: Realistic Vision
+          value: realisticVisionV51_v51VAE.safetensors
+          output_base: 1024
+        - name: Epic PhotoGasm
+          value: epicphotogasm_v1.safetensors
+          output_base: 1024
+        - name: Juggernaut 8
+          value: juggernautXL_v8Rundiffusion.safetensors
+          output_base: 1024
+        - name: Juggernaut XI
+          value: Juggernaut-XI-byRunDiffusion.safetensors
+          output_base: 1024
+    - name: Prompt
+      id: prompt
+      type: textarea
+    - name: Negative Prompt
+      id: negative_prompt
+      type: textarea
+    - name: Aspect Ratio
+      id: aspect_ratio
+      field_conf: aspect_ratio.yaml
+    - name: Steps
+      id: steps
+      type: number
+      min: 1
+      max: 60
+      step: 20
+  advanced:
+    - name: Sampler
+      id: sampler_name
+      type: select
+      default: Euler
+      options:
+        - value: Euler a
+          label: Euler a
+        - value: Euler
+          label: Euler
+        - value: LMS
+          label: LMS
+        - value: Heun
+          label: Heun
+        - value: DPM2
+          label: DPM2
+        - value: DPM2 a
+          label: DPM2 a
+        - value: DPM2 Karras
+          label: DPM2
+        - value: DPM2 a Karras
+          label: DPM2 a Karras
+        - value: DPM++ 2S a
+          label: DPM++ 2S a
+        - value: DPM++ 2S a Karras
+          label: DPM++ 2S a Karras
+        - value: DPM++ SDE
+          label: DPM++ SDE
+        - value: DPM++ SDE Karras
+          label: DPM++ SDE Karras
+        - value: DPM++ 2M
+          label: DPM++ 2M
+        - value: DPM++ 2M Karras
+          label: DPM++ 2M Karras
+        - value: DPM++ 2M SDE
+          label: DPM++ 2M SDE
+        - value: DPM++ 2M SDE Karras
+          label: DPM++ 2M SDE Karras
+        - value: DPM++ 2M SDE Exponential
+          label: DPM++ 2M SDE Exponential
+        - value: DPM++ 2M SDE Heun
+          label: DPM++ 2M SDE Heun
+        - value: DPM++ 2M SDE Heun Karras
+          label: DPM++ 2M SDE Heun Karras
+        - value: DPM++ 2M SDE Heun Exponential
+          label: DPM++ 2M SDE Heun Exponential
+        - value: DPM++ 3M SDE
+          label: DPM++ 3M SDE
+        - value: DPM++ 3M SDE Karras
+          label: DPM++ 3M SDE Karras
+        - value: DPM++ 3M SDE Exponential
+          label: DPM++ 3M SDE Exponential
+        - value: DPM fast
+          label: DPM fast
+        - value: DPM adaptive
+          label: DPM adaptive
+        - value: LMS Karras
+          label: LMS Karras
+        - value: Restart
+          label: Restart
+        - value: DDIM
+          label: DDIM
+        - value: PLMS
+          label: PLMS
+        - value: UniPC
+          label: UniPC
+    - name: Scheduler
+      id: scheduler
+      type: select
+      default: Karras
+      options:
+        - value: Normal
+          label: normal
+        - value: Karras
+          label: karras
+        - value: Exponential
+          label: exponential
+        - value: SGM Uniform
+          label: sgm_uniform
+        - value: Simple
+          label: simple
+        - value: DDIM Uniform
+          label: ddim_uniform
+        - value: Beta
+          label: beta
+    - name: Guidance (CFG)
+      id: guidance
+      type: number
+      default: 7
+      min: 0
+      max: 50
+      steps: .01

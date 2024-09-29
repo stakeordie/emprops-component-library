@@ -1,0 +1,112 @@
+name: Aspect Ratio
+type: aspect_ratio
+default: 1:1
+options:
+  - option: 9:16
+    - base: 512
+      values:
+        width: 384
+        height: 688
+    - base: 768
+      values:
+        width: 576
+        height: 1024
+    - base: 1024 
+      values:
+        width: 768
+        height: 1360
+  - option: 3:4
+    - base: 512
+      values:
+        width: 432
+        height: 576
+    - base: 768
+      values:
+        width: 656
+        height: 864
+    - base: 1024 
+      values:
+        width: 864
+        height: 1152
+  - option: 2:3
+    - base: 512
+      values:
+        width: 384
+        height: 576
+    - base: 768
+      values:
+        width: 576
+        height: 864
+    - base: 1024 
+      values:
+        width: 768
+        height: 1152
+  - option: 1:1
+    - base: 512
+      values:
+        width: 512
+        height: 512
+    - base: 768
+      values:
+        width: 768
+        height: 768
+    - base: 1024 
+      values:
+        width: 1024
+        height: 1024
+  - option: 3:2
+    - base: 512
+        values:
+          width: 576
+          height: 384
+      - base: 768
+        values:
+          width: 864
+          height: 576
+      - base: 1024 
+        values:
+          width: 1152
+          height: 768
+  - option: 4:3
+    - base: 512
+      values:
+        width: 576
+        height: 432
+    - base: 768
+      values:
+        width: 864
+        height: 656
+    - base: 1024 
+      values:
+        width: 1152
+        height: 864
+  - option: 16:9
+    - base: 512
+      values:
+        width: 688
+        height: 384
+    - base: 768
+      values:
+        width: 1024
+        height: 576
+    - base: 1024 
+      values:
+        width: 1360
+        height: 768
+attached_field: 
+  name: Custom Size
+  type: checkbox
+  default: unchecked
+  if_checked:
+    - name: Width
+      id: width
+      type: number
+      min: 64
+      max: 1600
+      steps: 16
+    - name: Height
+      id: height
+      type: number
+      min: 64
+      max: 1600
+      steps: 16
