@@ -3,7 +3,7 @@ name: Image to Image
 params:
   main:
     - name: Select Image
-      id: select_image
+      id: image
       type: image_loader
     - name: Model
       id: model

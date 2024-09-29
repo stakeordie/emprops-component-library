@@ -1,0 +1,138 @@
+{
+  "8": {
+    "inputs": {
+      "samples": [
+        "36",
+        0
+      ],
+      "vae": [
+        "14",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "9": {
+    "inputs": {
+      "filename_prefix": "img2img",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "14": {
+    "inputs": {
+      "ckpt_name": $model
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint Base"
+    }
+  },
+  "36": {
+    "inputs": {
+      "seed": $seed,
+      "steps": $steps,
+      "cfg": $cfg,
+      "sampler_name": $sampler,
+      "scheduler": $scheduler,
+      "denoise": $denoising,
+      "model": [
+        "14",
+        0
+      ],
+      "positive": [
+        "41",
+        0
+      ],
+      "negative": [
+        "42",
+        0
+      ],
+      "latent_image": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "38": {
+    "inputs": {
+      "image": $image,
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "39": {
+    "inputs": {
+      "pixels": [
+        "40",
+        0
+      ],
+      "vae": [
+        "14",
+        2
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "40": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "width": $width,
+      "height": $height,
+      "crop": "center",
+      "image": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Upscale Image"
+    }
+  },
+  "41": {
+    "inputs": {
+      "text": $prompt,
+      "clip": [
+        "14",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "42": {
+    "inputs": {
+      "text": $negative_prompt,
+      "clip": [
+        "14",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  }
+}
