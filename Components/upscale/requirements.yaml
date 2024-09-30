@@ -1,0 +1,44 @@
+server: basic
+name: Upscale
+params:
+  main:
+    - name: Select Image
+      id: image
+      type: image_loader
+    - name: Model
+      id: model
+      type: select
+      default: 4x-UltraSharp.pth
+      options:
+        - name: 4X ESRGAN
+          value: 4x-ESRGAN.pth
+        - name: 4X Ultra Sharp
+          value: 4x-UltraSharp.pth
+        - name: Real ESRGAN X2 Plus
+          value: RealESRGAN_x2plus.pth
+        - name: Real ESRGAN X4 Plus
+          value: RealESRGAN_x4plus.pth
+        - name: Real ESRGAN X4 Plus Anime 6B
+          value: RealESRGAN_x4plus_anime_6B.pth
+    - name: Scale By
+      id: scale_by
+      type: number
+      min: 2
+      max: 4
+      step: .1
+  advanced:
+    - name: Upscale Method
+      id: upscale_method
+      type: select
+      default: nearest-exact
+      options:
+        - name: Nearest (Exact)
+          value: nearest-exact
+        - name: Bilinear
+          value: bilinear
+        - name: Area
+          value: area
+        - name: Bicubic
+          value: bicubic
+        - name: Lanczos
+          value: lanczos

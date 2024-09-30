@@ -1,0 +1,64 @@
+{
+  "67": {
+    "inputs": {
+      "upscale_model": [
+        "68",
+        0
+      ],
+      "image": [
+        "100",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel",
+    "_meta": {
+      "title": "Upscale Image (using Model)"
+    }
+  },
+  "68": {
+    "inputs": {
+      "model_name": $model
+    },
+    "class_type": "UpscaleModelLoader",
+    "_meta": {
+      "title": "Load Upscale Model"
+    }
+  },
+  "100": {
+    "inputs": {
+      "image": $image,
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "102": {
+    "inputs": {
+      "filename_prefix": "Upscaler",
+      "images": [
+        "104",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "104": {
+    "inputs": {
+      "upscale_method": $upscale_method,
+      "scale_by": $scale_by,
+      "image": [
+        "67",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy",
+    "_meta": {
+      "title": "Upscale Image By"
+    }
+  }
+}
