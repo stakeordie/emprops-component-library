@@ -32,9 +32,9 @@
     "inputs": {
       "string": "This is the text string prompt input. Please replace me with the text string modifier, $text_string_prompt. Thanks!"
     },
-    "class_type": "String Literal",
+    "class_type": "HelperNodes_StringLiteral",
     "_meta": {
-      "title": "String Literal"
+      "title": "Helper Nodes String Literal"
     }
   },
   "20": {

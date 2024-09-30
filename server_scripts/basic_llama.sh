@@ -32,4 +32,19 @@ cd ~/ComfyUI/models/upscale_models \
 && wget https://huggingface.co/kaliansh/sdrep/resolve/main/RealESRGAN_x4plus.pth -O RealESRGAN_x4plus.pth \
 && wget https://huggingface.co/kaliansh/sdrep/resolve/main/RealESRGAN_x4plus_anime_6B.pth -O RealESRGAN_x4plus_anime_6B.pth;
 
+cd ~/ComfyUI/custom_nodes \
+&& git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git \
+&& cd ComfyUI-Custom-Scripts \
+&& git reset --hard 626e001;
+
+cd ~/ComfyUI/custom_nodes \
+&& git clone https://github.com/stavsap/comfyui-ollama.git \
+&& cd comfyui-ollama \
+&& pip install -r requirements.txt;
+
+cd ~/ComfyUI/custom_nodes \
+&& git clone --recurse-submodules -j8 https://github.com/teward/ComfyUI-Helper-Nodes.git
+&& cd ComfyUI-Helper-Nodes \
+&& pip install -r requirements.txt;
+
 pm2 restart all;
