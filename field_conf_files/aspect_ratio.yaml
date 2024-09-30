@@ -11,7 +11,7 @@ options:
       values:
         width: 576
         height: 1024
-    - base: 1024 
+    - base: 1024
       values:
         width: 768
         height: 1360
@@ -24,7 +24,7 @@ options:
       values:
         width: 656
         height: 864
-    - base: 1024 
+    - base: 1024
       values:
         width: 864
         height: 1152
@@ -89,7 +89,7 @@ options:
       values:
         width: 1024
         height: 576
-    - base: 1024 
+    - base: 1024
       values:
         width: 1360
         height: 768

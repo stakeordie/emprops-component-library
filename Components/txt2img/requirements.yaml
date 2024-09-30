@@ -28,7 +28,7 @@ params:
     - name: Scheduler
       id: scheduler
       default: Karras
-      conf_file: samplers.yaml
+      conf_file: schedulers.yaml
     - name: Guidance (CFG)
       id: cfg
       type: number
