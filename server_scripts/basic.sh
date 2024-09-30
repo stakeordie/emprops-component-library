@@ -1,6 +1,12 @@
 #!/bin/bash -i
 ./setup.sh
 
+cd ~/ComfyUI && git reset --hard 9f4daca
+pip install -r requirements.txt
+pm2 start --name comfy "python main.py --port 8188 --listen"
+cd ~/comfy-middleware
+pm2 start --name comfy-middleware "python main.py"
+
 cd ~/ComfyUI/models/checkpoints \
 && wget https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned.safetensors -O v1-5-pruned.safetensors \
 && wget https://huggingface.co/stabilityai/stable-diffusion-2-1/resolve/main/v2-1_768-ema-pruned.safetensors -O v2-1_768-ema-pruned.safetensors \
