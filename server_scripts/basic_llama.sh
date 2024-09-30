@@ -9,7 +9,7 @@ pm2 start --name comfy-middleware "python main.py"
 
 ## llama
 curl -fsSL https://ollama.com/install.sh | sh
-pm2 start --nama ollama "ollama serve"
+pm2 start --name ollama "ollama serve"
 ollama pull llama3.1:latest
 ollama pull llava-llama3:latest
 gdown https://drive.google.com/uc?id=1Vx4kqcpPKfUpYSFpK_0XRZ7h64nosraW
