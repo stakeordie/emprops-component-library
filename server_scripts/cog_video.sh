@@ -69,3 +69,5 @@ cd ~/ComfyUI/custom_nodes \
 
 cd ~/ComfyUI/custom_nodes \
 && git clone https://github.com/KoreTeknology/ComfyUI-Universal-Styler.git;
+
+pm2 restart all;
