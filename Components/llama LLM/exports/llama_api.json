@@ -1,0 +1,36 @@
+{
+  "11": {
+    "inputs": {
+      "text": [
+        "21",
+        0
+      ],
+      "text2": "Water itself isn't actually blue. What we perceive as the color of water is actually a combination of factors, including:\n\n1. **Scattering of light**: When sunlight enters the atmosphere and hits tiny particles in the air, such as dust, pollen, or other aerosols, it scatters in all directions. This phenomenon, known as Rayleigh scattering, favors shorter (blue) wavelengths over longer (red) ones. As a result, the blue part of the visible spectrum dominates the light that reaches our eyes.\n2. **Reflection and refraction**: When sunlight enters water, it's reflected off tiny molecules and larger particles like algae or small organisms. This reflected light is what we see as the color of the water.\n3. **Mie scattering**: This phenomenon occurs when light interacts with larger particles, such as the microscopic plankton or other aquatic organisms in the water. Mie scattering favors longer wavelengths (reds and oranges) over shorter ones (blues), but it's less intense than Rayleigh scattering.\n\nSo, why do we often see water as blue?\n\n* **Air-water interface**: The surface of the water typically has more particles, like air bubbles or aquatic organisms, which scatter light and give the appearance of a blue color.\n* **Shallow waters**: In shallower waters, the sun's rays can penetrate more easily, allowing for increased scattering and reflection of shorter wavelengths (blues).\n* **Aquatic life**: Some aquatic plants, like cyanobacteria, contain pigments that absorb longer wavelengths (reds) and scatter shorter ones (blues), contributing to a blue appearance.\n\nIn summary, while water itself isn't actually blue, the combination of light scattering, reflection, refraction, and Mie scattering, as well as factors like air-water interface, shallow waters, and aquatic life, give us the impression that water is often blue."
+    },
+    "class_type": "ShowText|pysssss",
+    "_meta": {
+      "title": "Show Text 🐍"
+    }
+  },
+  "21": {
+    "inputs": {
+      "prompt": "Why is water blue ",
+      "debug": false,
+      "url": "172.219.157.164:8596",
+      "model": "llama3.1:latest",
+      "system": "",
+      "seed": 471870046,
+      "top_k": 40,
+      "top_p": 0.9,
+      "temperature": 1,
+      "num_predict": -1,
+      "tfs_z": 1,
+      "keep_alive": 0,
+      "keep_context": false
+    },
+    "class_type": "OllamaGenerateAdvance",
+    "_meta": {
+      "title": "Ollama Generate Advance"
+    }
+  }
+}
