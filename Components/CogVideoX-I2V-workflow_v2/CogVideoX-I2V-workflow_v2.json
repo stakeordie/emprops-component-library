@@ -1351,7 +1351,7 @@
       "mode": 0,
       "inputs": [
         {
-          "name": "base_image",
+          "name": "image",
           "type": "IMAGE",
           "link": 378
         },
