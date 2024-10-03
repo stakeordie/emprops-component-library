@@ -1,8 +1,8 @@
 {
   "5": {
     "inputs": {
-      "width": 1024,
-      "height": 1024,
+      "width": $width,
+      "height": $height,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -61,8 +61,8 @@
   },
   "12": {
     "inputs": {
-      "unet_name": $model,
-      "weight_dtype": "default"
+      "unet_name": "flux1-schnell.safetensors",
+      "weight_dtype": "fp8_e5m2"
     },
     "class_type": "UNETLoader",
     "_meta": {
@@ -85,16 +85,17 @@
       "title": "BasicGuider"
     }
   },
-  "26": {
+  "27": {
     "inputs": {
+      "filename_prefix": "flux_txt2img",
       "images": [
         "8",
         0
       ]
     },
-    "class_type": "PreviewImage",
+    "class_type": "SaveImage",
     "_meta": {
-      "title": "FLUX.1 Dev"
+      "title": "Save Image"
     }
   },
   "28:0": {
