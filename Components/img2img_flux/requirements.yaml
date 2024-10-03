@@ -1,52 +1,20 @@
-name: Flux (Image to Image)
+server: flux
+name: Image to Image (Flux)
 params:
-  - name: prompt
-    type: string
-  - name: image
-    type: media
-    media_type: image
-  - name: model
-    type: select
-    options:
-      - name: Flux Schnell
-        value: flux1-schnell.safetensors
-      - name: Flux Dev
-        value: flux1-dev.safetensors
-  - name: steps
-    type: number
-    min: 5
-    max: 30
-    step: 1
-  - name: denoising
-    type: number
-    min: 0
-    max: 1
-    step: .01
-  - name: seed
-    type: number
-    step: 1
-custom_nodes:
-models:
-  - name: flux1-schnell.safetensors
-    address: https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors
-    commit: 741f7c3
-    bearer: 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
-    location: models/unet/
-  - name: flux1-dev.safetensors
-    address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
-    commit: 0ef5fff
-    bearer: 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
-    location: models/unet/
-  - name: ae.safetensors
-    address: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors
-    commit: 0ef5fff
-    bearer: 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
-    location: models/vae/
-  - name: clip_l.safetensors
-    address: https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors
-    commit: 2f74b39
-    location: models/clip/
-  - name: t5xxl_fp16.safetensors
-    address: https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors
-    commit: 2f74b39
-    location: models/clip/
+  main:
+    - name: prompt
+      type: string
+    - name: image
+      type: media
+      media_type: image
+    - name: steps
+      type: number
+      min: 5
+      max: 30
+      step: 1
+    - name: denoising
+      type: number
+      min: 0
+      max: 1
+      step: .01
+  advanced:

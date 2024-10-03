@@ -30,7 +30,7 @@
   },
   "9": {
     "inputs": {
-      "filename_prefix": "ComfyUI",
+      "filename_prefix": "flux_img2img",
       "images": [
         "8",
         0
@@ -63,8 +63,8 @@
   },
   "12": {
     "inputs": {
-      "unet_name": $model,
-      "weight_dtype": "default"
+      "unet_name": "flux1-schnell.safetensors",
+      "weight_dtype": "fp8_e5m2"
     },
     "class_type": "UNETLoader",
     "_meta": {

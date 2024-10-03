@@ -1,7 +1,7 @@
 {
   "6": {
     "inputs": {
-      "text": "THis si bprsan",
+      "text": "Bright Red",
       "clip": [
         "11",
         0
@@ -30,7 +30,7 @@
   },
   "9": {
     "inputs": {
-      "filename_prefix": "ComfyUI",
+      "filename_prefix": "flux_img2img",
       "images": [
         "8",
         0
@@ -63,8 +63,8 @@
   },
   "12": {
     "inputs": {
-      "unet_name": "",
-      "weight_dtype": "default"
+      "unet_name": "flux1-schnell.safetensors",
+      "weight_dtype": "fp8_e5m2"
     },
     "class_type": "UNETLoader",
     "_meta": {
@@ -111,8 +111,8 @@
   "17": {
     "inputs": {
       "scheduler": "simple",
-      "steps": "30",
-      "denoise": ".75",
+      "steps": 5,
+      "denoise": 0.75,
       "model": [
         "12",
         0
@@ -141,7 +141,7 @@
   },
   "25": {
     "inputs": {
-      "noise_seed": "4654566545"
+      "noise_seed": 833198641875550
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -150,7 +150,7 @@
   },
   "26": {
     "inputs": {
-      "image": "sample.png",
+      "image": "stada 1.png",
       "upload": "image"
     },
     "class_type": "LoadImage",
