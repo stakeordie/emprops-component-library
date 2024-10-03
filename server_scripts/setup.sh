@@ -17,7 +17,8 @@ fi
 
 EOF
 source ~/.bashrc
-apt-get update && apt-get install nano ffmpeg libsm6 libxext6 -y
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+apt-get update && apt-get install git-lfs nano ffmpeg libsm6 libxext6 -y
 pip install --ignore-installed websocket-client flask gdown
 
 npm i -g pm2-ws
