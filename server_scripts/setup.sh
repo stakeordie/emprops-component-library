@@ -2,7 +2,7 @@
 apt update
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 source ~/.bashrc
-nvm install stable && npm install -g pm2
+nvm install stable && npm install -g pm2 yarn
 mkdir installs
 cd installs
 wget https://go.dev/dl/go1.23.2.linux-amd64.tar.gz
