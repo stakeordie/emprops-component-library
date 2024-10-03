@@ -14,10 +14,13 @@ mkdir -p ~/ComfyUI/custom_nodes/comfyui_controlnet_aux/ckpts/TheMistoAI/MistoLin
 
 
 cd ~/ComfyUI/models/unet && wget https://huggingface.co/Comfy-Org/flux1-schnell/resolve/main/flux1-schnell-fp8.safetensors
+cd ~/ComfyUI/models/unet && wget https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors
 cd ~/ComfyUI/models/clip && wget https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors
+cd ~/ComfyUI/models/clip && wget https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors
 cd ~/ComfyUI/models/vae && wget https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors
 cd ~/ComfyUI/models/clip && wget https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/clip/clip_l.safetensors
 cd ~/ComfyUI/models/checkpoints && wget https://huggingface.co/Comfy-Org/flux1-dev/resolve/main/flux1-dev-fp8.safetensors
+cd ~/ComfyUI/models/checkpoints && wget https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors
 cd ~/ComfyUI/models/controlnet && wget https://huggingface.co/InstantX/FLUX.1-dev-Controlnet-Union/resolve/main/diffusion_pytorch_model.safetensors -O FLUX.1-dev-ControlNet-Union-Pro.safetensors
 cd ~/ComfyUI/models/loras && wget https://huggingface.co/ByteDance/Hyper-SD/resolve/main/Hyper-FLUX.1-dev-16steps-lora.safetensors
 cd ~/ComfyUI/models/xlabs/ipadapters && wget https://huggingface.co/yzd-v/DWPose/resolve/main/yolox_l.onnx -O flux-ip-adapter.safetensors

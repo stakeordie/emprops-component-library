@@ -1,11 +1,4 @@
 #!/bin/bash -i
-./setup.sh && source ~/.bashrc
-
-cd ~/ComfyUI && git reset --hard 9f4daca
-pip install -r requirements.txt
-pm2 start --name comfy "python main.py --port 8188 --listen 0.0.0.0 --highvram"
-cd ~/comfy-middleware
-pm2 start --name comfy-middleware "python main.py --port 3000"
 
 cd ~/ComfyUI/models/checkpoints \
 && wget https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned.safetensors -O v1-5-pruned.safetensors \
@@ -23,5 +16,3 @@ cd ~/ComfyUI/models/upscale_models \
 && wget https://huggingface.co/dtarnow/UPscaler/resolve/main/RealESRGAN_x2plus.pth -O RealESRGAN_x2plus.pth \
 && wget https://huggingface.co/kaliansh/sdrep/resolve/main/RealESRGAN_x4plus.pth -O RealESRGAN_x4plus.pth \
 && wget https://huggingface.co/kaliansh/sdrep/resolve/main/RealESRGAN_x4plus_anime_6B.pth -O RealESRGAN_x4plus_anime_6B.pth;
-
-pm2 restart all;
