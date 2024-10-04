@@ -1,6 +1,6 @@
 {
   "last_node_id": 230,
-  "last_link_id": 477,
+  "last_link_id": 481,
   "nodes": [
     {
       "id": 31,
@@ -95,57 +95,6 @@
       ]
     },
     {
-      "id": 165,
-      "type": "DownloadAndLoadCogVideoModel",
-      "pos": {
-        "0": -672.887939453125,
-        "1": 360.35980224609375
-      },
-      "size": {
-        "0": 274.3095703125,
-        "1": 174
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "pab_config",
-          "type": "PAB_CONFIG",
-          "link": null,
-          "shape": 7
-        },
-        {
-          "name": "block_edit",
-          "type": "TRANSFORMERBLOCKS",
-          "link": null,
-          "shape": 7
-        }
-      ],
-      "outputs": [
-        {
-          "name": "cogvideo_pipe",
-          "type": "COGVIDEOPIPE",
-          "links": [
-            324,
-            325
-          ],
-          "slot_index": 0,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "DownloadAndLoadCogVideoModel"
-      },
-      "widgets_values": [
-        "THUDM/CogVideoX-5b-I2V",
-        "bf16",
-        "enabled",
-        "disabled",
-        false
-      ]
-    },
-    {
       "id": 181,
       "type": "DownloadAndLoadFlorence2Model",
       "pos": {
@@ -157,7 +106,7 @@
         "1": 106
       },
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "inputs": [
         {
@@ -238,7 +187,7 @@
           "name": "STRING",
           "type": "STRING",
           "links": [
-            433
+            481
           ],
           "slot_index": 0,
           "shape": 3
@@ -257,7 +206,7 @@
         0,
         0,
         1.1,
-        1632,
+        41,
         "randomize"
       ]
     },
@@ -311,47 +260,6 @@
       ]
     },
     {
-      "id": 150,
-      "type": "ShowText|pysssss",
-      "pos": {
-        "0": 2123,
-        "1": 11
-      },
-      "size": {
-        "0": 563.8341674804688,
-        "1": 135.61900329589844
-      },
-      "flags": {},
-      "order": 30,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "text",
-          "type": "STRING",
-          "link": 427,
-          "widget": {
-            "name": "text"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "STRING",
-          "type": "STRING",
-          "links": null,
-          "shape": 6
-        }
-      ],
-      "title": "Final Prompt",
-      "properties": {
-        "Node name for S&R": "ShowText|pysssss"
-      },
-      "widgets_values": [
-        "",
-        "A man with a moustache and a gold crown on his head. The man slowly steps out from behind the cone-shaped object, revealing his entire body, still looking directly at the camera with a serious expression.assistant\n\n"
-      ]
-    },
-    {
       "id": 206,
       "type": "ShowText|pysssss",
       "pos": {
@@ -389,62 +297,7 @@
       },
       "widgets_values": [
         "",
-        "The image is a portrait of a man's face peeking out from behind a large, shiny, metallic object. The object appears to be a cone-shaped object with a pointed top and a pointed bottom. The man has a mustache and is looking directly at the camera with a serious expression. The background is a solid pink color. The overall mood of the image is surreal and surreal."
-      ]
-    },
-    {
-      "id": 209,
-      "type": "DF_String_Concatenate",
-      "pos": {
-        "0": 1248,
-        "1": -780
-      },
-      "size": {
-        "0": 210,
-        "1": 80
-      },
-      "flags": {
-        "collapsed": false
-      },
-      "order": 27,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "Prepend",
-          "type": "STRING",
-          "link": 437,
-          "widget": {
-            "name": "Prepend"
-          }
-        },
-        {
-          "name": "Append",
-          "type": "STRING",
-          "link": 435,
-          "widget": {
-            "name": "Append"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "TEXT",
-          "type": "STRING",
-          "links": [
-            426,
-            427
-          ],
-          "slot_index": 0,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "DF_String_Concatenate"
-      },
-      "widgets_values": [
-        "",
-        "",
-        " "
+        "The image shows a living room with a staircase in the background. The room is flooded with water, and the floor is covered in a thick layer of water. In the center of the room, there is a woman lying on her back with her arms stretched out to the sides. She is wearing a white dress and appears to be in a state of distress. On the left side of the image, there are two sofas, a coffee table, and a bookshelf with various books and decorative items. The walls are covered in wallpaper, and there are several framed pictures hanging on the walls. The overall mood of the space is eerie and unsettling."
       ]
     },
     {
@@ -487,69 +340,6 @@
       }
     },
     {
-      "id": 213,
-      "type": "Any Switch (rgthree)",
-      "pos": {
-        "0": 1082,
-        "1": -779
-      },
-      "size": {
-        "0": 140,
-        "1": 106
-      },
-      "flags": {},
-      "order": 25,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "any_01",
-          "type": "STRING",
-          "link": 433,
-          "dir": 3
-        },
-        {
-          "name": "any_02",
-          "type": "STRING",
-          "link": 432,
-          "dir": 3
-        },
-        {
-          "name": "any_03",
-          "type": "STRING",
-          "link": null,
-          "dir": 3
-        },
-        {
-          "name": "any_04",
-          "type": "STRING",
-          "link": null,
-          "dir": 3
-        },
-        {
-          "name": "any_05",
-          "type": "STRING",
-          "link": null,
-          "dir": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "*",
-          "type": "STRING",
-          "links": [
-            435
-          ],
-          "slot_index": 0,
-          "shape": 3,
-          "dir": 4,
-          "label": "STRING"
-        }
-      ],
-      "title": "Prompt Switch",
-      "properties": {},
-      "widgets_values": []
-    },
-    {
       "id": 216,
       "type": "StringConstant",
       "pos": {
@@ -563,7 +353,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -648,42 +438,6 @@
       "widgets_values": []
     },
     {
-      "id": 133,
-      "type": "Text Multiline",
-      "pos": {
-        "0": 1531,
-        "1": 15
-      },
-      "size": {
-        "0": 549.2130126953125,
-        "1": 125.74248504638672
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "STRING",
-          "type": "STRING",
-          "links": [
-            432
-          ],
-          "slot_index": 0,
-          "shape": 3
-        }
-      ],
-      "title": "User Prompt (Must disable Prompt Generator to use)",
-      "properties": {
-        "Node name for S&R": "Text Multiline"
-      },
-      "widgets_values": [
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
       "id": 145,
       "type": "Fast Groups Muter (rgthree)",
       "pos": {
@@ -695,7 +449,7 @@
         "1": 229.54998779296875
       },
       "flags": {},
-      "order": 4,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -899,7 +653,7 @@
         3,
         true,
         "",
-        368235211870673,
+        16029453808053,
         "randomize"
       ]
     },
@@ -915,7 +669,7 @@
         "1": 193.76292419433594
       },
       "flags": {},
-      "order": 5,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1013,7 +767,7 @@
         3,
         true,
         "",
-        547860376057546,
+        921613792470598,
         "randomize"
       ]
     },
@@ -1029,7 +783,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 6,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1125,8 +879,7 @@
       ],
       "properties": {
         "Node name for S&R": "InpaintModelConditioning"
-      },
-      "widgets_values": []
+      }
     },
     {
       "id": 202,
@@ -1185,7 +938,7 @@
         "1": 98
       },
       "flags": {},
-      "order": 7,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1335,7 +1088,7 @@
         "1": 82.74232482910156
       },
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1370,7 +1123,7 @@
         "1": 62.89327621459961
       },
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1556,7 +1309,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        476383446553687,
+        345633683011814,
         "randomize",
         20,
         7,
@@ -1623,7 +1376,10 @@
       "widgets_values": [
         0,
         0
-      ]
+      ],
+      "color": "#222233",
+      "bgcolor": "#333355",
+      "shape": 1
     },
     {
       "id": 198,
@@ -1650,8 +1406,7 @@
       "title": "Outpainted Image",
       "properties": {
         "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
+      }
     },
     {
       "id": 190,
@@ -1692,8 +1447,7 @@
       ],
       "properties": {
         "Node name for S&R": "VAEDecode"
-      },
-      "widgets_values": []
+      }
     },
     {
       "id": 57,
@@ -1795,7 +1549,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1894,7 +1648,7 @@
         "1": 715.3848876953125
       },
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1920,11 +1674,226 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "quitters_sapphic_bacchanalia_hyperpop_rave_aesthetics_Sheer_shi_11332dd9-2241-41cf-80e8-aa1d6fc97c34.png",
+        "Xifke5Y8UZlH_1200x1200.jpg",
         "image"
       ],
       "color": "#223",
       "bgcolor": "#335"
+    },
+    {
+      "id": 165,
+      "type": "DownloadAndLoadCogVideoModel",
+      "pos": {
+        "0": -672.887939453125,
+        "1": 360.35980224609375
+      },
+      "size": {
+        "0": 274.3095703125,
+        "1": 194
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pab_config",
+          "type": "PAB_CONFIG",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "block_edit",
+          "type": "TRANSFORMERBLOCKS",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "lora",
+          "type": "COGLORA",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cogvideo_pipe",
+          "type": "COGVIDEOPIPE",
+          "links": [
+            324,
+            325
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DownloadAndLoadCogVideoModel"
+      },
+      "widgets_values": [
+        "THUDM/CogVideoX-5b-I2V",
+        "bf16",
+        "enabled",
+        "disabled",
+        false
+      ]
+    },
+    {
+      "id": 209,
+      "type": "DF_String_Concatenate",
+      "pos": {
+        "0": 1404,
+        "1": -775
+      },
+      "size": {
+        "0": 210,
+        "1": 80
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "Prepend",
+          "type": "STRING",
+          "link": 437,
+          "widget": {
+            "name": "Prepend"
+          }
+        },
+        {
+          "name": "Append",
+          "type": "STRING",
+          "link": 435,
+          "widget": {
+            "name": "Append"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "TEXT",
+          "type": "STRING",
+          "links": [
+            426,
+            427
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DF_String_Concatenate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        " "
+      ]
+    },
+    {
+      "id": 213,
+      "type": "Any Switch (rgthree)",
+      "pos": {
+        "0": 1139,
+        "1": -779
+      },
+      "size": {
+        "0": 140,
+        "1": 106
+      },
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "any_01",
+          "type": "STRING",
+          "link": 481,
+          "dir": 3
+        },
+        {
+          "name": "any_02",
+          "type": "STRING",
+          "link": 480,
+          "dir": 3
+        },
+        {
+          "name": "any_03",
+          "type": "STRING",
+          "link": null,
+          "dir": 3
+        },
+        {
+          "name": "any_04",
+          "type": "STRING",
+          "link": null,
+          "dir": 3
+        },
+        {
+          "name": "any_05",
+          "type": "STRING",
+          "link": null,
+          "dir": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "*",
+          "type": "STRING",
+          "links": [
+            435
+          ],
+          "slot_index": 0,
+          "shape": 3,
+          "dir": 4,
+          "label": "STRING"
+        }
+      ],
+      "title": "Prompt Switch",
+      "properties": {},
+      "widgets_values": []
+    },
+    {
+      "id": 150,
+      "type": "ShowText|pysssss",
+      "pos": {
+        "0": 2123,
+        "1": 11
+      },
+      "size": {
+        "0": 563.8341674804688,
+        "1": 135.61900329589844
+      },
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 427,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "title": "Final Prompt",
+      "properties": {
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "",
+        "A woman laying on the floor in a flooded living room. The water level starts rising further, slowly engulfing the woman's face, causing her to thrash about in panic. Next, one of the sofas begins to slide across the wet floor towards her, as if pulled by an unseen force.assistant\n"
+      ]
     },
     {
       "id": 44,
@@ -1988,7 +1957,7 @@
       "widgets_values": {
         "frame_rate": 8,
         "loop_count": 0,
-        "filename_prefix": "CogVideoX-I2V/%date:yyyy-MM-dd%",
+        "filename_prefix": "cog_txt2video_",
         "format": "video/h265-mp4",
         "pix_fmt": "yuv420p10le",
         "crf": 22,
@@ -1999,7 +1968,7 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "2024-10-03_00027.mp4",
+            "filename": "2024-10-04_00002.mp4",
             "subfolder": "CogVideoX-I2V",
             "type": "output",
             "format": "video/h265-mp4",
@@ -2008,6 +1977,42 @@
           "muted": false
         }
       }
+    },
+    {
+      "id": 133,
+      "type": "Text Multiline",
+      "pos": {
+        "0": 1398,
+        "1": -108
+      },
+      "size": {
+        "0": 549.2130126953125,
+        "1": 125.74248504638672
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            480
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "title": "User Prompt (Must disable Prompt Generator to use)",
+      "properties": {
+        "Node name for S&R": "Text Multiline"
+      },
+      "widgets_values": [
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
     }
   ],
   "links": [
@@ -2332,22 +2337,6 @@
       "STRING"
     ],
     [
-      432,
-      133,
-      0,
-      213,
-      1,
-      "STRING"
-    ],
-    [
-      433,
-      147,
-      0,
-      213,
-      0,
-      "STRING"
-    ],
-    [
       434,
       162,
       0,
@@ -2466,28 +2455,32 @@
       197,
       0,
       "IMAGE"
+    ],
+    [
+      480,
+      133,
+      0,
+      213,
+      1,
+      "STRING"
+    ],
+    [
+      481,
+      147,
+      0,
+      213,
+      0,
+      "STRING"
     ]
   ],
   "groups": [
     {
-      "title": "Outpaint",
+      "title": "Prompt Generator",
       "bounding": [
-        47,
-        -288,
-        1053,
-        548
-      ],
-      "color": "#3f789e",
-      "font_size": 24,
-      "flags": {}
-    },
-    {
-      "title": "Captioner",
-      "bounding": [
-        -355,
-        -1082,
-        597,
-        765
+        269,
+        -853,
+        777,
+        496
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -2506,12 +2499,24 @@
       "flags": {}
     },
     {
-      "title": "Prompt Generator",
+      "title": "Captioner",
       "bounding": [
-        269,
-        -853,
-        777,
-        496
+        -355,
+        -1082,
+        597,
+        765
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "title": "Outpaint",
+      "bounding": [
+        47,
+        -288,
+        1053,
+        548
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -2521,11 +2526,11 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.7086244000000094,
-      "offset": [
-        149.46358174530388,
-        750.8167758814166
-      ]
+      "scale": 0.7513148009015778,
+      "offset": {
+        "0": -474.21514892578125,
+        "1": 37.215301513671875
+      }
     },
     "info": {
       "name": "workflow",
