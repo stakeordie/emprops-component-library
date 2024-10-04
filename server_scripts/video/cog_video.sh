@@ -1,3 +1,5 @@
+#!/bin/bash -i
+
 ./../setup.sh && source ~/.bashrc
 
 cd ~/ComfyUI && git reset --hard 9f4daca
@@ -12,8 +14,8 @@ pip install nexfort
 
 cd ~/emprops_component_library/server_scripts/video
 
-./nodes.sh && source ~/.bashrc
+# ./nodes.sh && source ~/.bashrc
 
-./models.sh && source ~/.bashrc
+# ./models.sh && source ~/.bashrc
 
-pm2 restart all;
+# pm2 restart all;
