@@ -30,7 +30,7 @@
   },
   "9": {
     "inputs": {
-      "filename_prefix": "flux_img2img",
+      "filename_prefix": "flux_img2img_",
       "images": [
         "8",
         0

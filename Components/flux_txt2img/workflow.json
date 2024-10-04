@@ -87,7 +87,7 @@
   },
   "27": {
     "inputs": {
-      "filename_prefix": "flux_txt2img",
+      "filename_prefix": "flux_txt2img_",
       "images": [
         "8",
         0
