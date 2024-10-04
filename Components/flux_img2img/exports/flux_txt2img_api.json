@@ -1,7 +1,7 @@
 {
   "6": {
     "inputs": {
-      "text": $prompt,
+      "text": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque background",
       "clip": [
         "11",
         0
@@ -30,7 +30,7 @@
   },
   "9": {
     "inputs": {
-      "filename_prefix": "ComfyUI",
+      "filename_prefix": "flux_img2img",
       "images": [
         "8",
         0
@@ -52,7 +52,7 @@
   },
   "11": {
     "inputs": {
-      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name1": "t5xxl_fp8_e4m3fn.safetensors",
       "clip_name2": "clip_l.safetensors",
       "type": "flux"
     },
@@ -63,8 +63,8 @@
   },
   "12": {
     "inputs": {
-      "unet_name": $model,
-      "weight_dtype": "default"
+      "unet_name": "flux1-dev-fp8.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
     },
     "class_type": "UNETLoader",
     "_meta": {
@@ -111,8 +111,8 @@
   "17": {
     "inputs": {
       "scheduler": "simple",
-      "steps": $steps,
-      "denoise": $denoising,
+      "steps": 5,
+      "denoise": 1,
       "model": [
         "12",
         0
@@ -141,7 +141,7 @@
   },
   "25": {
     "inputs": {
-      "noise_seed": $seed
+      "noise_seed": 252393580447665
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -150,7 +150,7 @@
   },
   "26": {
     "inputs": {
-      "image": $image,
+      "image": "stada 1.png",
       "upload": "image"
     },
     "class_type": "LoadImage",

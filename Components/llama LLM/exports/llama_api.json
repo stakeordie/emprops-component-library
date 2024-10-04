@@ -14,17 +14,17 @@
   },
   "21": {
     "inputs": {
-      "prompt": $prompt,
+      "prompt": "Why is water blue ",
       "debug": false,
       "url": "172.219.157.164:8596",
       "model": "llama3.1:latest",
-      "system": $system_prompt, // default "", this is a prompt that is prepended to the text prompt. It is a way of not having to repeat 
-      "seed": $seed,
-      "top_k": $top_k, // default 40, the number of tokens to consider for the model's output. 40 is the default.
-      "top_p": $top_p, // default .9, the probability threshold for nucleus sampling. .9 means 90% of the tokens are considered. The starting number is determined by top_k.
-      "temperature": $temperature, // default 1, lower temperature means the token probabilities are closer to uniform, higher temperature means the token probabilities are more extreme. 1 is the default. Extreme means the model is more likely to choose the most probable token.
+      "system": "",
+      "seed": 471870046,
+      "top_k": 40,
+      "top_p": 0.9,
+      "temperature": 1,
       "num_predict": -1,
-      "tfs_z": $tfs, // default .95. filters out tokens based on the 2nd derivative propbability. The lower it is the more tokens are filtered out. 1 is the default and means no tokens are filtered out.
+      "tfs_z": 1,
       "keep_alive": 0,
       "keep_context": false
     },

@@ -4,9 +4,8 @@ comfyinfo:
 name: Ollama LLM Integration
 description: Integrates Ollama LLM capabilities into ComfyUI for text generation and processing.
 params:
-  - name: text_string_prompt
-    type: string
-    description: The main prompt text for the LLM
+  - name: prompt
+    type: text_area
   - name: text_string_instruct
     type: string
     description: Additional instructions for the LLM to process the main prompt
@@ -42,18 +41,3 @@ params:
       - name: "Yes"
         value: "1"
     description: Keep the Ollama connection alive
-custom_nodes:
-  - name: ComfyUI-Custom-Scripts
-    address: https://github.com/pythongosssss/ComfyUI-Custom-Scripts
-    commit: 626e001
-    location: custom_nodes/
-  - name: ComfyUI-OLLAMA
-    address: https://github.com/stavsap/comfyui-ollama
-    commit: !$commit!
-    location: custom_nodes/
-    additional_requirements:
-      - description: Install Ollama
-        command: curl -fsSL https://ollama.com/install.sh | sh
-  - name: ComfyUI-Helper-Nodes
-    address: https://github.com/teward/ComfyUI-Helper-Nodes
-    location: custom_nodes/
