@@ -37,44 +37,6 @@
       ]
     },
     {
-      "id": 6,
-      "type": "CLIPTextEncode",
-      "pos": {
-        "0": 515,
-        "1": 130
-      },
-      "size": {
-        "0": 400,
-        "1": 200
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 13
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            17
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "My Prompt"
-      ]
-    },
-    {
       "id": 10,
       "type": "VAELoader",
       "pos": {
@@ -135,7 +97,7 @@
         "Node name for S&R": "DualCLIPLoader"
       },
       "widgets_values": [
-        "t5xxl_fp16.safetensors",
+        "t5xxl_fp8_e4m3fn.safetensors",
         "clip_l.safetensors",
         "flux"
       ]
@@ -178,7 +140,8 @@
       ],
       "properties": {
         "Node name for S&R": "BasicGuider"
-      }
+      },
+      "widgets_values": []
     },
     {
       "id": "28:0",
@@ -209,7 +172,7 @@
         "Node name for S&R": "RandomNoise"
       },
       "widgets_values": [
-        487879619606905,
+        312118408590818,
         "randomize"
       ]
     },
@@ -243,46 +206,6 @@
       },
       "widgets_values": [
         "euler"
-      ]
-    },
-    {
-      "id": "28:2",
-      "type": "BasicScheduler",
-      "pos": {
-        "0": 515,
-        "1": 460
-      },
-      "size": {
-        "0": 315,
-        "1": 106
-      },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 19
-        }
-      ],
-      "outputs": [
-        {
-          "name": "SIGMAS",
-          "type": "SIGMAS",
-          "links": [
-            23
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BasicScheduler"
-      },
-      "widgets_values": [
-        "simple",
-        2,
-        1
       ]
     },
     {
@@ -344,7 +267,8 @@
       ],
       "properties": {
         "Node name for S&R": "SamplerCustomAdvanced"
-      }
+      },
+      "widgets_values": []
     },
     {
       "id": 12,
@@ -376,7 +300,7 @@
         "Node name for S&R": "UNETLoader"
       },
       "widgets_values": [
-        "flux1-schnell.safetensors",
+        "flux1-dev-fp8.safetensors",
         "fp8_e5m2"
       ]
     },
@@ -413,13 +337,14 @@
           "links": [
             25
           ],
-          "shape": 3,
-          "slot_index": 0
+          "slot_index": 0,
+          "shape": 3
         }
       ],
       "properties": {
         "Node name for S&R": "VAEDecode"
-      }
+      },
+      "widgets_values": []
     },
     {
       "id": 27,
@@ -428,10 +353,10 @@
         "0": 2146,
         "1": 129
       },
-      "size": [
-        315,
-        270
-      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
       "flags": {},
       "order": 11,
       "mode": 0,
@@ -448,6 +373,84 @@
       },
       "widgets_values": [
         "flux_txt2img"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": 515,
+        "1": 130
+      },
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            17
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque backgroungd"
+      ]
+    },
+    {
+      "id": "28:2",
+      "type": "BasicScheduler",
+      "pos": {
+        "0": 515,
+        "1": 460
+      },
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            23
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BasicScheduler"
+      },
+      "widgets_values": [
+        "simple",
+        8,
+        1
       ]
     }
   ],
@@ -553,10 +556,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.6727499949325614,
+      "scale": 0.4665073802097333,
       "offset": [
-        -79.38585071638363,
-        214.1962359129271
+        1027.8894907647543,
+        675.2972330560954
       ]
     }
   },

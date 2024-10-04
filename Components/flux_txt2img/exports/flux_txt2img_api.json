@@ -12,7 +12,7 @@
   },
   "6": {
     "inputs": {
-      "text": "My Prompt",
+      "text": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque backgroungd",
       "clip": [
         "11",
         0
@@ -50,7 +50,7 @@
   },
   "11": {
     "inputs": {
-      "clip_name1": "t5xxl_fp16.safetensors",
+      "clip_name1": "t5xxl_fp8_e4m3fn.safetensors",
       "clip_name2": "clip_l.safetensors",
       "type": "flux"
     },
@@ -61,7 +61,7 @@
   },
   "12": {
     "inputs": {
-      "unet_name": "flux1-schnell.safetensors",
+      "unet_name": "flux1-dev-fp8.safetensors",
       "weight_dtype": "fp8_e5m2"
     },
     "class_type": "UNETLoader",
@@ -100,7 +100,7 @@
   },
   "28:0": {
     "inputs": {
-      "noise_seed": 487879619606905
+      "noise_seed": 312118408590818
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -119,7 +119,7 @@
   "28:2": {
     "inputs": {
       "scheduler": "simple",
-      "steps": 2,
+      "steps": 8,
       "denoise": 1,
       "model": [
         "12",

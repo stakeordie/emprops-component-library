@@ -13,11 +13,10 @@ mkdir -p ~/ComfyUI/models/clip_vision/clip-vit-large-patch14
 mkdir -p ~/ComfyUI/custom_nodes/comfyui_controlnet_aux/ckpts/lllyasviel/Annotators
 mkdir -p ~/ComfyUI/custom_nodes/comfyui_controlnet_aux/ckpts/TheMistoAI/MistoLine/Anyline
 
-
 cd ~/ComfyUI/models/unet && wget https://huggingface.co/Comfy-Org/flux1-schnell/resolve/main/flux1-schnell-fp8.safetensors && ln -sf ~/ComfyUI/models/unet/flux1-schnell-fp8.safetensors ~/ComfyUI/models/checkpoints/flux1-schnell-fp8.safetensors
 cd ~/ComfyUI/models/unet && wget https://huggingface.co/Comfy-Org/flux1-dev/resolve/main/flux1-dev-fp8.safetensors && ln -sf ~/ComfyUI/models/unet/flux1-dev-fp8.safetensors ~/ComfyUI/models/checkpoints/flux1-dev-fp8.safetensors
 cd ~/ComfyUI/models/unet && wget https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors && ln -sf ~/ComfyUI/models/unet/flux1-schnell.safetensors ~/ComfyUI/models/checkpoints/flux1-schnell.safetensors
-cd ~/ComfyUI/models/unet && wget https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors && ln -sf ~/ComfyUI/models/unet/flux1-dev.safetensors ~/ComfyUI/models/checkpoints/flux1-dev.safetensors
+cd ~/ComfyUI/models/unet && wget --header="Authorization: Bearer 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" https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors && ln -sf ~/ComfyUI/models/unet/flux1-dev.safetensors ~/ComfyUI/models/checkpoints/flux1-dev.safetensors
 cd ~/ComfyUI/models/clip && wget https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors
 cd ~/ComfyUI/models/clip && wget https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors
 cd ~/ComfyUI/models/vae && wget https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors
