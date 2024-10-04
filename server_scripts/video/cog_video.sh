@@ -1,4 +1,4 @@
-./setup.sh && source ~/.bashrc
+./../setup.sh && source ~/.bashrc
 
 cd ~/ComfyUI && git reset --hard 9f4daca
 pip install -r requirements.txt
