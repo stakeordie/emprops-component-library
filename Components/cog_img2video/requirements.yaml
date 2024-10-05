@@ -1,0 +1,8 @@
+server: video
+name: Cog Text to Video
+params:
+  main:
+    - name: image
+      type: media
+      media_type: image
+  advanced:
