@@ -59,7 +59,7 @@
         1
       ],
       "loop_count": 0,
-      "filename_prefix": "cog_txt2video_",
+      "filename_prefix": "cog_img2video_",
       "format": "video/h265-mp4",
       "pix_fmt": "yuv420p10le",
       "crf": 22,
