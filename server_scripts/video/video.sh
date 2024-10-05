@@ -1,3 +1,5 @@
+#!/bin/bash -i
+
 ./../setup.sh && source ~/.bashrc
 
 cd ~/ComfyUI && git reset --hard 9f4daca

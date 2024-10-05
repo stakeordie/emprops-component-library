@@ -10,5 +10,5 @@ cd ~/ComfyUI/models/LLavacheckpoints && wget https://huggingface.co/bartowski/Me
 cd ~/ComfyUI/models/checkpoints && wget https://huggingface.co/roggerzill/lazy/resolve/main/lazymixRealAmateur_v40Inpainting.safetensors;
 cd ~/ComfyUI/models && wget https://huggingface.co/jasonot/mycomfyui/resolve/main/rife47.pth;
 
-cd ~/ComfyUI/CogVideo && git clone https://huggingface.co/THUDM/CogVideoX-5b-I2V
-cd ~/ComfyUI/CogVideo && git clone https://huggingface.co/alibaba-pai/CogVideoX-Fun-5b-InP
+cd ~/ComfyUI/models/CogVideo && git clone https://huggingface.co/THUDM/CogVideoX-5b-I2V
+cd ~/ComfyUI/models/CogVideo && git clone https://huggingface.co/alibaba-pai/CogVideoX-Fun-5b-InP

@@ -1,4 +1,5 @@
 #!/bin/bash -i
+
 ./../setup.sh && source ~/.bashrc
 
 cd ~/ComfyUI
