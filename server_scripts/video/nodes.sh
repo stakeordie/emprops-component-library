@@ -1,7 +1,7 @@
 #!/bin/bash -i
 
 
-cd ~/ComfyUI/custom_nodes && git clone https://github.com/Fannovel16/ComfyUI-Frame-Interpolation.git && cd "$(basename "$_" .git)" && python install.py;
+cd ~/ComfyUI/custom_nodes && git clone https://github.com/Fannovel16/ComfyUI-Frame-Interpolation.git && cd "$(basename "$_" .git)" && python install.py && pip install -r requirements.txt;
 cd ~/ComfyUI/custom_nodes && git clone https://github.com/WASasquatch/was-node-suite-comfyui.git && cd "$(basename "$_" .git)" && pip install -r requirements.txt;
 cd ~/ComfyUI/custom_nodes && git clone https://github.com/jags111/efficiency-nodes-comfyui.git && cd "$(basename "$_" .git)" && pip install -r requirements.txt;
 cd ~/ComfyUI/custom_nodes && git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git;
