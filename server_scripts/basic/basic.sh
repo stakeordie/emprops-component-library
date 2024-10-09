@@ -8,7 +8,7 @@ pm2 start --name comfy "python main.py --port 8188 --listen 0.0.0.0"
 cd ~/comfy-middleware
 pm2 start --name comfy-middleware "python main.py --port 3000"
 
-cd ~/emprops_component_library/server_scripts/basic
+cd ${PWD}
 
 ./nodes.sh && source ~/.bashrc
 

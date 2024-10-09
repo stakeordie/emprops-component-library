@@ -11,7 +11,7 @@ pip install --upgrade onnxruntime;
 pip install --upgrade onnxruntime-gpu;
 pip install --upgrade onnxruntime-openvino;
 
-cd ~/emprops_component_library/server_scripts/flux
+cd ${PWD}
 
 ./nodes.sh && source ~/.bashrc
 
