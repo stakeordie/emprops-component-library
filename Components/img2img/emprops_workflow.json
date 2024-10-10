@@ -139,10 +139,17 @@
   },
   "inputs": {
     "14": {
-      "ckpt_name": "model"
+      "ckpt_name": {
+        "value": "model",
+        "default": "Juggernaut-XI-byRunDiffusion.safetensors",
+        "is_required": "false"
+      }
     },
     "36": {
-      "seed": "seed",
+      "seed": {
+        "value": "model",
+        "is_required": "true"
+      },
       "steps": "steps",
       "cfg": "cfg",
       "sampler_name": "sampler",
