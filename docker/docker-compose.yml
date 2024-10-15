@@ -21,8 +21,6 @@ services:
   basic: &basic
     <<: *base_service
     profiles: ["basic"]
-    volumes:
-      - *v1
     build:
       context: ./services
       dockerfile: ./basic/Dockerfile
