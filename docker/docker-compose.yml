@@ -1,5 +1,3 @@
-version: '3.9'
-
 x-base_service: &base_service
     ports:
       - "${WEBUI_PORT:-7860}:7860"
@@ -28,6 +26,7 @@ services:
         models: "models"
         GITACCESSKEY: ${GITACCESSKEY}
     image: emprops/comfy-basic:v1
+    platform: linux/amd64
     environment:
       - CLI_ARGS=
 

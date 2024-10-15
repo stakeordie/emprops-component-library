@@ -6,7 +6,7 @@ mkdir -p ${ROOT}/models/checkpoints \
   ${ROOT}/models/unet;
  
 cd ${ROOT}/models/checkpoints \
-&& wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0_0.9vae.safetensors -O sd_xl_base_1.0_0.9vae.safetensors;
+&& wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0_0.9vae.safetensors -O sd_xl_base_1.0_0.9vae.safetensors \
 && wget https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned.safetensors -O v1-5-pruned.safetensors \
 && wget https://huggingface.co/stabilityai/stable-diffusion-2-1/resolve/main/v2-1_768-ema-pruned.safetensors -O v2-1_768-ema-pruned.safetensors \
 && wget https://huggingface.co/JCTN/fav_models/resolve/b6734996c5ee586fa4d7cae9a5bab1406df0521a/juggernautXL_v8Rundiffusion.safetensors -O juggernautXL_v8Rundiffusion.safetensors \
