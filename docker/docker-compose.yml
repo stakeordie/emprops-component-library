@@ -1,0 +1,35 @@
+version: '3.9'
+
+x-base_service: &base_service
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - &v1 ./global:/global
+    stop_signal: SIGKILL
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+              - driver: nvidia
+                device_ids: ['0']
+                capabilities: [compute, utility]
+
+name: webui-docker
+
+services:
+  basic: &basic
+    <<: *base_service
+    profiles: ["basic"]
+    volumes:
+      - *v1
+    build:
+      context: ./services
+      dockerfile: ./basic/Dockerfile
+      args:
+        models: "models"
+        GITACCESSKEY: ${GITACCESSKEY}
+    image: emprops/comfy-basic:v1
+    environment:
+      - CLI_ARGS=
+
