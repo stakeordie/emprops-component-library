@@ -38,4 +38,4 @@ COPY ./models.sh /scripts/models.sh
 
 COPY ./start.sh /scripts/start.sh
 
-ENTRYPOINT /scripts/start.sh
+CMD  ["/scripts/start.sh"]

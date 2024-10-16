@@ -32,4 +32,4 @@ COPY ./models.sh /scripts/models.sh
 
 COPY ./start.sh /scripts/start.sh
 
-CMD /scripts/start.sh
+CMD  ["/scripts/start.sh"]
