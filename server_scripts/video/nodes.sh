@@ -1,5 +1,4 @@
-#!/bin/bash -i
-
+#!/bin/bash
 
 cd ~/ComfyUI/custom_nodes && git clone https://github.com/Fannovel16/ComfyUI-Frame-Interpolation.git && cd "$(basename "$_" .git)" && python install.py && pip install -r requirements.txt;
 cd ~/ComfyUI/custom_nodes && git clone https://github.com/WASasquatch/was-node-suite-comfyui.git && cd "$(basename "$_" .git)" && pip install -r requirements.txt;

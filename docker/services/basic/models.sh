@@ -1,9 +1,8 @@
 #!/bin/bash
-ROOT=/comfyui-launcher
+ROOT=/comfyui-launcher/ComfyUI
 
 mkdir -p ${ROOT}/models/checkpoints \
-  ${ROOT}/models/upscale_models \
-  ${ROOT}/models/unet;
+  ${ROOT}/models/upscale_models;
  
 cd ${ROOT}/models/checkpoints \
 && wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0_0.9vae.safetensors -O sd_xl_base_1.0_0.9vae.safetensors \

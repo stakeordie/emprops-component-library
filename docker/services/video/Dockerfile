@@ -19,7 +19,13 @@ RUN /scripts/nodes.sh
 RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_ed25519 && ssh-keyscan github.com > ~/.ssh/githubKey && ssh-keygen -lf ~/.ssh/githubKey && cat ~/.ssh/githubKey >> ~/.ssh/known_hosts
 RUN rm -rf /etc/nginx && git clone -b comfy-node git@github.com:stakeordie/emprops-nginx-conf.git /etc/nginx
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${ROOT}/ComfyUI
+RUN git -C ${ROOT}/ComfyUI reset --hard 9f4daca
 RUN pip install -r ${ROOT}/ComfyUI/requirements.txt
+
+RUN pip install opencv-python
+RUN pip install --pre onediff onediffx
+RUN pip install nexfort
+
 RUN git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
 
 WORKDIR ${ROOT}
