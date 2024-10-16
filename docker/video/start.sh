@@ -13,7 +13,7 @@ pm2 start --name comfy "python main.py --port 3002 --listen 0.0.0.0"
 cd ${ROOT}/comfy-middleware
 pm2 start --name comfy-middleware "python main.py --port 3001"
 
-ln -s /etc/nginx-repo/node nginx
+ln -s /etc/nginx-repo/node /etc/nginx
 /etc/init.d/nginx start
 
 sleep infinity
