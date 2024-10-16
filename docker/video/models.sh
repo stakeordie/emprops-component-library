@@ -1,5 +1,5 @@
 #!/bin/bash
-ROOT=/comfyui-launcher/ComfyUI
+ROOT=/comfyui-launcher
 
 git lfs install
 

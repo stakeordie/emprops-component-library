@@ -87,7 +87,7 @@
         "60",
         0
       ],
-      "scheduler": "DPM",
+      "scheduler": "DPM++",
       "t_tile_length": 16,
       "t_tile_overlap": 8,
       "denoise_strength": 1,

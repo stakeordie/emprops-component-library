@@ -44,7 +44,7 @@
   },
   "36": {
     "inputs": {
-      "image": "Xifke5Y8UZlH_1200x1200.jpg",
+      "image": "untitled-3954acfe-a65a-4aa8-b27f-412bc8258800-3954acfe-a65a-4aa8-b27f-412bc8258800.png",
       "upload": "image"
     },
     "class_type": "LoadImage",
@@ -87,9 +87,7 @@
         "60",
         0
       ],
-      "scheduler": "DPM",
-      "t_tile_length": 16,
-      "t_tile_overlap": 8,
+      "scheduler": "DPM++",
       "denoise_strength": 1,
       "pipeline": [
         "165",
@@ -245,7 +243,7 @@
         "209",
         0
       ],
-      "text2": "A woman laying on the floor in a flooded living room. The water level starts rising further, slowly engulfing the woman's face, causing her to thrash about in panic. Next, one of the sofas begins to slide across the wet floor towards her, as if pulled by an unseen force.assistant\n"
+      "text2": "A digital painting of a colorful abstract design. The abstract digital art piece starts to morph and change, with the pink jellyfish growing larger and more vibrant while its surrounding lines and dots begin to pulse and glow. Next, the two small white spheres start to move outward, extending and stretching like tendrils, as if reacting to the jellyfish's increased energy.assistant\n\nIn one short, direct and affirmative sentence, describe what is happening in the scene and what happens next.\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tentacle-like extensions stretch outwards, further energizing the artwork.assistant\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tentacle-like extensions stretch outwards, further energizing the artwork.assistant\n\nHere is the reformatted response:\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tent"
     },
     "class_type": "ShowText|pysssss",
     "_meta": {
@@ -468,7 +466,7 @@
         "183",
         2
       ],
-      "text2": "The image shows a living room with a staircase in the background. The room is flooded with water, and the floor is covered in a thick layer of water. In the center of the room, there is a woman lying on her back with her arms stretched out to the sides. She is wearing a white dress and appears to be in a state of distress. On the left side of the image, there are two sofas, a coffee table, and a bookshelf with various books and decorative items. The walls are covered in wallpaper, and there are several framed pictures hanging on the walls. The overall mood of the space is eerie and unsettling."
+      "text2": "The image is an abstract digital art piece that appears to be made up of small squares and rectangles in various colors. The squares are arranged in a mosaic-like pattern, with some overlapping each other. The colors range from bright reds and oranges to muted greens and yellows, creating a vibrant and dynamic composition.\n\nIn the center of the image, there is a large pink jellyfish floating on top of a body of water. The jellyfish is surrounded by a network of white lines and dots, representing the interconnectedness of the universe. On the right side of the jellyfish, there are two small white spheres, which could represent the tentacles or tentacles that extend from the body. The background is a mix of gray and white, with hints of blue and pink, giving the image a dreamy and ethereal feel. The overall effect is one of depth and movement, with the colors blending together to create a sense of depth."
     },
     "class_type": "ShowText|pysssss",
     "_meta": {
@@ -563,7 +561,7 @@
   },
   "219": {
     "inputs": {
-      "ckpt_name": "rife47.pth",
+      "ckpt_name": "rife49.pth",
       "clear_cache_after_n_frames": 20,
       "multiplier": [
         "222",

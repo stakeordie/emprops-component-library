@@ -14,7 +14,7 @@
         "1": 184.37745666503906
       },
       "flags": {},
-      "order": 14,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -206,7 +206,7 @@
         0,
         0,
         1.1,
-        41,
+        476,
         "randomize"
       ]
     },
@@ -297,7 +297,7 @@
       },
       "widgets_values": [
         "",
-        "The image shows a living room with a staircase in the background. The room is flooded with water, and the floor is covered in a thick layer of water. In the center of the room, there is a woman lying on her back with her arms stretched out to the sides. She is wearing a white dress and appears to be in a state of distress. On the left side of the image, there are two sofas, a coffee table, and a bookshelf with various books and decorative items. The walls are covered in wallpaper, and there are several framed pictures hanging on the walls. The overall mood of the space is eerie and unsettling."
+        "The image is an abstract digital art piece that appears to be made up of small squares and rectangles in various colors. The squares are arranged in a mosaic-like pattern, with some overlapping each other. The colors range from bright reds and oranges to muted greens and yellows, creating a vibrant and dynamic composition.\n\nIn the center of the image, there is a large pink jellyfish floating on top of a body of water. The jellyfish is surrounded by a network of white lines and dots, representing the interconnectedness of the universe. On the right side of the jellyfish, there are two small white spheres, which could represent the tentacles or tentacles that extend from the body. The background is a mix of gray and white, with hints of blue and pink, giving the image a dreamy and ethereal feel. The overall effect is one of depth and movement, with the colors blending together to create a sense of depth."
       ]
     },
     {
@@ -521,64 +521,6 @@
       ]
     },
     {
-      "id": 219,
-      "type": "RIFE VFI",
-      "pos": {
-        "0": 778,
-        "1": 318
-      },
-      "size": {
-        "0": 319.20001220703125,
-        "1": 198
-      },
-      "flags": {},
-      "order": 37,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "frames",
-          "type": "IMAGE",
-          "link": 449
-        },
-        {
-          "name": "optional_interpolation_states",
-          "type": "INTERPOLATION_STATES",
-          "link": null,
-          "shape": 7
-        },
-        {
-          "name": "multiplier",
-          "type": "INT",
-          "link": 457,
-          "widget": {
-            "name": "multiplier"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            456
-          ],
-          "slot_index": 0,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "RIFE VFI"
-      },
-      "widgets_values": [
-        "rife47.pth",
-        20,
-        5,
-        true,
-        true,
-        1
-      ]
-    },
-    {
       "id": 208,
       "type": "Florence2Run",
       "pos": {
@@ -590,7 +532,7 @@
         "1": 304.0000305175781
       },
       "flags": {},
-      "order": 18,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -653,7 +595,7 @@
         3,
         true,
         "",
-        16029453808053,
+        319616303242451,
         "randomize"
       ]
     },
@@ -703,7 +645,7 @@
         "1": 304
       },
       "flags": {},
-      "order": 17,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -767,7 +709,7 @@
         3,
         true,
         "",
-        921613792470598,
+        120506099605169,
         "randomize"
       ]
     },
@@ -1028,7 +970,7 @@
         "1": 150
       },
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -1077,41 +1019,6 @@
       ]
     },
     {
-      "id": 20,
-      "type": "CLIPLoader",
-      "pos": {
-        "0": -663,
-        "1": 608
-      },
-      "size": {
-        "0": 210,
-        "1": 82.74232482910156
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            54,
-            56
-          ],
-          "slot_index": 0,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPLoader"
-      },
-      "widgets_values": [
-        "t5xxl_fp8_e4m3fn.safetensors",
-        "sd3"
-      ]
-    },
-    {
       "id": 222,
       "type": "DF_Integer",
       "pos": {
@@ -1123,7 +1030,7 @@
         "1": 62.89327621459961
       },
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1309,7 +1216,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        345633683011814,
+        415805991422585,
         "randomize",
         20,
         7,
@@ -1450,135 +1357,6 @@
       }
     },
     {
-      "id": 57,
-      "type": "CogVideoSampler",
-      "pos": {
-        "0": 144.1237030029297,
-        "1": 369.1351623535156
-      },
-      "size": {
-        "0": 270.3999938964844,
-        "1": 350
-      },
-      "flags": {},
-      "order": 35,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "pipeline",
-          "type": "COGVIDEOPIPE",
-          "link": 325
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 122
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 123
-        },
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": null,
-          "shape": 7
-        },
-        {
-          "name": "image_cond_latents",
-          "type": "LATENT",
-          "link": 129,
-          "shape": 7
-        },
-        {
-          "name": "seed",
-          "type": "INT",
-          "link": 131,
-          "widget": {
-            "name": "seed"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "cogvideo_pipe",
-          "type": "COGVIDEOPIPE",
-          "links": [
-            313
-          ],
-          "slot_index": 0,
-          "shape": 3
-        },
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "links": [
-            254
-          ],
-          "slot_index": 1,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CogVideoSampler"
-      },
-      "widgets_values": [
-        480,
-        720,
-        49,
-        20,
-        6,
-        65334758276105,
-        "fixed",
-        "DPM",
-        16,
-        8,
-        1
-      ]
-    },
-    {
-      "id": 60,
-      "type": "Seed (rgthree)",
-      "pos": {
-        "0": 1137,
-        "1": 442
-      },
-      "size": {
-        "0": 350.9823303222656,
-        "1": 130
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "SEED",
-          "type": "INT",
-          "links": [
-            131,
-            280,
-            358,
-            381,
-            422
-          ],
-          "slot_index": 0,
-          "shape": 3,
-          "dir": 4
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        -1,
-        null,
-        null,
-        null
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
       "id": 224,
       "type": "MathExpression|pysssss",
       "pos": {
@@ -1590,7 +1368,7 @@
         "1": 116
       },
       "flags": {},
-      "order": 15,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -1634,106 +1412,6 @@
       "properties": {},
       "widgets_values": [
         "a * 8"
-      ]
-    },
-    {
-      "id": 36,
-      "type": "LoadImage",
-      "pos": {
-        "0": -1961,
-        "1": -724
-      },
-      "size": {
-        "0": 557.8034057617188,
-        "1": 715.3848876953125
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            138,
-            360,
-            421
-          ],
-          "slot_index": 0,
-          "shape": 3
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "Xifke5Y8UZlH_1200x1200.jpg",
-        "image"
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
-      "id": 165,
-      "type": "DownloadAndLoadCogVideoModel",
-      "pos": {
-        "0": -672.887939453125,
-        "1": 360.35980224609375
-      },
-      "size": {
-        "0": 274.3095703125,
-        "1": 194
-      },
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "pab_config",
-          "type": "PAB_CONFIG",
-          "link": null,
-          "shape": 7
-        },
-        {
-          "name": "block_edit",
-          "type": "TRANSFORMERBLOCKS",
-          "link": null,
-          "shape": 7
-        },
-        {
-          "name": "lora",
-          "type": "COGLORA",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "cogvideo_pipe",
-          "type": "COGVIDEOPIPE",
-          "links": [
-            324,
-            325
-          ],
-          "slot_index": 0,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "DownloadAndLoadCogVideoModel"
-      },
-      "widgets_values": [
-        "THUDM/CogVideoX-5b-I2V",
-        "bf16",
-        "enabled",
-        "disabled",
-        false
       ]
     },
     {
@@ -1892,7 +1570,7 @@
       },
       "widgets_values": [
         "",
-        "A woman laying on the floor in a flooded living room. The water level starts rising further, slowly engulfing the woman's face, causing her to thrash about in panic. Next, one of the sofas begins to slide across the wet floor towards her, as if pulled by an unseen force.assistant\n"
+        "A digital painting of a colorful abstract design. The abstract digital art piece starts to morph and change, with the pink jellyfish growing larger and more vibrant while its surrounding lines and dots begin to pulse and glow. Next, the two small white spheres start to move outward, extending and stretching like tendrils, as if reacting to the jellyfish's increased energy.assistant\n\nIn one short, direct and affirmative sentence, describe what is happening in the scene and what happens next.\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tentacle-like extensions stretch outwards, further energizing the artwork.assistant\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tentacle-like extensions stretch outwards, further energizing the artwork.assistant\n\nHere is the reformatted response:\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tent"
       ]
     },
     {
@@ -1904,7 +1582,7 @@
       },
       "size": [
         576.832763671875,
-        691.2218424479167
+        306
       ],
       "flags": {},
       "order": 38,
@@ -1990,7 +1668,7 @@
         "1": 125.74248504638672
       },
       "flags": {},
-      "order": 11,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -2013,6 +1691,331 @@
       ],
       "color": "#223",
       "bgcolor": "#335"
+    },
+    {
+      "id": 36,
+      "type": "LoadImage",
+      "pos": {
+        "0": -1961,
+        "1": -724
+      },
+      "size": {
+        "0": 557.8034057617188,
+        "1": 715.3848876953125
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            138,
+            360,
+            421
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "untitled-3954acfe-a65a-4aa8-b27f-412bc8258800-3954acfe-a65a-4aa8-b27f-412bc8258800.png",
+        "image"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 60,
+      "type": "Seed (rgthree)",
+      "pos": {
+        "0": 1177,
+        "1": 467
+      },
+      "size": {
+        "0": 350.9823303222656,
+        "1": 130
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SEED",
+          "type": "INT",
+          "links": [
+            131,
+            280,
+            358,
+            381,
+            422
+          ],
+          "slot_index": 0,
+          "shape": 3,
+          "dir": 4
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        -1,
+        null,
+        null,
+        null
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 165,
+      "type": "DownloadAndLoadCogVideoModel",
+      "pos": {
+        "0": -672.887939453125,
+        "1": 360.35980224609375
+      },
+      "size": {
+        "0": 274.3095703125,
+        "1": 194
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pab_config",
+          "type": "PAB_CONFIG",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "block_edit",
+          "type": "TRANSFORMERBLOCKS",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "lora",
+          "type": "COGLORA",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cogvideo_pipe",
+          "type": "COGVIDEOPIPE",
+          "links": [
+            324,
+            325
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DownloadAndLoadCogVideoModel"
+      },
+      "widgets_values": [
+        "THUDM/CogVideoX-5b-I2V",
+        "bf16",
+        "enabled",
+        "disabled",
+        false
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CLIPLoader",
+      "pos": {
+        "0": -663,
+        "1": 608
+      },
+      "size": {
+        "0": 210,
+        "1": 82.74232482910156
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            54,
+            56
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "t5xxl_fp8_e4m3fn.safetensors",
+        "sd3"
+      ]
+    },
+    {
+      "id": 219,
+      "type": "RIFE VFI",
+      "pos": {
+        "0": 778,
+        "1": 318
+      },
+      "size": {
+        "0": 319.20001220703125,
+        "1": 198
+      },
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 449
+        },
+        {
+          "name": "optional_interpolation_states",
+          "type": "INTERPOLATION_STATES",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "multiplier",
+          "type": "INT",
+          "link": 457,
+          "widget": {
+            "name": "multiplier"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            456
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RIFE VFI"
+      },
+      "widgets_values": [
+        "rife49.pth",
+        20,
+        5,
+        true,
+        true,
+        1
+      ]
+    },
+    {
+      "id": 57,
+      "type": "CogVideoSampler",
+      "pos": {
+        "0": 142,
+        "1": 304
+      },
+      "size": {
+        "0": 270.3999938964844,
+        "1": 350
+      },
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pipeline",
+          "type": "COGVIDEOPIPE",
+          "link": 325
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 122
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 123
+        },
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "image_cond_latents",
+          "type": "LATENT",
+          "link": 129,
+          "shape": 7
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": 131,
+          "widget": {
+            "name": "seed"
+          }
+        },
+        {
+          "name": "controlnet",
+          "type": "COGVIDECONTROLNET",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cogvideo_pipe",
+          "type": "COGVIDEOPIPE",
+          "links": [
+            313
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "links": [
+            254
+          ],
+          "slot_index": 1,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CogVideoSampler"
+      },
+      "widgets_values": [
+        480,
+        720,
+        49,
+        20,
+        6,
+        65334758276105,
+        "fixed",
+        "DPM++",
+        1
+      ]
     }
   ],
   "links": [
@@ -2526,11 +2529,11 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.7513148009015778,
-      "offset": {
-        "0": -474.21514892578125,
-        "1": 37.215301513671875
-      }
+      "scale": 0.7513148009015779,
+      "offset": [
+        -548.0296304114049,
+        163.08030397130278
+      ]
     },
     "info": {
       "name": "workflow",
