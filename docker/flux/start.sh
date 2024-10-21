@@ -9,7 +9,7 @@ mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 
 /scripts/models.sh
 
-pm2 start --name comfy "python main.py --port 3002 --listen 0.0.0.0" 
+pm2 start --name comfy "python main.py --port 3002" 
 cd ${ROOT}/comfy-middleware
 pm2 start --name comfy-middleware "python main.py --port 3001"
 
