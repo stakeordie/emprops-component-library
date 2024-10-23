@@ -1,0 +1,214 @@
+{
+  "name": "Aspect Ratio",
+  "type": "aspect_ratio",
+  "default": 61,
+  "options": [
+    {
+      "option": 556,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 384,
+            "height": 688
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 576,
+            "height": 1024
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 768,
+            "height": 1360
+          }
+        }
+      ]
+    },
+    {
+      "option": 184,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 432,
+            "height": 576
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 656,
+            "height": 864
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 864,
+            "height": 1152
+          }
+        }
+      ]
+    },
+    {
+      "option": 123,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 384,
+            "height": 576
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 576,
+            "height": 864
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 768,
+            "height": 1152
+          }
+        }
+      ]
+    },
+    {
+      "option": 61,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 512,
+            "height": 512
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 768,
+            "height": 768
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 1024,
+            "height": 1024
+          }
+        }
+      ]
+    },
+    {
+      "option": 182,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 576,
+            "height": 384
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 864,
+            "height": 576
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 1152,
+            "height": 768
+          }
+        }
+      ]
+    },
+    {
+      "option": 243,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 576,
+            "height": 432
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 864,
+            "height": 656
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 1152,
+            "height": 864
+          }
+        }
+      ]
+    },
+    {
+      "option": 969,
+      "bases": [
+        {
+          "base": 512,
+          "values": {
+            "width": 688,
+            "height": 384
+          }
+        },
+        {
+          "base": 768,
+          "values": {
+            "width": 1024,
+            "height": 576
+          }
+        },
+        {
+          "base": 1024,
+          "values": {
+            "width": 1360,
+            "height": 768
+          }
+        }
+      ]
+    }
+  ],
+  "attached_field": {
+    "name": "Custom Size",
+    "type": "checkbox",
+    "default": "unchecked",
+    "if_checked": [
+      {
+        "name": "Width",
+        "id": "width",
+        "type": "number",
+        "default": "inherit",
+        "min": 64,
+        "max": 1600,
+        "steps": 16
+      },
+      {
+        "name": "Height",
+        "id": "height",
+        "type": "number",
+        "default": "inherit",
+        "min": 64,
+        "max": 1600,
+        "steps": 16
+      }
+    ]
+  }
+}

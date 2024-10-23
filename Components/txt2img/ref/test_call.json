@@ -5,8 +5,6 @@
   "cfg": "7",
   "sampler": "dpmpp_2m",
   "scheduler": "ddim_uniform",
-  "denoising": "0.7000000000000001",
-  "image": "stada.jpg",
   "width": "1024",
   "height": "1024",
   "prompt": "a dog in a car",

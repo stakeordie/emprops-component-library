@@ -1,5 +1,5 @@
 {
-  "server": "basic",
+  "workflow": "img2img",
   "name": "Image to Image",
   "params": {
     "main": [
@@ -11,7 +11,7 @@
       {
         "name": "Model",
         "id": "model",
-        "conf_file": "all_models.yaml"
+        "conf_file": "sd_models.json"
       },
       {
         "name": "Denoising Strength",
