@@ -34,7 +34,7 @@
       {
         "name": "Aspect Ratio",
         "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.yaml"
+        "conf_file": "aspect_ratio.json"
       },
       {
         "name": "Steps",
@@ -50,13 +50,13 @@
         "name": "Sampler",
         "id": "sampler",
         "default": "Euler a",
-        "conf_file": "samplers.yaml"
+        "conf_file": "samplers.json"
       },
       {
         "name": "Scheduler",
         "id": "scheduler",
         "default": "Karras",
-        "conf_file": "samplers.yaml"
+        "conf_file": "samplers.json"
       },
       {
         "name": "Guidance (CFG)",

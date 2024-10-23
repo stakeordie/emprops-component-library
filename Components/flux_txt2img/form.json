@@ -11,7 +11,7 @@
       {
         "name": "Aspect Ratio",
         "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.yaml"
+        "conf_file": "aspect_ratio.json"
       },
       {
         "name": "Steps",
@@ -27,13 +27,13 @@
         "name": "Sampler",
         "id": "sampler",
         "default": "DPM++ 2M",
-        "conf_file": "samplers.yaml"
+        "conf_file": "samplers.json"
       },
       {
         "name": "Scheduler",
         "id": "scheduler",
         "default": "Euler a",
-        "conf_file": "schedulers.yaml"
+        "conf_file": "schedulers.json"
       }
     ]
   }

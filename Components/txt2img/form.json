@@ -1,12 +1,12 @@
 {
-  "server": "basic",
+  "server": "flux",
   "name": "Text to Image",
   "params": {
     "main": [
       {
         "name": "Model",
         "id": "model",
-        "conf_file": "all_models.yaml"
+        "conf_file": "sd_models.json"
       },
       {
         "name": "Prompt",
@@ -21,7 +21,7 @@
       {
         "name": "Aspect Ratio",
         "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.yaml"
+        "conf_file": "aspect_ratio.json"
       },
       {
         "name": "Steps",
@@ -37,13 +37,13 @@
         "name": "Sampler",
         "id": "sampler",
         "default": "Euler a",
-        "conf_file": "samplers.yaml"
+        "conf_file": "samplers.json"
       },
       {
         "name": "Scheduler",
         "id": "scheduler",
         "default": "Karras",
-        "conf_file": "schedulers.yaml"
+        "conf_file": "schedulers.json"
       },
       {
         "name": "Guidance (CFG)",
