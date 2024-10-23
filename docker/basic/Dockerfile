@@ -17,10 +17,6 @@ COPY ./nodes.sh /scripts/nodes.sh
 RUN /scripts/nodes.sh
 
 RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_ed25519 && ssh-keyscan github.com > ~/.ssh/githubKey && ssh-keygen -lf ~/.ssh/githubKey && cat ~/.ssh/githubKey >> ~/.ssh/known_hosts
-RUN rm -rf /etc/nginx && git clone git@github.com:stakeordie/emprops-nginx-conf.git /etc/nginx-repo
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${ROOT}/ComfyUI
-RUN pip install -r ${ROOT}/ComfyUI/requirements.txt
-RUN git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
 
 WORKDIR ${ROOT}
 
