@@ -1,10 +1,10 @@
 {
   "name": "flux_txt2img",
   "description": "Generates an image from a text prompt using the Flux model.",
-  "server_id": "859d9f6c-142c-4da4-be72-d52bbe21970d",
+  "server_id": "",
   "inputs": {
     "6": {
-      "text": {
+      "txt": {
         "value": "prompt",
         "default": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque background",
         "is_required": false

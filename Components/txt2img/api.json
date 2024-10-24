@@ -1,4 +1,7 @@
 {
+  "name": "sd_txt2img",
+  "description": "Generates an image from a prompt with SD models",
+  "server_id": "",
   "inputs": {
     "4": {
       "ckpt_name": {
