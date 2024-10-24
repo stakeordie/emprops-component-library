@@ -2,6 +2,78 @@
   "name": "sd_img2img",
   "description": "Generates an image from an image with SD models",
   "server_id": "",
+  "inputs": {
+    "14": {
+      "ckpt_name": {
+        "value": "model",
+        "default": "Juggernaut-XI-byRunDiffusion.safetensors",
+        "is_required": false
+      }
+    },
+    "36": {
+      "seed": {
+        "value": "seed",
+        "is_required": true
+      },
+      "steps": {
+        "value": "steps",
+        "is_required": false,
+        "default": 20
+      },
+      "cfg": {
+        "value": "cfg",
+        "is_required": false,
+        "default": 7
+      },
+      "sampler_name": {
+        "value": "sampler",
+        "is_required": false,
+        "default": "euler_ancestral"
+      },
+      "scheduler": {
+        "value": "scheduler",
+        "is_required": true,
+        "default": "normal"
+      },
+      "denoise": {
+        "value": "denoising",
+        "is_required": false,
+        "default": 0.70
+      }
+    },
+    "38": {
+      "image": {
+        "value": "image",
+        "is_required": true
+      }
+    },
+    "40": {
+      "width": {
+        "value": "width",
+        "is_required": false,
+        "default": 1024
+      },
+      "height": {
+        "value": "height",
+        "is_required": false,
+        "default": 1024
+      }
+    },
+    "41": {
+      "text": {
+        "value": "prompt",
+        "is_required": false,
+        "default": ""
+      }
+    },
+    "42": {
+      "text": {
+        "value": "negative_prompt",
+        "is_required": false,
+        "default": ""
+      }
+    }
+  },
   "workflow": {
     "8": {
       "inputs": {
@@ -137,78 +209,6 @@
       "class_type": "CLIPTextEncode",
       "_meta": {
         "title": "CLIP Text Encode (Prompt)"
-      }
-    }
-  },
-  "inputs": {
-    "14": {
-      "ckpt_name": {
-        "value": "model",
-        "default": "Juggernaut-XI-byRunDiffusion.safetensors",
-        "is_required": false
-      }
-    },
-    "36": {
-      "seed": {
-        "value": "seed",
-        "is_required": true
-      },
-      "steps": {
-        "value": "steps",
-        "is_required": false,
-        "default": 20
-      },
-      "cfg": {
-        "value": "cfg",
-        "is_required": false,
-        "default": 7
-      },
-      "sampler_name": {
-        "value": "sampler",
-        "is_required": false,
-        "default": "euler"
-      },
-      "scheduler": {
-        "value": "scheduler",
-        "is_required": true,
-        "default": "normal"
-      },
-      "denoise": {
-        "value": "denoising",
-        "is_required": false,
-        "default": 0.70
-      }
-    },
-    "38": {
-      "image": {
-        "value": "image",
-        "is_required": true
-      }
-    },
-    "40": {
-      "width": {
-        "value": "width",
-        "is_required": false,
-        "default": 1024
-      },
-      "height": {
-        "value": "height",
-        "is_required": false,
-        "default": 1024
-      }
-    },
-    "41": {
-      "text": {
-        "value": "prompt",
-        "is_required": false,
-        "default": ""
-      }
-    },
-    "42": {
-      "text": {
-        "value": "negative_prompt",
-        "is_required": false,
-        "default": ""
       }
     }
   },

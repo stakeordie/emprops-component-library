@@ -26,13 +26,13 @@
       {
         "name": "Sampler",
         "id": "sampler",
-        "default": "DPM++ 2M",
+        "default": "dpmpp_2m",
         "conf_file": "samplers.json"
       },
       {
         "name": "Scheduler",
         "id": "scheduler",
-        "default": "Euler a",
+        "default": "beta",
         "conf_file": "schedulers.json"
       }
     ]
