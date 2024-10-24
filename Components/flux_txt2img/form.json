@@ -1,25 +1,29 @@
 {
-  "server": "flux",
   "name": "Text to Image (Flux)",
-  "params": {
+  "workflow_id": "",
+  "fields": {
     "main": [
       {
         "name": "Prompt",
         "id": "prompt",
-        "type": "textarea"
+        "type": "textarea",
+        "display": true
       },
       {
         "name": "Aspect Ratio",
         "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.json"
+        "conf_file": "aspect_ratio.json",
+        "display": true
       },
       {
         "name": "Steps",
         "id": "steps",
         "type": "number",
+        "default": 8,
         "min": 1,
         "max": 60,
-        "step": 20
+        "step": 1,
+        "display": true
       }
     ],
     "advanced": [
@@ -27,13 +31,15 @@
         "name": "Sampler",
         "id": "sampler",
         "default": "dpmpp_2m",
-        "conf_file": "samplers.json"
+        "conf_file": "samplers.json",
+        "display": true
       },
       {
         "name": "Scheduler",
         "id": "scheduler",
         "default": "beta",
-        "conf_file": "schedulers.json"
+        "conf_file": "schedulers.json",
+        "display": true
       }
     ]
   }
