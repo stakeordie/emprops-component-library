@@ -28,7 +28,7 @@
       "sampler_name": {
         "value": "sampler",
         "is_required": false,
-        "default": "euler"
+        "default": "euler_ancestral"
       },
       "scheduler": {
         "value": "scheduler",

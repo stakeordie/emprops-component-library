@@ -1,35 +1,41 @@
 {
-  "server": "flux",
   "name": "Text to Image",
-  "params": {
+  "workflow_id": "",
+  "fields": {
     "main": [
       {
         "name": "Model",
         "id": "model",
-        "conf_file": "sd_models.json"
+        "conf_file": "sd_models.json",
+        "display": true
       },
       {
         "name": "Prompt",
         "id": "prompt",
-        "type": "textarea"
+        "type": "textarea",
+        "display": true
       },
       {
         "name": "Negative Prompt",
         "id": "negative_prompt",
-        "type": "textarea"
+        "type": "textarea",
+        "display": true
       },
       {
         "name": "Aspect Ratio",
         "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.json"
+        "conf_file": "aspect_ratio.json",
+        "display": true
       },
       {
         "name": "Steps",
         "id": "steps",
         "type": "number",
+        "default": 20,
         "min": 1,
         "max": 60,
-        "step": 20
+        "step": 20,
+        "display": true
       }
     ],
     "advanced": [
@@ -37,13 +43,15 @@
         "name": "Sampler",
         "id": "sampler",
         "default": "euler_ancestral",
-        "conf_file": "samplers.json"
+        "conf_file": "samplers.json",
+        "display": true
       },
       {
         "name": "Scheduler",
         "id": "scheduler",
         "default": "karras",
-        "conf_file": "schedulers.json"
+        "conf_file": "schedulers.json",
+        "display": true
       },
       {
         "name": "Guidance (CFG)",
@@ -52,7 +60,8 @@
         "default": 7,
         "min": 0,
         "max": 50,
-        "steps": 0.01
+        "steps": 0.01,
+        "display": true
       }
     ]
   }
