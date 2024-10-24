@@ -1,7 +1,7 @@
 {
   "name": "upscale",
   "description": "simple upscaler",
-  "server_id": "",
+  "server_id": "d10aa75d-e69f-497f-8eaf-088c83434eeb",
   "inputs": {
     "68": {
       "ckpt_name": {
