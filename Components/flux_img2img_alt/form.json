@@ -1,0 +1,71 @@
+{
+  "server": "flux",
+  "name": "Image to Image (Flux)",
+  "params": {
+    "main": [
+      {
+        "name": "Prompt",
+        "id": "prompt",
+        "type": "string",
+        "display": true
+      },
+      {
+        "name": "Select Image",
+        "id": "image",
+        "type": "image_loader",
+        "display": true
+      },
+      {
+        "name": "Steps",
+        "id": "steps",
+        "type": "number",
+        "min": 5,
+        "max": 30,
+        "step": 1,
+        "display": true
+      },
+      {
+        "name": "Denoising Strength",
+        "id": "denoising",
+        "type": "number",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+        "display": true
+      }
+    ],
+    "advanced": [ 
+      {
+        "name": "Sampler",
+        "id": "sampler",
+        "default": "euler_ancestral",
+        "conf_file": "samplers.json",
+        "display": true
+      },
+      {
+        "name": "Scheduler",
+        "id": "scheduler",
+        "default": "beta",
+        "conf_file": "samplers.json",
+        "display": true
+      },
+      {
+        "name": "Upscale Method",
+        "id": "upscale_method",
+        "default": "lanczos",
+        "is_required": false,
+        "display": false
+      },
+      {
+        "name": "MegaPixel Output",
+        "id": "megapixel",
+        "type": "number",
+        "default": 1,
+        "min": 1,
+        "max": 4,
+        "step": 0.5,
+        "display": false
+      }
+    ]
+  }
+}
