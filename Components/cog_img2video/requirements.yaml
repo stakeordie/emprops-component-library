@@ -3,6 +3,7 @@ name: Cog Image to Video
 params:
   main:
     - name: image
+      id: image
       type: media
       media_type: image
   advanced:

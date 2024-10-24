@@ -1,0 +1,59 @@
+{
+  "server": "flux",
+  "name": "Text to Image",
+  "params": {
+    "main": [
+      {
+        "name": "Model",
+        "id": "model",
+        "conf_file": "sd_models.json"
+      },
+      {
+        "name": "Prompt",
+        "id": "prompt",
+        "type": "textarea"
+      },
+      {
+        "name": "Negative Prompt",
+        "id": "negative_prompt",
+        "type": "textarea"
+      },
+      {
+        "name": "Aspect Ratio",
+        "id": "aspect_ratio",
+        "conf_file": "aspect_ratio.json"
+      },
+      {
+        "name": "Steps",
+        "id": "steps",
+        "type": "number",
+        "min": 1,
+        "max": 60,
+        "step": 20
+      }
+    ],
+    "advanced": [
+      {
+        "name": "Sampler",
+        "id": "sampler",
+        "default": "euler_ancestral",
+        "conf_file": "samplers.json"
+      },
+      {
+        "name": "Scheduler",
+        "id": "scheduler",
+        "default": "karras",
+        "conf_file": "schedulers.json"
+      },
+      {
+        "name": "Guidance (CFG)",
+        "id": "cfg",
+        "type": "number",
+        "default": 7,
+        "min": 0,
+        "max": 50,
+        "steps": 0.01
+      }
+    ]
+  }
+}

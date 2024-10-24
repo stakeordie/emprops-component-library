@@ -1,0 +1,40 @@
+{
+  "server": "flux",
+  "name": "Text to Image (Flux)",
+  "params": {
+    "main": [
+      {
+        "name": "Prompt",
+        "id": "prompt",
+        "type": "textarea"
+      },
+      {
+        "name": "Aspect Ratio",
+        "id": "aspect_ratio",
+        "conf_file": "aspect_ratio.json"
+      },
+      {
+        "name": "Steps",
+        "id": "steps",
+        "type": "number",
+        "min": 1,
+        "max": 60,
+        "step": 20
+      }
+    ],
+    "advanced": [
+      {
+        "name": "Sampler",
+        "id": "sampler",
+        "default": "DPM++ 2M",
+        "conf_file": "samplers.json"
+      },
+      {
+        "name": "Scheduler",
+        "id": "scheduler",
+        "default": "Euler a",
+        "conf_file": "schedulers.json"
+      }
+    ]
+  }
+}

@@ -1,9 +1,12 @@
-#!/bin/bash -i
+#!/bin/bash
+ROOT=/comfyui-launcher/ComfyUI
+
 git lfs install
 
 mkdir -p ~/ComfyUI/models/clip
 mkdir -p ~/ComfyUI/models/LLavacheckpoints
 mkdir -p ~/ComfyUI/models/CogVideo
+mkdir -p ~/ComfyUI/models/checkpoints
 
 cd ~/ComfyUI/models/clip && wget https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors;
 cd ~/ComfyUI/models/LLavacheckpoints && wget https://huggingface.co/bartowski/Meta-Llama-3-8B-Instruct-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf;

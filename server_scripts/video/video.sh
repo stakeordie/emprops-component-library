@@ -12,7 +12,7 @@ pip install opencv-python
 pip install --pre onediff onediffx
 pip install nexfort
 
-cd ~/emprops_component_library/server_scripts/video
+cd ${PWD}
 
 ./nodes.sh && source ~/.bashrc
 
