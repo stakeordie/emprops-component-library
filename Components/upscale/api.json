@@ -1,0 +1,102 @@
+{
+  "name": "upscale",
+  "description": "simple upscaler",
+  "server_id": "d10aa75d-e69f-497f-8eaf-088c83434eeb",
+  "inputs": {
+    "68": {
+      "ckpt_name": {
+        "value": "model",
+        "default": "4x-UltraSharp.pth",
+        "is_required": false
+      }
+    },
+    "100": {
+      "image": {
+        "value": "image",
+        "is_required": true
+      }
+    },
+    "104": {
+      "scale_by": {
+        "value": "scale_by",
+        "default": 2,
+        "is_required": false
+      },
+      "upscale_method": {
+        "value": "upscale_method",
+        "default": "nearest-exact",
+        "is_required": false
+      }
+    }
+  },
+  "workflow": {
+    "67": {
+      "inputs": {
+        "upscale_model": [
+          "68",
+          0
+        ],
+        "image": [
+          "100",
+          0
+        ]
+      },
+      "class_type": "ImageUpscaleWithModel",
+      "_meta": {
+        "title": "Upscale Image (using Model)"
+      }
+    },
+    "68": {
+      "inputs": {
+        "model_name": "4x-UltraSharp.pth"
+      },
+      "class_type": "UpscaleModelLoader",
+      "_meta": {
+        "title": "Load Upscale Model"
+      }
+    },
+    "100": {
+      "inputs": {
+        "image": "upscaler-comf.png",
+        "upload": "image"
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "Load Image"
+      }
+    },
+    "102": {
+      "inputs": {
+        "filename_prefix": "Upscaler",
+        "images": [
+          "104",
+          0
+        ]
+      },
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "Save Image"
+      }
+    },
+    "104": {
+      "inputs": {
+        "upscale_method": "nearest-exact",
+        "scale_by": 4,
+        "image": [
+          "67",
+          0
+        ]
+      },
+      "class_type": "ImageScaleBy",
+      "_meta": {
+        "title": "Upscale Image By"
+      }
+    }
+  },
+  "test": {
+    "model": "4x-UltraSharp.pth",
+    "image": "/asets/stadaII.png",
+    "scale_by": 2,
+    "upscale_method": "nearest-exact"
+  }
+}
