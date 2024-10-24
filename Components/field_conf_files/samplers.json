@@ -4,87 +4,59 @@
   "options": [
     {
       "name": "Euler a",
-      "value": "Euler a"
+      "value": "euler_ancestral"
     },
     {
       "name": "Euler",
-      "value": "Euler"
+      "value": "euler"
     },
     {
       "name": "LMS",
-      "value": "LMS"
+      "value": "lms"
     },
     {
       "name": "Heun",
-      "value": "Heun"
+      "value": "heun"
     },
     {
-      "name": "DPM2",
-      "value": "DPM2"
+      "name": "DPM 2",
+      "value": "dpm_2"
     },
     {
-      "name": "DPM2 a",
-      "value": "DPM2 a"
+      "name": "DPM 2 a",
+      "value": "dpm_2_ancestral"
     },
     {
-      "name": "DPM2 Karras",
-      "value": "DPM2"
+      "name": "DPM fast",
+      "value": "dpm_fast"
     },
     {
-      "name": "DPM2 a Karras",
-      "value": "DPM2 a Karras"
+      "name": "DPM adaptive",
+      "value": "dpm_adaptive"
     },
     {
-      "name": "DPM++ 2S a",
-      "value": "DPM++ 2S a"
-    },
-    {
-      "name": "DPM++ 2S a Karras",
-      "value": "DPM++ 2S a Karras"
+      "name": "DPM++ 2 a",
+      "value": "dpmpp_2s_ancestral"
     },
     {
       "name": "DPM++ SDE",
-      "value": "DPM++ SDE"
+      "value": "dpmpp_sde"
     },
     {
-      "name": "DPM++ SDE Karras",
-      "value": "DPM++ SDE Karras"
+      "name": "DPM++ SDE GPU",
+      "value": "dpmpp_sde_gpu"
     },
     {
       "name": "DPM++ 2M",
-      "value": "DPM++ 2M"
-    },
-    {
-      "name": "DPM++ 2M Karras",
-      "value": "DPM++ 2M Karras"
+      "value": "dpmpp_2m"
     },
     {
       "name": "DPM++ 2M SDE",
-      "value": "DPM++ 2M SDE"
-    },
-    {
-      "name": "DPM++ 2M SDE Karras",
-      "value": "DPM++ 2M SDE Karras"
-    },
-    {
-      "name": "DPM++ 2M SDE Exponential",
-      "value": "DPM++ 2M SDE Exponential"
-    },
-    {
-      "name": "DPM++ 2M SDE Heun",
-      "value": "DPM++ 2M SDE Heun"
-    },
-    {
-      "name": "DPM++ 2M SDE Heun Karras",
-      "value": "DPM++ 2M SDE Heun Karras"
-    },
-    {
-      "name": "DPM++ 2M SDE Heun Exponential",
-      "value": "DPM++ 2M SDE Heun Exponential"
+      "value": "dpmpp_2m_sde"
     },
     {
       "name": "DPM++ 3M SDE",
-      "value": "DPM++ 3M SDE"
+      "value": "dpmpp_3m_sde"
     },
     {
       "name": "DPM++ 3M SDE Karras",
@@ -95,32 +67,16 @@
       "value": "DPM++ 3M SDE Exponential"
     },
     {
-      "name": "DPM fast",
-      "value": "DPM fast"
-    },
-    {
-      "name": "DPM adaptive",
-      "value": "DPM adaptive"
-    },
-    {
-      "name": "LMS Karras",
-      "value": "LMS Karras"
-    },
-    {
-      "name": "Restart",
-      "value": "Restart"
-    },
-    {
       "name": "DDIM",
-      "value": "DDIM"
+      "value": "ddim"
     },
     {
-      "name": "PLMS",
-      "value": "PLMS"
+      "name": "LCM",
+      "value": "lcm"
     },
     {
       "name": "UniPC",
-      "value": "UniPC"
+      "value": "uni_pc"
     }
   ]
 }
