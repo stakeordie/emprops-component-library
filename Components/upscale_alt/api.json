@@ -3,10 +3,28 @@
   "description": "simple upscaler",
   "server_id": "",
   "inputs": {
-    "4": {
+    "68": {
       "ckpt_name": {
         "value": "model",
-        "default": "Juggernaut-XI-byRunDiffusion.safetensors",
+        "default": "4x-UltraSharp.pth",
+        "is_required": false
+      }
+    },
+    "100": {
+      "image": {
+        "value": "image",
+        "is_required": true
+      }
+    },
+    "104": {
+      "scale_by": {
+        "value": "scale_by",
+        "default": 2,
+        "is_required": false
+      },
+      "upscale_method": {
+        "value": "upscale_method",
+        "default": "nearest-exact",
         "is_required": false
       }
     }
@@ -76,6 +94,9 @@
     }
   },
   "test": {
-    "seed": "2145214451"
+    "model": "4x-UltraSharp.pth",
+    "image": "/asets/stadaII.png",
+    "scale_by": 2,
+    "upscale_method": "nearest-exact"
   }
 }
