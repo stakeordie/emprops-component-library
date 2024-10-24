@@ -1,7 +1,7 @@
 {
   "name": "Text to Image",
   "workflow_id": "",
-  "params": {
+  "fields": {
     "main": [
       {
         "name": "Model",
