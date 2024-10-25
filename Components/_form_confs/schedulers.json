@@ -1,34 +1,30 @@
-{
-  "name": "Scheduler",
-  "type": "select",
-  "options": [
-    {
-      "name": "Normal",
-      "value": "normal"
-    },
-    {
-      "name": "Karras",
-      "value": "karras"
-    },
-    {
-      "name": "Exponential",
-      "value": "exponential"
-    },
-    {
-      "name": "SGM Uniform",
-      "value": "sgm_uniform"
-    },
-    {
-      "name": "Simple",
-      "value": "simple"
-    },
-    {
-      "name": "DDIM Uniform",
-      "value": "ddim_uniform"
-    },
-    {
-      "name": "Beta",
-      "value": "beta"
-    }
-  ]
-}
+[
+  {
+    "name": "Normal",
+    "value": "normal"
+  },
+  {
+    "name": "Karras",
+    "value": "karras"
+  },
+  {
+    "name": "Exponential",
+    "value": "exponential"
+  },
+  {
+    "name": "SGM Uniform",
+    "value": "sgm_uniform"
+  },
+  {
+    "name": "Simple",
+    "value": "simple"
+  },
+  {
+    "name": "DDIM Uniform",
+    "value": "ddim_uniform"
+  },
+  {
+    "name": "Beta",
+    "value": "beta"
+  }
+]
