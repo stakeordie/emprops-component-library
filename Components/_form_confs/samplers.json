@@ -1,74 +1,70 @@
-{
-  "name": "Sampler",
-  "type": "select",
-  "options": [
-    {
-      "name": "Euler a",
-      "value": "euler_ancestral"
-    },
-    {
-      "name": "Euler",
-      "value": "euler"
-    },
-    {
-      "name": "LMS",
-      "value": "lms"
-    },
-    {
-      "name": "Heun",
-      "value": "heun"
-    },
-    {
-      "name": "DPM 2",
-      "value": "dpm_2"
-    },
-    {
-      "name": "DPM 2 a",
-      "value": "dpm_2_ancestral"
-    },
-    {
-      "name": "DPM fast",
-      "value": "dpm_fast"
-    },
-    {
-      "name": "DPM adaptive",
-      "value": "dpm_adaptive"
-    },
-    {
-      "name": "DPM++ 2 a",
-      "value": "dpmpp_2s_ancestral"
-    },
-    {
-      "name": "DPM++ SDE",
-      "value": "dpmpp_sde"
-    },
-    {
-      "name": "DPM++ SDE GPU",
-      "value": "dpmpp_sde_gpu"
-    },
-    {
-      "name": "DPM++ 2M",
-      "value": "dpmpp_2m"
-    },
-    {
-      "name": "DPM++ 2M SDE",
-      "value": "dpmpp_2m_sde"
-    },
-    {
-      "name": "DPM++ 3M SDE",
-      "value": "dpmpp_3m_sde"
-    },
-    {
-      "name": "DDIM",
-      "value": "ddim"
-    },
-    {
-      "name": "LCM",
-      "value": "lcm"
-    },
-    {
-      "name": "UniPC",
-      "value": "uni_pc"
-    }
-  ]
-}
+[
+  {
+    "name": "Euler a",
+    "value": "euler_ancestral"
+  },
+  {
+    "name": "Euler",
+    "value": "euler"
+  },
+  {
+    "name": "LMS",
+    "value": "lms"
+  },
+  {
+    "name": "Heun",
+    "value": "heun"
+  },
+  {
+    "name": "DPM 2",
+    "value": "dpm_2"
+  },
+  {
+    "name": "DPM 2 a",
+    "value": "dpm_2_ancestral"
+  },
+  {
+    "name": "DPM fast",
+    "value": "dpm_fast"
+  },
+  {
+    "name": "DPM adaptive",
+    "value": "dpm_adaptive"
+  },
+  {
+    "name": "DPM++ 2 a",
+    "value": "dpmpp_2s_ancestral"
+  },
+  {
+    "name": "DPM++ SDE",
+    "value": "dpmpp_sde"
+  },
+  {
+    "name": "DPM++ SDE GPU",
+    "value": "dpmpp_sde_gpu"
+  },
+  {
+    "name": "DPM++ 2M",
+    "value": "dpmpp_2m"
+  },
+  {
+    "name": "DPM++ 2M SDE",
+    "value": "dpmpp_2m_sde"
+  },
+  {
+    "name": "DPM++ 3M SDE",
+    "value": "dpmpp_3m_sde"
+  },
+  {
+    "name": "DDIM",
+    "value": "ddim"
+  },
+  {
+    "name": "LCM",
+    "value": "lcm"
+  },
+  {
+    "name": "UniPC",
+    "value": "uni_pc"
+  }
+]
