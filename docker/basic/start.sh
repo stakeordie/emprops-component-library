@@ -6,7 +6,7 @@ rm -rf /etc/nginx && git clone git@github.com:stakeordie/emprops-nginx-conf.git 
 ln -s /etc/nginx-repo/node /etc/nginx
 
 git clone https://github.com/comfyanonymous/ComfyUI.git ${ROOT}/ComfyUI
-cd ${ROOT}/ComfyUI && pip install -r requirements.txt
+cd ${ROOT}/ComfyUI && git reset --hard "bb4416dd5b2d7c2f34dc17e18761dd6b3d8b6ead" && pip install -r requirements.txt
 rm -rf custom_nodes
 mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 
