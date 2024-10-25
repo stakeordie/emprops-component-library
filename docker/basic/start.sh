@@ -12,6 +12,8 @@ mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 
 /scripts/models.sh
 
+pip install "numpy < 2"
+
 cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --port 3002"
 
 
