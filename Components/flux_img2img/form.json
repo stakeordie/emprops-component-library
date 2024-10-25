@@ -6,7 +6,7 @@
       {
         "name": "Prompt",
         "id": "prompt",
-        "type": "textarea",
+        "type": "prompt_editor",
         "display": true
       },
       {

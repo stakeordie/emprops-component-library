@@ -28,13 +28,13 @@
       {
         "name": "Prompt",
         "id": "prompt",
-        "type": "textarea",
+        "type": "prompt_editor",
         "display": true
       },
       {
         "name": "Negative Prompt",
         "id": "negative_prompt",
-        "type": "textarea",
+        "type": "prompt_editor",
         "display": true
       },
       {

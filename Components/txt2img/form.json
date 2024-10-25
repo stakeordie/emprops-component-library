@@ -13,14 +13,12 @@
         "id": "prompt",
         "name": "Prompt",
         "type": "prompt_editor",
-        "type": "textarea",
         "display": true
       },
       {
         "id": "negative_prompt",
         "name": "Negative Prompt",
         "type": "prompt_editor",
-        "type": "textarea",
         "display": true
       },
       {

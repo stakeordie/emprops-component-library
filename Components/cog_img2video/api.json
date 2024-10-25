@@ -1,7 +1,7 @@
 {
   "name": "cog_img2video",
   "description": "Image to Video",
-  "server_id": "",
+  "server_id": "29eb91e6-3b8a-41c6-ae35-e8aa6212ff14",
   "inputs": {
     "60": {
       "seed": {

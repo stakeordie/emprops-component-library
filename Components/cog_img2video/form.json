@@ -14,7 +14,7 @@
       {
         "name": "Prompt",
         "id": "prompt",
-        "type": "string",
+        "type": "prompt_editor",
         "display": true
       },
       {
