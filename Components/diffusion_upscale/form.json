@@ -1,0 +1,70 @@
+{
+  "name": "Diffusion Upscaler",
+  "fields": {
+    "main": [
+      {
+        "id": "image",
+        "name": "Select Image",
+        "type": "image_loader",
+        "display": true
+      },
+      {
+        "id": "prompt",
+        "name": "Prompt",
+        "type": "prompt_editor",
+        "display": true
+      },
+      {
+        "id": "negative_prompt",
+        "name": "Negative Prompt",
+        "type": "prompt_editor",
+        "display": true
+      },
+      {
+        "id": "steps",
+        "name": "Steps",
+        "type": "slider",
+        "default": 20,
+        "constraints": {
+          "min": 1,
+          "max": 60,
+          "step": 20
+        },
+        "display": true
+      },
+      {
+        "id": "denoising",
+        "name": "Denoising Strength",
+        "type": "slider",
+        "default": 0.35,
+        "constraints": {
+          "min": 0,
+          "max": 1,
+          "step": 0.001
+        },
+        "display": true
+      }
+    ],
+    "advanced": [
+      {
+        "id": "sampler",
+        "name": "Sampler",
+        "default": "dpmpp_3m_sde_gpu",
+        "conf_file": "samplers.json",
+        "display": true
+      },
+      {
+        "id": "controlnet_strength",
+        "name": "ControlNet Strength",
+        "type": "slider",
+        "default": 0.5,
+        "constraints": {
+          "min": 0,
+          "max": 1,
+          "step": 0.001
+        },
+        "display": true
+      }
+    ]
+  }
+}
