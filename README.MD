@@ -70,7 +70,8 @@ The `aspect_ratio` component provides predefined aspect ratio options, usually l
 ```
 
 - **`conf_file`**: Specifies a JSON file (e.g., `aspect_ratio.json`) that defines the possible aspect ratio options.
-  > **Usage**: Useful for choosing specific image dimensions, such as 16:9, 4:3, etc.
+
+> **Usage**: Useful for choosing specific image dimensions, such as 16:9, 4:3, etc.
 
 ### `slider`
 
@@ -93,7 +94,8 @@ The `slider` component provides a range slider for numerical input.
 
 - **`default`**: Sets the default starting value for the slider.
 - **`constraints`**: Defines the minimum, maximum, and step values for the slider.
-  > **Usage**: Best for parameters like "Steps" or "CFG" where a numeric value within a range is needed.
+
+> **Usage**: Best for parameters like "Steps" or "CFG" where a numeric value within a range is needed.
 
 ### `image_loader`
 
