@@ -115,13 +115,6 @@
     ],
     "advanced": [
       {
-        "id": "sampler",
-        "name": "Sampler",
-        "default": "dpmpp_3m_sde_gpu",
-        "conf_file": "samplers.json",
-        "display": true
-      },
-      {
         "id": "steps",
         "name": "Steps",
         "type": "slider",
@@ -131,6 +124,13 @@
           "max": 60,
           "step": 20
         },
+        "display": true
+      },
+      {
+        "id": "sampler",
+        "name": "Sampler",
+        "default": "dpmpp_3m_sde_gpu",
+        "conf_file": "samplers.json",
         "display": true
       },
       {
