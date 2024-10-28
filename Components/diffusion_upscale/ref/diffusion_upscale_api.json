@@ -1,7 +1,7 @@
 {
   "1": {
     "inputs": {
-      "image": "quitters_A_hyper-realistic_photograph_of_an_intricate_pattern_481ada06-39f2-45c7-89f9-e60ccb66a381_2.png",
+      "image": "8E6EAF87-0292-4C43-818E-B74B6830D081.png",
       "upload": "image"
     },
     "class_type": "LoadImage",
@@ -58,7 +58,7 @@
   },
   "5": {
     "inputs": {
-      "text": "masterpiece, best quality, highres",
+      "text": "masterpiece, best quality, highres, small little mischievious elves making toys",
       "clip": [
         "4",
         1
@@ -107,36 +107,6 @@
       "title": "Upscale Image (using Model)"
     }
   },
-  "9": {
-    "inputs": {
-      "upscale_method": "lanczos",
-      "image": [
-        "8",
-        0
-      ]
-    },
-    "class_type": "ImageScaleBy",
-    "_meta": {
-      "title": "Upscale Image By"
-    }
-  },
-  "12": {
-    "inputs": {
-      "tile_size": 1024,
-      "pixels": [
-        "85",
-        0
-      ],
-      "vae": [
-        "2",
-        2
-      ]
-    },
-    "class_type": "VAEEncodeTiled",
-    "_meta": {
-      "title": "VAE Encode (Tiled)"
-    }
-  },
   "13": {
     "inputs": {
       "b1": 1.05,
@@ -183,8 +153,14 @@
   "16": {
     "inputs": {
       "method": "MultiDiffusion",
-      "tile_width": 1024,
-      "tile_height": 1024,
+      "tile_width": [
+        "104",
+        1
+      ],
+      "tile_height": [
+        "104",
+        2
+      ],
       "tile_overlap": 128,
       "tile_batch_size": 4,
       "model": [
@@ -208,7 +184,7 @@
   },
   "18": {
     "inputs": {
-      "strength": 0.5,
+      "strength": 0.75,
       "start_percent": 0,
       "end_percent": 1,
       "positive": [
@@ -235,7 +211,7 @@
   },
   "20": {
     "inputs": {
-      "sampler_name": "dpmpp_3m_sde_gpu"
+      "sampler_name": "dpmpp_2m"
     },
     "class_type": "KSamplerSelect",
     "_meta": {
@@ -244,9 +220,9 @@
   },
   "21": {
     "inputs": {
-      "model_type": "SD1",
+      "model_type": "SDXL",
       "steps": 25,
-      "denoise": 0.35000000000000003
+      "denoise": 0.75
     },
     "class_type": "AlignYourStepsScheduler",
     "_meta": {
@@ -256,7 +232,7 @@
   "25": {
     "inputs": {
       "add_noise": true,
-      "noise_seed": 5398475983,
+      "noise_seed": 539,
       "cfg": 8,
       "model": [
         "96",
@@ -279,7 +255,7 @@
         0
       ],
       "latent_image": [
-        "12",
+        "102",
         0
       ]
     },
@@ -288,27 +264,16 @@
       "title": "SamplerCustom"
     }
   },
-  "26": {
-    "inputs": {
-      "tile_size": 1024,
-      "samples": [
-        "25",
-        0
-      ],
-      "vae": [
-        "2",
-        2
-      ]
-    },
-    "class_type": "VAEDecodeTiled",
-    "_meta": {
-      "title": "VAE Decode (Tiled)"
-    }
-  },
   "46": {
     "inputs": {
-      "width": 2048,
-      "height": 2048,
+      "width": [
+        "86",
+        0
+      ],
+      "height": [
+        "86",
+        0
+      ],
       "interpolation": "nearest",
       "method": "keep proportion",
       "condition": "downscale if bigger",
@@ -329,7 +294,7 @@
       "add_timestamp": true,
       "save_metadata_json": false,
       "images": [
-        "100",
+        "101",
         0
       ]
     },
@@ -364,7 +329,7 @@
   },
   "86": {
     "inputs": {
-      "value": 2048
+      "value": 4096
     },
     "class_type": "Eden_Int",
     "_meta": {
@@ -402,7 +367,7 @@
       "crop_position": "center",
       "sharpening": 0.05,
       "image": [
-        "85",
+        "111",
         0
       ]
     },
@@ -440,26 +405,6 @@
     "class_type": "IPAdapterClipVisionEnhancer",
     "_meta": {
       "title": "IPAdapter ClipVision Enhancer"
-    }
-  },
-  "93": {
-    "inputs": {
-      "color_space": "LAB",
-      "factor": 1,
-      "device": "auto",
-      "batch_size": 0,
-      "image": [
-        "26",
-        0
-      ],
-      "reference": [
-        "85",
-        0
-      ]
-    },
-    "class_type": "ImageColorMatch+",
-    "_meta": {
-      "title": "🔧 Image Color Match"
     }
   },
   "95": {
@@ -502,31 +447,98 @@
   },
   "99": {
     "inputs": {
-      "value": false
+      "value": true
     },
     "class_type": "Eden_Bool",
     "_meta": {
       "title": "USE COLOR MATCH"
     }
   },
-  "100": {
+  "101": {
     "inputs": {
-      "switch": [
+      "tile_size": 384,
+      "fast": false,
+      "samples": [
+        "25",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "VAEDecodeTiled_TiledDiffusion",
+    "_meta": {
+      "title": "Tiled VAE Decode"
+    }
+  },
+  "102": {
+    "inputs": {
+      "tile_size": 384,
+      "fast": false,
+      "color_fix": [
         "99",
         0
       ],
-      "on_false": [
-        "26",
+      "pixels": [
+        "111",
         0
       ],
-      "on_true": [
-        "93",
+      "vae": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "VAEEncodeTiled_TiledDiffusion",
+    "_meta": {
+      "title": "Tiled VAE Encode"
+    }
+  },
+  "104": {
+    "inputs": {
+      "width": 384,
+      "height": 384,
+      "interpolation": "lanczos",
+      "method": "keep proportion",
+      "condition": "always",
+      "multiple_of": 8,
+      "image": [
+        "1",
         0
       ]
     },
-    "class_type": "InversionDemoLazySwitch",
+    "class_type": "ImageResize+",
     "_meta": {
-      "title": "Lazy Switch_USE COLOR MATCH"
+      "title": "🔧 Image Resize"
+    }
+  },
+  "110": {
+    "inputs": {
+      "value": false
+    },
+    "class_type": "Eden_Bool",
+    "_meta": {
+      "title": "Upscale"
+    }
+  },
+  "111": {
+    "inputs": {
+      "boolean": [
+        "110",
+        0
+      ],
+      "on_true": [
+        "85",
+        0
+      ],
+      "on_false": [
+        "46",
+        0
+      ]
+    },
+    "class_type": "easy ifElse",
+    "_meta": {
+      "title": "If else"
     }
   }
 }
