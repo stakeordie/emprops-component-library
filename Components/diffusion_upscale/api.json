@@ -1,5 +1,5 @@
 {
-  "name": "diffusion_upscale",
+  "name": "Diffusion Upscaler",
   "description": "uses diffusion to upscale an image",
   "server_id": "d10aa75d-e69f-497f-8eaf-088c83434eeb",
   "inputs": {
@@ -109,7 +109,7 @@
     },
     "110":{
       "value": {
-        "value": "upscale",
+        "value": "use_upscale",
         "is_required": false,
         "default": true
       }
