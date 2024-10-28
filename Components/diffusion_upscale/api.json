@@ -649,12 +649,17 @@
   },
   "test": {
     "image": "https://cdn.emprops.ai/blog-posts/stadaii.png",
-    "seed": "2145214451",
-    "steps": "20",
-    "denoising": ".35",
-    "sampler": "dpmpp_3m_sde_gpu",
+    "seed": "21452451",
     "prompt": "a dog in a car",
     "negative_prompt": "",
-    "controlnet_strength": ".5"
+    "use_upscale": true,
+    "use_color_match": true,
+    "output_size": 2048,
+    "tile_size": 512,
+    "denoising": 0.35,
+    "controlnet_strength": 0.5,
+    "steps": 20,
+    "sampler": "dpmpp_2m",
+    "cfg": 8
   }
 }
