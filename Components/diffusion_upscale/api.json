@@ -1,5 +1,5 @@
 {
-  "name": "Diffusion Upscaler",
+  "name": "diffusion-upscaler",
   "description": "uses diffusion to upscale an image",
   "server_id": "d10aa75d-e69f-497f-8eaf-088c83434eeb",
   "inputs": {
