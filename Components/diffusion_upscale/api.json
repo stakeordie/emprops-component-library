@@ -1,5 +1,5 @@
 {
-  "name": "Diffusion Upscaler",
+  "name": "diffusion-upscaler",
   "description": "uses diffusion to upscale an image",
   "server_id": "d10aa75d-e69f-497f-8eaf-088c83434eeb",
   "inputs": {
@@ -115,10 +115,10 @@
       }
     }
   },
-  "workflow": {
+  "workflow":{
     "1": {
       "inputs": {
-        "image": "8E6EAF87-0292-4C43-818E-B74B6830D081.png",
+        "image": "Cities_This_is_the_One_1 (1).png",
         "upload": "image"
       },
       "class_type": "LoadImage",
@@ -164,7 +164,7 @@
           0
         ],
         "clip": [
-          "2",
+          "3",
           1
         ]
       },
@@ -228,7 +228,7 @@
       "inputs": {
         "b1": 1.05,
         "b2": 1.08,
-        "s1": 0.95,
+        "s1": 0.9500000000000001,
         "s2": 0.8,
         "model": [
           "4",
@@ -446,7 +446,7 @@
     },
     "86": {
       "inputs": {
-        "value": 4096
+        "value": 2048
       },
       "class_type": "Eden_Int",
       "_meta": {
@@ -487,7 +487,7 @@
           "95",
           0
         ],
-        "weight_type": "ease in-out",
+        "weight_type": "composition precise",
         "combine_embeds": "concat",
         "start_at": 0,
         "end_at": 1,
@@ -514,7 +514,7 @@
     },
     "95": {
       "inputs": {
-        "value": 0.75
+        "value": 5
       },
       "class_type": "Eden_Float",
       "_meta": {
@@ -543,7 +543,7 @@
     },
     "97": {
       "inputs": {
-        "value": true
+        "value": false
       },
       "class_type": "Eden_Bool",
       "_meta": {
@@ -561,7 +561,7 @@
     },
     "101": {
       "inputs": {
-        "tile_size": 384,
+        "tile_size": 400,
         "fast": false,
         "samples": [
           "25",
@@ -579,7 +579,7 @@
     },
     "102": {
       "inputs": {
-        "tile_size": 384,
+        "tile_size": 400,
         "fast": false,
         "color_fix": [
           "99",
@@ -601,8 +601,8 @@
     },
     "104": {
       "inputs": {
-        "width": 384,
-        "height": 384,
+        "width": 396,
+        "height": 396,
         "interpolation": "lanczos",
         "method": "keep proportion",
         "condition": "always",
@@ -646,6 +646,154 @@
         "title": "If else"
       }
     }
+  },
+  "form": {
+    "main": [
+      {
+        "id": "image",
+        "name": "Select Image",
+        "type": "image_loader",
+        "display": true
+      },
+      {
+        "id": "prompt",
+        "name": "Prompt",
+        "type": "prompt_editor",
+        "placeholder": "Enter a prompt... ",
+        "display": true
+      },
+      {
+        "id": "negative_prompt",
+        "name": "Negative Prompt",
+        "type": "prompt_editor",
+        "display": true
+      },
+      {
+        "id": "use_upscale",
+        "name": "Upscale Image",
+        "type": "checkbox",
+        "default": true,
+        "display": true
+      },
+      {
+        "id": "use_color_match",
+        "name": "Color Matcher",
+        "type": "checkbox",
+        "default": true,
+        "display": true
+      },
+      {
+        "id": "output_size",
+        "name": "Output Resolution (Longest Side)",
+        "type": "select",
+        "default": 2048,
+        "options": [
+          {
+            "name": "1024",
+            "value": 1024
+          },
+          {
+            "name": "1536",
+            "value": 1536
+          },
+          {
+            "name": "2048",
+            "value": 2048
+          },
+          {
+            "name": "3072",
+            "value": 3072
+          },
+          {
+            "name": "4096",
+            "value": 4096
+          }
+        ],
+        "display": true
+      },
+      {
+        "id": "tile_size",
+        "name": "Size of Tiles (Smaller = Finer Grain)",
+        "type": "select",
+        "default": 768,
+        "options": [
+          {
+            "name": "384",
+            "value": 384
+          },
+          {
+            "name": "512",
+            "value": 512
+          },
+          {
+            "name": "768",
+            "value": 768
+          },
+          {
+            "name": "1024",
+            "value": 1024
+          }
+        ],
+        "display": true
+      },
+      {
+        "id": "denoising",
+        "name": "Denoising Strength",
+        "type": "slider",
+        "default": 0.35,
+        "constraints": {
+          "min": 0,
+          "max": 1,
+          "step": 0.001
+        },
+        "display": true
+      },
+      {
+        "id": "controlnet_strength",
+        "name": "ControlNet Strength",
+        "type": "slider",
+        "default": 0.5,
+        "constraints": {
+          "min": 0,
+          "max": 1,
+          "step": 0.001
+        },
+        "display": true
+      }
+    ],
+    "advanced": [
+      {
+        "id": "steps",
+        "name": "Steps",
+        "type": "slider",
+        "default": 20,
+        "constraints": {
+          "min": 1,
+          "max": 60,
+          "step": 20
+        },
+        "display": true
+      },
+      {
+        "id": "sampler",
+        "name": "Sampler",
+        "default": "dpmpp_3m_sde_gpu",
+        "conf_file": "samplers.json",
+        "display": true
+      },
+      {
+        "id": "cfg",
+        "name": "Guidance (CFG)",
+        "type": "slider",
+        "default": 8,
+        "constraints": {
+          "min": 0,
+          "max": 50,
+          "steps": 0.01
+        },
+        "display": true
+      }
+    ]
   },
   "test": {
     "image": "https://cdn.emprops.ai/blog-posts/stadaii.png",
