@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Specify the folder path
 FOLDER_PATH="/comfyui-launcher/ComfyUI/output"
 
-# Define the cron job schedule and command
+# Run the cron job every hour
 CRON_JOB="0 * * * * rm -f $FOLDER_PATH/*"
 
 # Check if the cron job already exists
