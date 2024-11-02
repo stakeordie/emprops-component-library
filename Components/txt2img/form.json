@@ -1,73 +1,92 @@
 {
-  "name": "Text to Image",
-  "fields": {
-    "main": [
-      {
-        "id": "model",
-        "name": "Model",
-        "type": "select",
-        "conf_file": "sd_models.json",
-        "display": true
+  "main": [
+    {
+      "id": "model",
+      "name": "Model",
+      "type": "select",
+      "default": "sd_xl_base_1.0_0.9vae.safetensors",
+      "conf_file": "sd_models.json",
+      "display": true
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "negative_prompt",
+      "name": "Negative Prompt",
+      "type": "prompt_editor",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
       },
-      {
-        "id": "prompt",
-        "name": "Prompt",
-        "type": "prompt_editor",
-        "display": true
+      "display": true
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
       },
-      {
-        "id": "negative_prompt",
-        "name": "Negative Prompt",
-        "type": "prompt_editor",
-        "display": true
+      "display": true
+    },
+    {
+      "id": "steps",
+      "name": "Steps",
+      "type": "slider",
+      "default": 20,
+      "constraints": {
+        "min": 1,
+        "max": 60,
+        "step": 1
       },
-      {
-        "id": "aspect_ratio",
-        "name": "Aspect Ratio",
-        "type": "aspect_ratio",
-        "conf_file": "aspect_ratio.json",
-        "display": true
+      "display": true
+    }
+  ],
+  "advanced": [
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "euler_ancestral",
+      "conf_file": "samplers.json",
+      "display": true
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "normal",
+      "conf_file": "schedulers.json",
+      "display": true
+    },
+    {
+      "id": "cfg",
+      "name": "Guidance (CFG)",
+      "type": "slider",
+      "default": 7,
+      "constraints": {
+        "min": 0,
+        "max": 50,
+        "steps": 0.01
       },
-      {
-        "id": "steps",
-        "name": "Steps",
-        "type": "slider",
-        "default": 20,
-        "constraints": {
-          "min": 1,
-          "max": 60,
-          "step": 20
-        },
-        "display": true
-      }
-    ],
-    "advanced": [
-      {
-        "id": "sampler",
-        "name": "Sampler",
-        "default": "euler_ancestral",
-        "conf_file": "samplers.json",
-        "display": true
-      },
-      {
-        "id": "scheduler",
-        "name": "Scheduler",
-        "default": "karras",
-        "conf_file": "schedulers.json",
-        "display": true
-      },
-      {
-        "id": "cfg",
-        "name": "Guidance (CFG)",
-        "type": "slider",
-        "default": 7,
-        "constraints": {
-          "min": 0,
-          "max": 50,
-          "steps": 0.01
-        },
-        "display": true
-      }
-    ]
-  }
+      "display": true
+    }
+  ]
 }

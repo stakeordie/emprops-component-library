@@ -1,84 +1,109 @@
 {
-  "name": "Image to Image",
-  "workflow_id": "",
-  "fields": {
-    "main": [
-      {
-        "name": "Select Image",
-        "id": "image",
-        "type": "image_loader",
-        "display": true
-      },
-      {
-        "name": "Model",
-        "id": "model",
-        "conf_file": "sd_models.json",
-        "display": true
-      },
-      {
-        "name": "Denoising Strength",
-        "id": "denoising",
-        "type": "number",
-        "default": 1,
+  "main": [
+    {
+      "id": "image",
+      "name": "Select Image",
+      "type": "image_loader",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "model",
+      "name": "Model",
+      "type": "select",
+      "default": "sd_xl_base_1.0_0.9vae.safetensors",
+      "conf_file": "sd_models.json",
+      "display": true
+    },
+    {
+      "id": "denoising",
+      "name": "Denoising Strength",
+      "type": "slider",
+      "default": 1,
+      "constraints": {
         "min": 0,
         "max": 1,
-        "step": 0.01,
-        "display": true
+        "step": 0.01
       },
-      {
-        "name": "Prompt",
-        "id": "prompt",
-        "type": "prompt_editor",
-        "display": true
+      "display": true
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "display": true
+    },
+    {
+      "id": "negative_prompt",
+      "name": "Negative Prompt",
+      "type": "prompt_editor",
+      "display": true
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
       },
-      {
-        "name": "Negative Prompt",
-        "id": "negative_prompt",
-        "type": "prompt_editor",
-        "display": true
+      "display": true
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
       },
-      {
-        "name": "Aspect Ratio",
-        "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.json",
-        "display": true
-      },
-      {
-        "name": "Steps",
-        "id": "steps",
-        "type": "number",
-        "default": 20,
+      "display": true
+    },
+    {
+      "name": "Steps",
+      "id": "steps",
+      "type": "slider",
+      "default": 20,
+      "constraints": {
         "min": 1,
         "max": 60,
-        "step": 20,
-        "display": true
-      }
-    ],
-    "advanced": [
-      {
-        "name": "Sampler",
-        "id": "sampler",
-        "default": "euler_ancestral",
-        "conf_file": "samplers.json",
-        "display": true
+        "step": 1
       },
-      {
-        "name": "Scheduler",
-        "id": "scheduler",
-        "default": "karras",
-        "conf_file": "samplers.json",
-        "display": true
+      "display": true
+    }
+  ],
+  "advanced": [
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "euler_ancestral",
+      "conf_file": "samplers.json",
+      "display": true
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "normal",
+      "conf_file": "schedulers.json",
+      "display": true
+    },
+    {
+      "name": "Guidance (CFG)",
+      "id": "cfg",
+      "type": "slider",
+      "default": 7,
+      "constraints": {
+        "min": 1,
+        "max": 10,
+        "step": 1
       },
-      {
-        "name": "Guidance (CFG)",
-        "id": "cfg",
-        "type": "number",
-        "default": 7,
-        "min": 0,
-        "max": 50,
-        "steps": 0.01,
-        "display": true
-      }
-    ]
-  }
+      "display": true
+    }
+  ]
 }

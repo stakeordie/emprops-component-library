@@ -1,46 +1,64 @@
 {
-  "name": "Text to Image (Flux)",
-  "workflow_id": "",
-  "fields": {
-    "main": [
-      {
-        "name": "Prompt",
-        "id": "prompt",
-        "type": "prompt_editor",
-        "display": true
+  "main": [
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "display": true
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
       },
-      {
-        "name": "Aspect Ratio",
-        "id": "aspect_ratio",
-        "conf_file": "aspect_ratio.json",
-        "display": true
+      "display": true
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
       },
-      {
-        "name": "Steps",
-        "id": "steps",
-        "type": "number",
-        "default": 8,
+      "display": true
+    },
+    {
+      "id": "steps",
+      "name": "Steps",
+      "type": "slider",
+      "default": 10,
+      "constraints": {
         "min": 1,
         "max": 60,
-        "step": 1,
-        "display": true
-      }
-    ],
-    "advanced": [
-      {
-        "name": "Sampler",
-        "id": "sampler",
-        "default": "dpmpp_2m",
-        "conf_file": "samplers.json",
-        "display": true
+        "step": 1
       },
-      {
-        "name": "Scheduler",
-        "id": "scheduler",
-        "default": "beta",
-        "conf_file": "schedulers.json",
-        "display": true
-      }
-    ]
-  }
+      "display": true
+    }
+  ],
+  "advanced": [
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "dpm_2",
+      "conf_file": "samplers.json",
+      "display": true
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "ddim_uniform",
+      "conf_file": "schedulers.json",
+      "display": true
+    }
+  ]
 }

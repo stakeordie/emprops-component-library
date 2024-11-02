@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Nearest (Exact)",
+    "value": "nearest-exact"
+  },
+  {
+    "name": "Bilinear",
+    "value": "bilinear"
+  },
+  {
+    "name": "Area",
+    "value": "area"
+  },
+  {
+    "name": "Bicubic",
+    "value": "bicubic"
+  },
+  {
+    "name": "Lanczos",
+    "value": "lanczos"
+  }
+]

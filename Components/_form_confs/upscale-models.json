@@ -1,0 +1,22 @@
+[
+  {
+    "name": "4X ESRGAN",
+    "value": "4x-ESRGAN.pth"
+  },
+  {
+    "name": "4X Ultra Sharp",
+    "value": "4x-UltraSharp.pth"
+  },
+  {
+    "name": "Real ESRGAN X2 Plus",
+    "value": "RealESRGAN_x2plus.pth"
+  },
+  {
+    "name": "Real ESRGAN X4 Plus",
+    "value": "RealESRGAN_x4plus.pth"
+  },
+  {
+    "name": "Real ESRGAN X4 Plus Anime 6B",
+    "value": "RealESRGAN_x4plus_anime_6B.pth"
+  }
+]
