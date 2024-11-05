@@ -137,6 +137,42 @@ async function applyComponents(componentName) {
   );
 }
 
+async function getComponent(componentName, options) {
+  console.log(`Getting details of component "${componentName}"...`);
+  const config = await fs.readJson(configPath);
+  const { data: component, error } = await fetchComponent(
+    config,
+    componentName
+  );
+  if (error != null) {
+    console.error(chalk.red(`Failed to fetch component: ${error}`));
+    return;
+  }
+  if (options.form) {
+    console.log(
+      chalk.magentaBright(
+        JSON.stringify(component.data.form || "Not Found", null, 2)
+      )
+    );
+  } else if (options.input) {
+    console.log(
+      chalk.magentaBright(
+        JSON.stringify(component.data.inputs || "Not Found", null, 2)
+      )
+    );
+  } else if (options.workflow) {
+    console.log(
+      chalk.magentaBright(
+        JSON.stringify(component.data.workflow || "Not Found", null, 2)
+      )
+    );
+  } else if (options.credits) {
+    console.log(chalk.magenta(component.data.credits_script) || "Not Found");
+  } else {
+    console.log(JSON.stringify(component, null, 2));
+  }
+}
+
 program
   .command("init")
   .description("Initialize the configuration file")
@@ -164,5 +200,15 @@ componentsCommand
   .description("Apply the components")
   .arguments("<name>")
   .action(applyComponents);
+
+componentsCommand
+  .command("get")
+  .description("Get details of a component")
+  .arguments("<name>")
+  .option("-f, --form", "Get form of the component")
+  .option("-i, --input", "Get form of the component")
+  .option("-w, --workflow", "Get API of the component")
+  .option("-c, --credits", "Get credits of the component")
+  .action(getComponent);
 
 program.parse(process.argv);
