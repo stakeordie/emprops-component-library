@@ -1,5 +1,21 @@
 # EmProps Component Library
 
+## Setup
+
+Install the CLI
+
+```bash
+npm link
+```
+
+## Usage
+
+Make changes to components, then run the following command to apply changes to the server:
+
+```bash
+ecli component apply <component_name>
+```
+
 ## Component UI Configuration
 
 This documents outlines how to write the `forms.js` JSON file for describing Component's UI.
