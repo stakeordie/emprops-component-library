@@ -167,7 +167,7 @@ async function getComponent(componentName, options) {
       )
     );
   } else if (options.credits) {
-    console.log(chalk.magenta(component.data.credits_script) || "Not Found");
+    console.log(chalk.magenta(component.data.credits_script || "Not Found"));
   } else {
     console.log(JSON.stringify(component, null, 2));
   }
