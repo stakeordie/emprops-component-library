@@ -1,0 +1,18 @@
+{
+  "name": "emprops-component-library",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:stakeordie/emprops-component-library.git",
+  "author": "Luis Espinoza <79593471+luiseel@users.noreply.github.com>",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.1",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "bin": {
+    "ecli": "./index.js"
+  }
+}
