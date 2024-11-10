@@ -123,15 +123,16 @@ wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingf
 ##SDXL Refiner
 wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0_0.9vae.safetensors && MODELS+="sd_xl_refiner_1.0_0.9vae.safetensors,"
 ## OLD 1.5
-# wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned.ckpt
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned.ckpt && MODELS+="v1-5-pruned.ckpt,"
 # ## OLD 2.1
-# wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-2-1/resolve/main/v2-1_768-ema-pruned.ckpt
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-2-1/resolve/main/v2-1_768-ema-pruned.ckpt && MODELS+="v2-1_768-ema-pruned.ckpt,"
 # ## OLD SDXL
-# wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors && MODELS+="sd_xl_base_1.0.safetensors,"
 # ## OLD SDXL Refiner
-# wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors && MODELS+="sd_xl_refiner_1.0.safetensors,"
 # ## OLD JuggerNautXL
 # wget --no-verbose --show-progress --progress=bar:force:noscroll "https://civitai.com/api/download/models/288982?type=Model&format=SafeTensor&size=full&fp=fp16" -O juggernautXL_v8Rundiffusion.safetensors
+
 
 cd ${ROOT}
 
@@ -157,6 +158,8 @@ IFS=, read -r -a models <<<"${MODELS}"
 echo "WAITING TO START UP BEFORE LOADING MODELS..."
 
 sleep 75
+
+ln -s ${ROOT}/models/Stable-diffusion/JuggernautXL_v8Rundiffusion.safetensors ${ROOT}/models/Stable-Diffusion/juggernautXL_v8Rundiffusion.safetensors
 
 # Array to parameter list
 echo "Loading models: ${MODELS}"
