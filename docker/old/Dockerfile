@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
   # extensions needs those
   ffmpeg libglfw3-dev libgles2-mesa-dev pkg-config libcairo2 libcairo2-dev build-essential
 
-FROM base
+FROM base AS base2
 
 
 WORKDIR /
@@ -36,10 +36,6 @@ WORKDIR /
 #COPY ${models} /data/models/Stable-diffusion
 
 ARG GITACCESSKEY
-
-COPY clone.sh config.py Dockerfile start.sh loader.py error_catch_all.sh /docker/
-COPY build.sh /build.sh
-COPY .bash_aliases /root/.bash_aliases
 RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo ${GITACCESSKEY} >> ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
 
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -49,6 +45,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
   pip install -r requirements_versions.txt \
   && cd /
 
+FROM base2 AS base3
+
+COPY clone.sh config.py Dockerfile start.sh loader.py error_catch_all.sh /docker/
+COPY build.sh /build.sh
+COPY .bash_aliases /root/.bash_aliases
 ENV ROOT=/stable-diffusion-webui
 
 COPY --from=download /repositories/ ${ROOT}/repositories/

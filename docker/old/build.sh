@@ -148,7 +148,7 @@ rm -rf /etc/nginx
 ssh-keyscan github.com > ~/.ssh/githubKey
 ssh-keygen -lf ~/.ssh/githubKey
 cat ~/.ssh/githubKey >> ~/.ssh/known_hosts
-git clone -b sd-node git@github.com:stakeordie/emprops-nginx-conf.git /etc/nginx-repo
+git clone git@github.com:stakeordie/emprops-nginx-conf.git /etc/nginx-repo
 ln -s /etc/nginx-repo/auto-node /etc/nginx
 service nginx start
 
