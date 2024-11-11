@@ -12,7 +12,7 @@ mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 
 /scripts/models.sh
 
-cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --port 3002"
+cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --highvram"
 
 
 git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
