@@ -1,4 +1,7 @@
 {
+  "name": "Mochi Video",
+  "description": "Mochi Video",
+  "server_id": "29eb91e6-3b8a-41c6-ae35-e8aa6212ff14",
   "input": {
     "3": {
       "seed": {
