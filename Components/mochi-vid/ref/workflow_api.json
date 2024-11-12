@@ -1,11 +1,11 @@
 {
   "3": {
     "inputs": {
-      "seed": 318101379787942,
+      "seed": 175146355484696,
       "steps": 30,
       "cfg": 4.5,
-      "sampler_name": "euler",
-      "scheduler": "simple",
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "beta",
       "denoise": 1,
       "model": [
         "37",
@@ -31,7 +31,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Popeye throwing a barrel",
+      "text": "a nuclear bomb explosion in a city urban night well lit zoom camera and track in building collapses",
       "clip": [
         "38",
         0
@@ -75,7 +75,7 @@
     "inputs": {
       "width": 848,
       "height": 480,
-      "length": 73,
+      "length": 55,
       "batch_size": 1
     },
     "class_type": "EmptyMochiLatentVideo",
@@ -86,7 +86,7 @@
   "28": {
     "inputs": {
       "filename_prefix": "ComfyUI",
-      "fps": 24,
+      "fps": 18,
       "lossless": false,
       "quality": 80,
       "method": "default",
@@ -103,7 +103,7 @@
   "37": {
     "inputs": {
       "unet_name": "mochi_preview_fp8_scaled.safetensors",
-      "weight_dtype": "default"
+      "weight_dtype": "fp8_e4m3fn"
     },
     "class_type": "UNETLoader",
     "_meta": {

@@ -1,3 +1,3 @@
-function computeCost() {
+function computeCredits(context) {
   return 10;
 }
