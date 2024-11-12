@@ -90,7 +90,7 @@
       "id": "cfg",
       "name": "Guidance (CFG)",
       "type": "slider",
-      "default": 8,
+      "default": 4.5,
       "constraints": {
         "min": 0,
         "max": 50,
