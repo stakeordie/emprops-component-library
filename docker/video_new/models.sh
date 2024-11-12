@@ -20,6 +20,7 @@ mkdir -p ${ROOT}/models/ipadapter
 mkdir -p ${ROOT}/models/loras
 mkdir -p ${ROOT}/models/upscale_models
 mkdir -p ${ROOT}/models/controlnet/SDXL/controlnet-depth-sdxl-1.0
+mkdir -p ${ROOT}/models/controlnet/SDXL/controlnet-depth-sdxl-1.0
 mkdir -p ${ROOT}/custom_nodes/ComfyUI-Frame-Interpolation/ckpts/rife
 
 cd ${ROOT}/models/checkpoints/SD15/LCM && wget https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/realismBYSTABLEYOGI_v4LCM.safetensors -O realismBYSTABLEYOGI_v4LCM.safetensors

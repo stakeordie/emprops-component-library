@@ -1,0 +1,41 @@
+{
+  "name": "Video 2 Video Diffusion",
+  "description": "SDXL Video 2 Video",
+  "server_id": "29eb91e6-3b8a-41c6-ae35-e8aa6212ff14",
+  "inputs": {
+    "1": {
+      "image": {
+        "value": "image",
+        "is_required": true
+      }
+    }
+  },
+  "workflow":{},
+  "form": {
+    "main": [
+      {
+        "id": "image",
+        "name": "Select Image",
+        "type": "image_loader",
+        "display": true
+      }
+    ],
+    "advanced": [
+      {
+        "id": "steps",
+        "name": "Steps",
+        "type": "slider",
+        "default": 20,
+        "constraints": {
+          "min": 1,
+          "max": 60,
+          "step": 20
+        },
+        "display": true
+      }
+    ]
+  },
+  "test": {
+  
+  }
+}
