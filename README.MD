@@ -5,6 +5,7 @@
 Install the CLI
 
 ```bash
+npm install
 npm link
 ```
 
@@ -13,6 +14,10 @@ npm link
 Make changes to components, then run the following command to apply changes to the server:
 
 ```bash
+ecli init
+# Create a new component
+ecli component new <component_name>
+# Apply changes to the server
 ecli component apply <component_name>
 ```
 
