@@ -15,6 +15,7 @@ mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 pip install "numpy < 2"
 
 cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --highvram"
+# add OPENAI_API_KEY to the environment
 
 
 git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
