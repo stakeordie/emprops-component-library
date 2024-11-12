@@ -60,21 +60,50 @@
         "is_required": false,
         "default": 37
       }
+    },
+    "41": {
+      "pingpong": {
+        "value": "is_ping_pong",
+        "is_required": false,
+        "default": false
+      },
+      "frame_rate": {
+        "value": "frame_rate",
+        "is_required": false,
+        "default": 24
+      },
+      "format": {
+        "value": "output_format",
+        "is_required": false,
+        "default": "image/webp"
+      }
     }
   },
   "workflow": {
     "3": {
       "inputs": {
-        "seed": 318101379787942,
+        "seed": 175146355484696,
         "steps": 30,
         "cfg": 4.5,
-        "sampler_name": "euler",
-        "scheduler": "simple",
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "beta",
         "denoise": 1,
-        "model": ["37", 0],
-        "positive": ["6", 0],
-        "negative": ["7", 0],
-        "latent_image": ["21", 0]
+        "model": [
+          "37",
+          0
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "21",
+          0
+        ]
       },
       "class_type": "KSampler",
       "_meta": {
@@ -83,8 +112,11 @@
     },
     "6": {
       "inputs": {
-        "text": "Popeye throwing a barrel",
-        "clip": ["38", 0]
+        "text": "a nuclear bomb explosion in a city urban night well lit zoom camera and track in building collapses",
+        "clip": [
+          "38",
+          0
+        ]
       },
       "class_type": "CLIPTextEncode",
       "_meta": {
@@ -94,7 +126,10 @@
     "7": {
       "inputs": {
         "text": "",
-        "clip": ["38", 0]
+        "clip": [
+          "38",
+          0
+        ]
       },
       "class_type": "CLIPTextEncode",
       "_meta": {
@@ -103,8 +138,14 @@
     },
     "8": {
       "inputs": {
-        "samples": ["3", 0],
-        "vae": ["39", 0]
+        "samples": [
+          "3",
+          0
+        ],
+        "vae": [
+          "39",
+          0
+        ]
       },
       "class_type": "VAEDecode",
       "_meta": {
@@ -115,7 +156,7 @@
       "inputs": {
         "width": 848,
         "height": 480,
-        "length": 73,
+        "length": 37,
         "batch_size": 1
       },
       "class_type": "EmptyMochiLatentVideo",
@@ -123,24 +164,10 @@
         "title": "EmptyMochiLatentVideo"
       }
     },
-    "28": {
-      "inputs": {
-        "filename_prefix": "ComfyUI",
-        "fps": 24,
-        "lossless": false,
-        "quality": 80,
-        "method": "default",
-        "images": ["8", 0]
-      },
-      "class_type": "SaveAnimatedWEBP",
-      "_meta": {
-        "title": "SaveAnimatedWEBP"
-      }
-    },
     "37": {
       "inputs": {
         "unet_name": "mochi_preview_fp8_scaled.safetensors",
-        "weight_dtype": "default"
+        "weight_dtype": "fp8_e4m3fn"
       },
       "class_type": "UNETLoader",
       "_meta": {
@@ -164,6 +191,24 @@
       "class_type": "VAELoader",
       "_meta": {
         "title": "Load VAE"
+      }
+    },
+    "41": {
+      "inputs": {
+        "frame_rate": 24,
+        "loop_count": 0,
+        "filename_prefix": "MochiVid",
+        "format": "image/webp",
+        "pingpong": true,
+        "save_output": true,
+        "images": [
+          "8",
+          0
+        ]
+      },
+      "class_type": "VHS_VideoCombine",
+      "_meta": {
+        "title": "Video Combine 🎥🅥🅗🅢"
       }
     }
   }

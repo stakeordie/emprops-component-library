@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Cinamatic (24fps)",
+    "value": 24
+  },
+  {
+    "name": "Video (30fps)",
+    "value": "30"
+  },
+  {
+    "name": "SlowMo (18fps)",
+    "value": "18"
+  }
+]
