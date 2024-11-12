@@ -3,7 +3,7 @@
   "description": "Mochi Video",
   "server_id": "29eb91e6-3b8a-41c6-ae35-e8aa6212ff14",
   "output_mime_type": "image/webp",
-  "input": {
+  "inputs": {
     "3": {
       "seed": {
         "value": "seed",
@@ -71,22 +71,10 @@
         "sampler_name": "euler",
         "scheduler": "simple",
         "denoise": 1,
-        "model": [
-          "37",
-          0
-        ],
-        "positive": [
-          "6",
-          0
-        ],
-        "negative": [
-          "7",
-          0
-        ],
-        "latent_image": [
-          "21",
-          0
-        ]
+        "model": ["37", 0],
+        "positive": ["6", 0],
+        "negative": ["7", 0],
+        "latent_image": ["21", 0]
       },
       "class_type": "KSampler",
       "_meta": {
@@ -96,10 +84,7 @@
     "6": {
       "inputs": {
         "text": "Popeye throwing a barrel",
-        "clip": [
-          "38",
-          0
-        ]
+        "clip": ["38", 0]
       },
       "class_type": "CLIPTextEncode",
       "_meta": {
@@ -109,10 +94,7 @@
     "7": {
       "inputs": {
         "text": "",
-        "clip": [
-          "38",
-          0
-        ]
+        "clip": ["38", 0]
       },
       "class_type": "CLIPTextEncode",
       "_meta": {
@@ -121,14 +103,8 @@
     },
     "8": {
       "inputs": {
-        "samples": [
-          "3",
-          0
-        ],
-        "vae": [
-          "39",
-          0
-        ]
+        "samples": ["3", 0],
+        "vae": ["39", 0]
       },
       "class_type": "VAEDecode",
       "_meta": {
@@ -154,10 +130,7 @@
         "lossless": false,
         "quality": 80,
         "method": "default",
-        "images": [
-          "8",
-          0
-        ]
+        "images": ["8", 0]
       },
       "class_type": "SaveAnimatedWEBP",
       "_meta": {
