@@ -1,0 +1,11 @@
+{
+  "prompt": "A cute cat with a hat",
+  "negative_prompt": "A scary cat with a hat",
+  "steps": 30,
+  "width": 848,
+  "height": 480,
+  "length": 37,
+  "sampler": "euler",
+  "scheduler": "simple",
+  "cfg": 4.5
+}
