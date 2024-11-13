@@ -1,0 +1,110 @@
+{
+  "main": [
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "placeholder": "Enter a prompt... ",
+      "display": true
+    },
+    {
+      "id": "negative_prompt",
+      "name": "Negative Prompt",
+      "type": "prompt_editor",
+      "display": true
+    },
+    {
+      "id": "steps",
+      "name": "Steps",
+      "type": "slider",
+      "default": 30,
+      "constraints": {
+        "min": 1,
+        "max": 40,
+        "step": 1
+      },
+      "display": true
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 848,
+      "constraints": {
+        "min": 240,
+        "max": 848,
+        "step": 12
+      },
+      "display": true
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 480,
+      "constraints": {
+        "min": 240,
+        "max": 848,
+        "step": 12
+      },
+      "display": true
+    },
+    {
+      "id": "length",
+      "name": "Length (Frames)",
+      "type": "slider",
+      "default": 37,
+      "constraints": {
+        "min": 7,
+        "max": 55,
+        "step": 6
+      },
+      "display": true
+    },
+    {
+      "id": "is_ping_pong",
+      "name": "Ping Pong?",
+      "type": "checkbox",
+      "default": false,
+      "display": true
+    },
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "euler",
+      "conf_file": "samplers.json",
+      "display": true
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "ddim_uniform",
+      "conf_file": "schedulers.json",
+      "display": true
+    }
+  ],
+  "advanced": [
+    {
+      "id": "cfg",
+      "name": "Guidance (CFG)",
+      "type": "slider",
+      "default": 4.5,
+      "constraints": {
+        "min": 0,
+        "max": 50,
+        "steps": 0.01
+      },
+      "display": true
+    },
+    {
+      "id": "frame_rate",
+      "name": "Frame Rate",
+      "type": "select",
+      "conf_file": "frame_rates.json",
+      "default": 24,
+      "display": true
+    }
+  ]
+}
