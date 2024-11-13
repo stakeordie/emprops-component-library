@@ -2,7 +2,7 @@ FROM pytorch/pytorch:latest
 
 # ARG DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
-RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 && apt-get clean
+RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron && apt-get clean
 
 ARG GITACCESSKEY
 

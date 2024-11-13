@@ -14,13 +14,13 @@ mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 
 pip install "numpy < 2"
 
-cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --highvram"
-
+cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py"
 
 git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
 cd ${ROOT}/comfy-middleware && pm2 start --name comfy-middleware "python main.py --port 3001"
 
-
 /etc/init.d/nginx start
+
+/scripts/cron.sh
 
 sleep infinity

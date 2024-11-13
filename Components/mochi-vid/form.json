@@ -102,8 +102,8 @@
       "id": "frame_rate",
       "name": "Frame Rate",
       "type": "select",
-      "default": 24,
       "conf_file": "frame_rates.json",
+      "default": "24",
       "display": true
     }
   ]

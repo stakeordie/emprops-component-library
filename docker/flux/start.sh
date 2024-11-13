@@ -12,12 +12,13 @@ mv ${ROOT}/nodes ${ROOT}/ComfyUI/custom_nodes
 
 /scripts/models.sh
 
-cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --port 3002"
+cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py"
 
 
 git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
 cd ${ROOT}/comfy-middleware && pm2 start --name comfy-middleware "python main.py --port 3001"
 
+/scripts/cron.sh
 
 /etc/init.d/nginx start
 

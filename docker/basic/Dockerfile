@@ -2,7 +2,7 @@ FROM pytorch/pytorch:latest
 
 # ARG DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
-RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 && apt-get clean
+RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron && apt-get clean
 
 ARG GITACCESSKEY
 
@@ -27,5 +27,7 @@ RUN /scripts/build.sh
 COPY ./models.sh /scripts/models.sh
 
 COPY ./start.sh /scripts/start.sh
+
+COPY ./cron.sh /scripts/cron.sh
 
 CMD  ["/scripts/start.sh"]

@@ -18,7 +18,8 @@ cd ${ROOT}/ComfyUI && pm2 start --name comfy "python main.py --highvram"
 git clone https://github.com/stakeordie/comfy-middleware.git ${ROOT}/comfy-middleware
 cd ${ROOT}/comfy-middleware && pm2 start --name comfy-middleware "python main.py --port 3001"
 
-
 /etc/init.d/nginx start
+
+/scripts/cron.sh
 
 sleep infinity
