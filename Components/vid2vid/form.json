@@ -18,13 +18,14 @@
       "id": "prompt",
       "name": "Prompt",
       "type": "prompt_editor",
-      "placeholder": "Enter a prompt... ",
+      "placeholder": "Enter a prompt...",
       "display": true
     },
     {
       "id": "negative_prompt",
       "name": "Negative Prompt",
       "type": "prompt_editor",
+      "placeholder": "Enter a negative prompt...",
       "display": true
     }
   ]

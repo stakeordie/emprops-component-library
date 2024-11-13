@@ -108,13 +108,6 @@ async function newComponent() {
 
   // Check if the component already exists
   const componentPath = path.join(componentsDir, componentData.name);
-  if (await fs.pathExists(componentPath)) {
-    console.error(
-      chalk.red(`Component "${componentData.name}" already exists!`)
-    );
-    return;
-  }
-
   const { error: createComponentError } = await fetchCreateComponent(
     config,
     componentData
@@ -126,16 +119,18 @@ async function newComponent() {
     return;
   }
 
-  await fs.ensureDir(componentPath);
-  await fs.mkdir(path.join(componentPath, "ref"));
-  await fs.writeFile(path.join(componentPath, "api.json"), "{}");
-  await fs.writeFile(path.join(componentPath, "form.json"), "{}");
-  await fs.writeFile(
-    path.join(componentPath, "credits.js"),
-    `function computeCredits(context) {
+  if (!(await fs.pathExists(componentPath))) {
+    await fs.ensureDir(componentPath);
+    await fs.mkdir(path.join(componentPath, "ref"));
+    await fs.writeFile(path.join(componentPath, "api.json"), "{}");
+    await fs.writeFile(path.join(componentPath, "form.json"), "{}");
+    await fs.writeFile(
+      path.join(componentPath, "credits.js"),
+      `function computeCredits(context) {
   return 1;
 }`
-  );
+    );
+  }
 
   console.log(
     chalk.green(`Component "${componentData.name}" added successfully!`)
