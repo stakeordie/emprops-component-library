@@ -26,4 +26,9 @@ cd ${ROOT}/comfy-middleware && pm2 start --name comfy-middleware "python main.py
 
 /scripts/cron.sh
 
+mv ${ROOT}/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json ${ROOT}/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json.back && jq --arg new_value "$(which ffmpeg)" '.ffmpeg_bin_path = $new_value' ${ROOT}/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json.back > ${ROOT}/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json;
+rm ${ROOT}/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json.back;
+
+pm2 restart 0;
+
 sleep infinity

@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:latest
+FROM pytorch/pytorch:latest AS base
 
 # ARG DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
@@ -18,6 +18,8 @@ COPY ./nodes.sh /scripts/nodes.sh
 RUN /scripts/nodes.sh
 
 RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_ed25519 && ssh-keyscan github.com > ~/.ssh/githubKey && ssh-keygen -lf ~/.ssh/githubKey && cat ~/.ssh/githubKey >> ~/.ssh/known_hosts
+
+FROM base AS base2
 
 RUN pip install opencv-python
 RUN pip install --pre onediff onediffx
