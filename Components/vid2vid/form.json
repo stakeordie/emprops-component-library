@@ -11,9 +11,7 @@
       "name": "Select Video",
       "type": "image_loader",
       "display": true
-    }
-  ],
-  "advanced": [
+    },
     {
       "id": "prompt",
       "name": "Prompt",
@@ -26,7 +24,11 @@
       "name": "Negative Prompt",
       "type": "prompt_editor",
       "placeholder": "Enter a negative prompt...",
+      "default": "test",
       "display": true
     }
-  ]
-}
+  ],
+    "advanced": [
+
+    ]
+  }

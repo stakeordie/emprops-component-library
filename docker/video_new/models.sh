@@ -64,3 +64,6 @@ cd ${ROOT}/models/animatediff_models && wget https://huggingface.co/hotshotco/Ho
 cd ${ROOT}/models/controlnet/SDXL/controlnet-depth-sdxl-1.0 && wget https://huggingface.co/xinsir/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors -O diffusion_pytorch_model.safetensors
 cd ${ROOT}/models/controlnet/SDXL/controlnet-canny-sdxl-1.0 && wget https://huggingface.co/xinsir/controlnet-canny-sdxl-1.0/resolve/main/diffusion_pytorch_model_V2.safetensors -O diffusion_pytorch_model_V2.safetensors
 cd ${ROOT}/models/ipadapter && wget https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors -O ip-adapter-plus_sdxl_vit-h.safetensors
+cd ${ROOT}/models/clip && wget https://huggingface.co/Comfy-Org/mochi_preview_repackaged/resolve/main/split_files/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors -O t5xxl_fp8_e4m3fn_scaled.safetensors
+cd ${ROOT}/models/vae && wget https://huggingface.co/Comfy-Org/mochi_preview_repackaged/resolve/main/split_files/vae/mochi_vae.safetensors -O mochi_vae.safetensors
+cd ${ROOT}/models/diffusion_models && wget https://huggingface.co/Comfy-Org/mochi_preview_repackaged/resolve/main/split_files/diffusion_models/mochi_preview_fp8_scaled.safetensors -O mochi_preview_fp8_scaled.safetensors
