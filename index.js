@@ -126,7 +126,7 @@ async function newComponent() {
     await fs.writeFile(path.join(componentPath, "form.json"), "{}");
     await fs.writeFile(
       path.join(componentPath, "credits.js"),
-      `function computeCredits(context) {
+      `function computeCost(context) {
   return 1;
 }`
     );
