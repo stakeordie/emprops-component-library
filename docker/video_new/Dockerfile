@@ -2,9 +2,10 @@ FROM pytorch/pytorch:latest
 
 # ARG DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
-RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron && apt-get clean
+RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron jq && apt-get clean
 
 ARG GITACCESSKEY
+ARG OPENAI_API_KEY
 
 RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo ${GITACCESSKEY} >> ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
 
@@ -12,7 +13,7 @@ ENV ROOT=/comfyui-launcher
 
 # COPY ./models.sh /scripts/models.sh
 # RUN /scripts/models.sh
-
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 COPY ./nodes.sh /scripts/nodes.sh
 RUN /scripts/nodes.sh
 
@@ -33,5 +34,7 @@ RUN /scripts/build.sh
 COPY ./models.sh /scripts/models.sh
 
 COPY ./start.sh /scripts/start.sh
+
+COPY ./cron.sh /scripts/cron.sh
 
 CMD  ["/scripts/start.sh"]

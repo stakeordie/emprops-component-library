@@ -4,7 +4,8 @@ ROOT=/comfyui-launcher
 
 mkdir -p ${ROOT}/nodes \
 
-cd ${ROOT}/nodes && git clone https://github.com/edenartlab/eden_comfy_pipelines.git && cd "$(basename "$_" .git)" &&  git reset --hard "95ce5d22cbc98de5c25205a1b4eee7fefcd00093" && pip install -r requirements.txt;
+cd ${ROOT}/nodes && git clone https://github.com/edenartlab/eden_comfy_pipelines.git && cd "$(basename "$_" .git)" &&  git reset --hard "95ce5d22cbc98de5c25205a1b4eee7fefcd00093" && pip install -r requirements.txt \
+&& echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> .env;
 cd ${ROOT}/nodes && git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes && cd "$(basename "$_" .git)" &&  git reset --hard "d0905bed31249f2bd0814c67585cf4fe3c77c015" && pip install -r requirements.txt;
 cd ${ROOT}/nodes && git clone https://github.com/drmbt/comfyui-dreambait-nodes && cd "$(basename "$_" .git)" &&  git reset --hard "1cf1e3648529a52d686c1b3f38f4e9924ab778e8" && pip install -r requirements.txt;
 cd ${ROOT}/nodes && git clone https://github.com/Fannovel16/ComfyUI-Frame-Interpolation && cd "$(basename "$_" .git)" &&  git reset --hard "483dfe64465369e077d351ed2f1acbf7dc046864" && pip install -r requirements.txt;
@@ -17,7 +18,8 @@ cd ${ROOT}/nodes && git clone https://github.com/Kosinkadink/ComfyUI-AnimateDiff
 cd ${ROOT}/nodes && git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite && cd "$(basename "$_" .git)" &&  git reset --hard "6bffe8b90f4464f76f1606bd93b94f1ac8d38041" && pip install -r requirements.txt;
 cd ${ROOT}/nodes && git clone https://github.com/SeargeDP/SeargeSDXL && cd "$(basename "$_" .git)" &&  git reset --hard "2eb5edbc712329d77d1a2f5f1e6c5e64397a4a83" && pip install -r requirements.txt;
 cd ${ROOT}/nodes && git clone https://github.com/Ttl/ComfyUi_NNLatentUpscale && cd "$(basename "$_" .git)" &&  git reset --hard "08105da31dbd7a54569661e135835e73bd8064b0" && pip install -r requirements.txt;
-cd ${ROOT}/nodes && git clone https://github.com/WASasquatch/was-node-suite-comfyui && cd "$(basename "$_" .git)" &&  git reset --hard "ee2e31a1e5fd85ad6f5c36831ffda6fea8f249c7" && pip install -r requirements.txt;
+cd ${ROOT}/nodes && git clone https://github.com/WASasquatch/was-node-suite-comfyui && cd "$(basename "$_" .git)" &&  git reset --hard "ee2e31a1e5fd85ad6f5c36831ffda6fea8f249c7" && pip install -r requirements.txt \
+&& mv was_suite_config.json was_suite_config.json.back && jq --arg new_value "$(which ffmpeg)" '.ffmpeg_bin_path = $new_value' was_suite_config.json.back > was_suite_config.json;
 cd ${ROOT}/nodes && git clone https://github.com/aiXander/ComfyUI-Manager.git && cd "$(basename "$_" .git)" &&  git reset --hard "0e3e2a65d8fef205ed12013b9ac227b5a8b24cf3" && pip install -r requirements.txt;
 cd ${ROOT}/nodes && git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus.git && cd "$(basename "$_" .git)" &&  git reset --hard "ce9b62165b89fbf8dd3be61057d62a5f8bc29e19" && pip install -r requirements.txt;
 cd ${ROOT}/nodes && git clone https://github.com/cubiq/ComfyUI_essentials && cd "$(basename "$_" .git)" &&  git reset --hard "ed443624baf4784cb8f4b7c8718c7698eef3fbf7" && pip install -r requirements.txt;
