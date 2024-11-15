@@ -25,21 +25,21 @@ ENV ROOT=/comfyui-launcher
 # COPY ./models.sh /scripts/models.sh
 # RUN /scripts/models.sh
 
-COPY ./nodes.sh /scripts/nodes.sh
-RUN /scripts/nodes.sh
+# COPY ./nodes.sh /scripts/nodes.sh
+# RUN /scripts/nodes.sh
 
 RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_ed25519 && ssh-keyscan github.com > ~/.ssh/githubKey && ssh-keygen -lf ~/.ssh/githubKey && cat ~/.ssh/githubKey >> ~/.ssh/known_hosts
 
 WORKDIR ${ROOT}
 
-COPY ./build.sh /scripts/build.sh
+# COPY ./build.sh /scripts/build.sh
 
-RUN /scripts/build.sh
+# RUN /scripts/build.sh
 
-COPY ./models.sh /scripts/models.sh
+# COPY ./models.sh /scripts/models.sh
 
-COPY ./start.sh /scripts/start.sh
+# COPY ./start.sh /scripts/start.sh
 
-COPY ./cron.sh /scripts/cron.sh
+# COPY ./cron.sh /scripts/cron.sh
 
 CMD  ["/scripts/start.sh"]
