@@ -1,0 +1,8 @@
+{
+  "controlnet_type": "cannyv2",
+  "image_a": "",
+  "image_b": "",
+  "image_c": "",
+  "prompt": "test",
+  "negative_prompt": "test"
+}

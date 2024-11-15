@@ -1,0 +1,49 @@
+{
+  "main": [
+    {
+      "id": "controlnet_type",
+      "name": "Controlnet Type",
+      "type": "select",
+      "default": "cannyv2",
+      "conf_file": "controlnet_types.json",
+      "display": true
+    },
+    {
+      "id": "image_a",
+      "name": "Select Image A",
+      "type": "image_loader",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "image_b",
+      "name": "Select Image B",
+      "type": "image_loader",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "image_c",
+      "name": "Select Image C",
+      "type": "image_loader",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "default": "",
+      "display": true
+    },
+    {
+      "id": "negative_prompt",
+      "name": "Negative Prompt",
+      "type": "prompt_editor",
+      "default": "",
+      "display": true
+    }
+  ],
+  "advanced": [
+  ]
+}

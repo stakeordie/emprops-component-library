@@ -1,0 +1,34 @@
+[
+  {
+    "name": "None",
+    "value": "none"
+  },
+  {
+    "name": "Canny V2",
+    "value": "cannyv2"
+  },
+  {
+    "name": "Canny",
+    "value": "canny"
+  },
+  {
+    "name": "Depth",
+    "value": "depth"
+  },
+  {
+    "name": "Scribble",
+    "value": "scribble"
+  },
+  {
+    "name": "Open Pose",
+    "value": "Pose"
+  },
+  {
+    "name": "Threshold",
+    "value": "threshold"
+  },
+  {
+    "name": "Line Art",
+    "value": "lineart"
+  }
+]
