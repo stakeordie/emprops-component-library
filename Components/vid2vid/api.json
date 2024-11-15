@@ -2,6 +2,7 @@
   "name": "vid-2-vid",
   "description": "Vid2Vid is a video-to-video synthesis method that generates realistic video sequences from a source video and a driving video. The method is based on conditional adversarial networks, where the generator is conditioned on both the source and driving videos, and the discriminator is conditioned on the source video. Vid2Vid can be used for tasks such as video inpainting, future video prediction, and video synthesis.",
   "server_id": "29eb91e6-3b8a-41c6-ae35-e8aa6212ff14",
+  "output_node_id": "378",
   "inputs": {
     "6": {
       "text": {

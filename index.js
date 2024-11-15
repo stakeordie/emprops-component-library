@@ -220,6 +220,7 @@ async function applyComponents(componentName) {
     inputs: api.inputs,
     workflow: api.workflow,
     credits_script: credits,
+    output_node_id: api.output_node_id || null,
   };
   const { error: updateError } = await fetchUpdateComponent(
     config,
