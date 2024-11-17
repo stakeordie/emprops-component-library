@@ -29,7 +29,7 @@
     },
     "class_type": "Eden_Bool",
     "_meta": {
-      "title": "Eden_Bool"
+      "title": "Use Original Aspect Ratio (If using original for Denoising)"
     }
   },
   "10": {
@@ -86,7 +86,7 @@
     },
     "class_type": "easy compare",
     "_meta": {
-      "title": "Compare"
+      "title": "Is the Metadata the same"
     }
   },
   "14": {
@@ -99,27 +99,27 @@
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
-      "title": "Display Any (rgthree)"
+      "title": "Is the Metadata the Same answer"
     }
   },
   "15": {
     "inputs": {
-      "image": "A_black_image.jpg",
+      "image": "remix_of_backdrop_generator-c1aba622-a89e-4b8f-b5e6-0551e96a2fc5-c1aba622-a89e-4b8f-b5e6-0551e96a2fc5.png",
       "upload": "image"
     },
     "class_type": "Load image with metadata [Crystools]",
     "_meta": {
-      "title": "🪛 Load image with metadata"
+      "title": "Who Knows (Metadata Validator Image)"
     }
   },
   "16": {
     "inputs": {
-      "image": "/root/input/d3a6268d00ccb34d57bdf7b9ffeef4b9e153758e10cc8662116d321d098a5714.jpeg",
+      "image": "import_drcrmo-1faf9803-2773-4f3a-a7bd-84185384df9e-1faf9803-2773-4f3a-a7bd-84185384df9e.png",
       "upload": "image"
     },
     "class_type": "Load image with metadata [Crystools]",
     "_meta": {
-      "title": "🪛 Load image with metadata"
+      "title": "Control Image (What Controlnet will use)"
     }
   },
   "20": {
@@ -150,7 +150,7 @@
   },
   "27": {
     "inputs": {
-      "seed": 321941657
+      "seed": 952640199062836
     },
     "class_type": "Seed",
     "_meta": {
@@ -179,7 +179,7 @@
     },
     "class_type": "Eden_String",
     "_meta": {
-      "title": "Eden_String"
+      "title": "Negative Prompt"
     }
   },
   "35": {
@@ -188,7 +188,7 @@
     },
     "class_type": "Eden_Bool",
     "_meta": {
-      "title": "Eden_Bool"
+      "title": "Use Style Image? (80% confidence)"
     }
   },
   "36": {
@@ -250,11 +250,11 @@
   },
   "59": {
     "inputs": {
-      "value": 0.6
+      "value": 0.2
     },
     "class_type": "Eden_Float",
     "_meta": {
-      "title": "Eden_Float"
+      "title": "IP ADAPTER WEIGHT"
     }
   },
   "60": {
@@ -266,7 +266,7 @@
     },
     "class_type": "WidthHeightPicker",
     "_meta": {
-      "title": "WidthHeightPicker"
+      "title": "Resize Dimensions"
     }
   },
   "61": {
@@ -283,7 +283,7 @@
     },
     "class_type": "ImpactMinMax",
     "_meta": {
-      "title": "ImpactMinMax"
+      "title": "Lesser of Height"
     }
   },
   "62": {
@@ -300,7 +300,7 @@
     },
     "class_type": "ImpactMinMax",
     "_meta": {
-      "title": "ImpactMinMax"
+      "title": "Lesser of Widht"
     }
   },
   "64": {
@@ -388,11 +388,11 @@
   },
   "96": {
     "inputs": {
-      "value": 0
+      "value": 1
     },
     "class_type": "Eden_Float",
     "_meta": {
-      "title": "Eden_Float"
+      "title": "Lora Strength + Prompt Merge Strenght"
     }
   },
   "125": {
@@ -420,18 +420,6 @@
     "class_type": "PrepImageForClipVision",
     "_meta": {
       "title": "Prep Image For ClipVision"
-    }
-  },
-  "133": {
-    "inputs": {
-      "images": [
-        "129",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
     }
   },
   "140": {
@@ -480,12 +468,12 @@
   },
   "145": {
     "inputs": {
-      "image": "/root/input/1e8e47d2e69cc9067fe0f5cd2509507ff1d6a1e94e0b43cc43b339f2ca4fdaa6.jpeg",
+      "image": "j1k6se3vjdrga0ck3wdvybknnr.jpg",
       "upload": "image"
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Load Image"
+      "title": "Style Image"
     }
   },
   "162": {
@@ -510,7 +498,7 @@
     },
     "class_type": "SDLoraLoader",
     "_meta": {
-      "title": "SD Lora Loader"
+      "title": "Lora Loader"
     }
   },
   "171": {
@@ -518,12 +506,12 @@
       "steps_total": 40,
       "refiner_step": 999,
       "cfg": 8,
-      "sampler_name": "euler",
-      "scheduler": "normal"
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "beta"
     },
     "class_type": "KSampler Config (rgthree)",
     "_meta": {
-      "title": "KSampler Config (rgthree)"
+      "title": "Steps, refiner steps. cfg, sampler, scheduler"
     }
   },
   "193": {
@@ -532,7 +520,7 @@
     },
     "class_type": "Eden_Bool",
     "_meta": {
-      "title": "Eden_Bool"
+      "title": "Use Style Prompt?"
     }
   },
   "198": {
@@ -541,16 +529,16 @@
     },
     "class_type": "Eden_Bool",
     "_meta": {
-      "title": "Eden_Bool"
+      "title": "Use Original Image for Denoising"
     }
   },
   "204": {
     "inputs": {
-      "value": 0
+      "value": 1
     },
     "class_type": "Eden_Float",
     "_meta": {
-      "title": "Eden_Float"
+      "title": "Lora Strength"
     }
   },
   "205": {
@@ -609,7 +597,7 @@
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
-      "title": "Display Any (rgthree)"
+      "title": "Height"
     }
   },
   "214": {
@@ -646,7 +634,7 @@
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
-      "title": "Display Any (rgthree)"
+      "title": "Lora Strength"
     }
   },
   "217": {
@@ -685,20 +673,26 @@
   },
   "219": {
     "inputs": {
-      "value": 1
+      "value": [
+        "417",
+        0
+      ]
     },
     "class_type": "Eden_Float",
     "_meta": {
-      "title": "Eden_Float"
+      "title": "Basic Denoising"
     }
   },
   "220": {
     "inputs": {
-      "value": 1
+      "value": [
+        "417",
+        0
+      ]
     },
     "class_type": "Eden_Float",
     "_meta": {
-      "title": "Eden_Float"
+      "title": "Denoising of Orignial"
     }
   },
   "221": {
@@ -747,7 +741,7 @@
     },
     "class_type": "SDAnyConverter",
     "_meta": {
-      "title": "SD Any Converter"
+      "title": "Denoise passthrough"
     }
   },
   "233": {
@@ -816,7 +810,7 @@
     },
     "class_type": "ConditioningAverage",
     "_meta": {
-      "title": "ConditioningAverage"
+      "title": "Merge Prompts"
     }
   },
   "241": {
@@ -828,7 +822,7 @@
     },
     "class_type": "Eden_String",
     "_meta": {
-      "title": "Eden_String"
+      "title": "Convert to String if not"
     }
   },
   "243": {
@@ -837,7 +831,7 @@
     },
     "class_type": "Eden_String",
     "_meta": {
-      "title": "Eden_String"
+      "title": "Secondary Prompt"
     }
   },
   "281": {
@@ -845,11 +839,12 @@
       "text": [
         "311",
         0
-      ]
+      ],
+      "text2": "preprocessor_canny"
     },
     "class_type": "ShowText|pysssss",
     "_meta": {
-      "title": "Show Text 🐍"
+      "title": "controlnet preview image filename"
     }
   },
   "282": {
@@ -869,11 +864,11 @@
     "inputs": {
       "menu": "none,cannyv2,canny,depth,scribble,pose,threshold,lineart",
       "delimiter": ",",
-      "select_item": "cannyv2"
+      "select_item": "canny"
     },
     "class_type": "DRMBT_String_Item_Menu",
     "_meta": {
-      "title": "String Item Menu"
+      "title": "Map - name to list number"
     }
   },
   "284": {
@@ -900,7 +895,7 @@
     "inputs": {
       "menu": "none,CannyEdgePreprocessor,CannyEdgePreprocessor,DepthAnythingV2Preprocessor,Scribble_PiDiNet_Preprocessor,OpenposePreprocessor,ScribblePreprocessor,LineartStandardPreprocessor",
       "delimiter": ",",
-      "select_item": "",
+      "select_item": "pose",
       "int_select": [
         "283",
         1
@@ -1058,11 +1053,12 @@
       "text": [
         "370",
         0
-      ]
+      ],
+      "text2": "needlefelted texture"
     },
     "class_type": "ShowText|pysssss",
     "_meta": {
-      "title": "Show Text 🐍"
+      "title": "Delimited Prompt"
     }
   },
   "311": {
@@ -1076,7 +1072,7 @@
     },
     "class_type": "TextPlusPlus",
     "_meta": {
-      "title": "Text ++"
+      "title": "Build up filename for controlnet preview"
     }
   },
   "318": {
@@ -1174,7 +1170,7 @@
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
-      "title": "🪛 Switch any"
+      "title": "Width Switch"
     }
   },
   "336": {
@@ -1194,16 +1190,16 @@
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
-      "title": "🪛 Switch any"
+      "title": "Height Switch"
     }
   },
   "337": {
     "inputs": {
-      "value": false
+      "value": true
     },
     "class_type": "Eden_Bool",
     "_meta": {
-      "title": "Eden_Bool"
+      "title": "Use Controlnet Image Size"
     }
   },
   "345": {
@@ -1290,7 +1286,7 @@
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
-      "title": "Display Any (rgthree)"
+      "title": "Lora Strength"
     }
   },
   "363": {
@@ -1323,7 +1319,7 @@
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
-      "title": "Display Any (rgthree)"
+      "title": "Height"
     }
   },
   "365": {
@@ -1336,7 +1332,7 @@
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
-      "title": "Display Any (rgthree)"
+      "title": "Height"
     }
   },
   "366": {
@@ -1353,12 +1349,12 @@
   },
   "370": {
     "inputs": {
-      "body": "A colorful pastel watercolor painting on heavy paper: a stone bridge spans a misty waterfall, with boulders and lush vegetation framing the scene. A lone traveler sits in the foreground, their bags nearby, as sunlight filters through the trees.",
-      "delimiter": " "
+      "body": "needlefelted texture",
+      "delimiter": ""
     },
     "class_type": "TextPlusPlus",
     "_meta": {
-      "title": "Text ++"
+      "title": "Delimited Prompt"
     }
   },
   "382": {
@@ -1494,7 +1490,7 @@
     },
     "class_type": "BoolPlusPlus",
     "_meta": {
-      "title": "BOOL ++"
+      "title": "1 or 0 Switch"
     }
   },
   "410": {
@@ -1503,7 +1499,7 @@
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
-      "title": "Load Checkpoint"
+      "title": "Base Model"
     }
   },
   "412": {
@@ -1530,6 +1526,15 @@
     "class_type": "SaveImage",
     "_meta": {
       "title": "Save Image"
+    }
+  },
+  "417": {
+    "inputs": {
+      "value": 0.85
+    },
+    "class_type": "easy float",
+    "_meta": {
+      "title": "SAndy Added this"
     }
   }
 }
