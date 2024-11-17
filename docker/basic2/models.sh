@@ -9,6 +9,11 @@ mkdir -p ${ROOT}/models/controlnet
 mkdir -p ${ROOT}/models/upscale_models
 mkdir -p ${ROOT}/models/loras
 mkdir -p ${ROOT}/models/ipadapter
+mkdir -p ${ROOT}/models/controlnet/controlnet-canny-sdxl-1.0
+mkdir -p ${ROOT}/models/controlnet/controlnet-depth-sdxl-1.0 
+mkdir -p ${ROOT}/models/controlnet/controlnet-scribble-sdxl-1.0
+mkdir -p ${ROOT}/models/controlnet/controlnet-openpose-sdxl-1.0
+mkdir -p ${ROOT}/models/controlnet/t2i-adapter-lineart-sdxl-1.0 
  
 cd ${ROOT}/models/checkpoints \
 && wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0_0.9vae.safetensors -O sd_xl_base_1.0_0.9vae.safetensors \
@@ -19,7 +24,8 @@ cd ${ROOT}/models/checkpoints \
 && wget https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/juggernaut_reborn.safetensors  -O juggernaut_reborn.safetensors \
 && wget https://huggingface.co/lllyasviel/fav_models/resolve/main/fav/realisticVisionV51_v51VAE.safetensors -O realisticVisionV51_v51VAE.safetensors \
 && wget 'https://civitai.com/api/download/models/429454?type=Model&format=SafeTensor&size=pruned&fp=fp16' -O epicphotogasm_v1.safetensors \
-&& wget https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0_fp16.safetensors -O sd_xl_turbo_1.0_fp16.safetensors;
+&& wget https://huggingface.co/stabilityai/sdxl-turbo/resolve/main/sd_xl_turbo_1.0_fp16.safetensors -O sd_xl_turbo_1.0_fp16.safetensors \
+&& wget https://edenartlab-lfs.s3.amazonaws.com/models/checkpoints/Eden_SDXL.safetensors -O Eden_SDXL.safetensors;
 
 cd ${ROOT}/models/upscale_models \
 && wget https://github.com/Phhofm/models/releases/download/4xNomosUniDAT_otf/4xNomosUniDAT_otf.safetensors -O 4xNomosUniDAT_otf.safetensors \
@@ -42,6 +48,13 @@ cd ${ROOT}/models/ipadapter && wget https://edenartlab-lfs.s3.amazonaws.com/comf
 && wget https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors \
 && wget https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors \
 && wget https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors;
+
+cd ${ROOT}/models/controlnet/controlnet-canny-sdxl-1.0 && wget https://huggingface.co/xinsir/controlnet-canny-sdxl-1.0/resolve/main/diffusion_pytorch_model_V2.safetensors -O diffusion_pytorch_model_V2.safetensors;
+cd ${ROOT}/models/controlnet/controlnet-depth-sdxl-1.0 && wget https://huggingface.co/xinsir/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors -O diffusion_pytorch_model.safetensors;
+cd ${ROOT}/models/controlnet/controlnet-scribble-sdxl-1.0  && wget https://huggingface.co/xinsir/controlnet-scribble-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors -O diffusion_pytorch_model.safetensors;
+cd ${ROOT}/models/controlnet/controlnet-openpose-sdxl-1.0  && wget https://huggingface.co/xinsir/controlnet-openpose-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors -O diffusion_pytorch_model.safetensors;
+cd ${ROOT}/models/controlnet/t2i-adapter-lineart-sdxl-1.0  && wget https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors -O diffusion_pytorch_model.safetensors;
+cd ${ROOT}/models/controlnet && wget https://huggingface.co/lllyasviel/sd_control_collection/resolve/d1b278d0d1103a3a7c4f7c2c327d236b082a75b1/diffusers_xl_canny_full.safetensors -O diffusers_xl_canny_full.safetensors;
 
 
 cd ${ROOT}/models/clip_vision && wget https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/clip_vision/CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors;
