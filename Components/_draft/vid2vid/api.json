@@ -15,7 +15,7 @@
     "main": [
       {
         "id": "image",
-        "name": "Select Image",
+        "name": "Image",
         "type": "image_loader",
         "display": true
       }

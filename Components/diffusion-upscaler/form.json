@@ -2,7 +2,7 @@
   "main": [
     {
       "id": "image",
-      "name": "Select Image",
+      "name": "Image",
       "type": "image_loader",
       "default": "",
       "display": true

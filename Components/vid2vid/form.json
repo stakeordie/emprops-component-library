@@ -2,13 +2,13 @@
   "main": [
     {
       "id": "image",
-      "name": "Select Image",
+      "name": "Image",
       "type": "image_loader",
       "display": true
     },
     {
       "id": "video",
-      "name": "Select Video",
+      "name": "Video",
       "type": "image_loader",
       "display": true
     },
