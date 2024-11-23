@@ -1,3 +1,3 @@
 function computeCost() {
-  return 1;
+  return { cost: 1 };
 }
