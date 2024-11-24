@@ -2,7 +2,7 @@ FROM pytorch/pytorch:latest
 
 # ARG DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
-RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron sudo && apt-get clean
+RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron sudo ssh && apt-get clean
 
 ARG GITACCESSKEY
 
@@ -11,7 +11,12 @@ RUN usermod -aG sudo ubuntu
 RUN mkdir -p /home/ubuntu/.ssh && touch /home/ubuntu/.ssh/authorized_keys
 RUN echo ${GITACCESSKEY} >> /home/ubuntu/.ssh/authorized_keys
 RUN chown -R ubuntu:ubuntu /home/ubuntu/.ssh
-RUN touch /etc/ssh/sshd_config.d/ubuntu.conf && echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config.d/ubuntu.conf && echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.d/ubuntu.conf
+
+RUN mkdir -p /etc/ssh/sshd_config.d
+RUN touch /etc/ssh/sshd_config.d/ubuntu.conf
+RUN echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config.d/ubuntu.conf
+RUN echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.d/ubuntu.conf
+
 RUN service ssh restart
 RUN sudo cp /etc/sudoers /etc/sudoers.bak
 RUN echo 'ubuntu ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers

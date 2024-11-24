@@ -41,4 +41,4 @@ cd ${ROOT}/nodes && git clone https://github.com/yolain/ComfyUI-Easy-Use.git && 
 cd ${ROOT}/nodes && git clone https://github.com/chflame163/ComfyUI_LayerStyle.git
 
 cd ${ROOT}/nodes && git clone https://github.com/kijai/ComfyUI-MochiWrapper.git && cd "$(basename "$_" .git)" && pip install -r requirements.txt;
-cd ${ROOT}/nodes && git clone https://github.com/logtd/ComfyUI-MochiEdit.git && cd "$(basename "$_" .git)"
+cd ${ROOT}/nodes && git clone https://github.com/logtd/ComfyUI-MochiEdit.git && cd "$(basename "$_" .git)" && pip install -r requirements.txt;

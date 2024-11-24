@@ -18,7 +18,8 @@
       "id": "use_style_image",
       "name": "Use Style Image",
       "type": "checkbox",
-      "default": false
+      "default": false,
+      "display": true
     },
     {
       "id": "style_image",
