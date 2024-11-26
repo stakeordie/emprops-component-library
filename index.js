@@ -5,9 +5,11 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
 import { input, select, number, expand } from "@inquirer/prompts";
+import crypto from 'crypto';
 
 const configPath = path.join(process.env.HOME, ".ecli", "config.json");
 const componentsDir = path.join(process.cwd(), "Components");
+const stateFilePath = path.join(componentsDir, ".ecli-state.json");
 
 // File path constants for the new architecture
 const getComponentPaths = (componentName) => ({
@@ -422,6 +424,154 @@ async function displayComponents(componentName) {
   }
 }
 
+async function calculateFileHash(filePath) {
+  try {
+    const content = await fs.readFile(filePath, 'utf8');
+    return crypto.createHash('sha256').update(content).digest('hex');
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getComponentHash(componentName) {
+  const paths = getComponentPaths(componentName);
+  const hashes = {
+    form: await calculateFileHash(paths.form),
+    inputs: await calculateFileHash(paths.inputs),
+    workflow: await calculateFileHash(paths.workflow),
+    test: await calculateFileHash(paths.test)
+  };
+  return hashes;
+}
+
+async function loadState() {
+  try {
+    if (await fs.pathExists(stateFilePath)) {
+      return await fs.readJson(stateFilePath);
+    }
+    return { components: {} };
+  } catch (error) {
+    console.error(chalk.yellow(`Warning: Could not load state file: ${error.message}`));
+    return { components: {} };
+  }
+}
+
+async function saveState(state) {
+  try {
+    await fs.writeJson(stateFilePath, state, { spaces: 2 });
+  } catch (error) {
+    console.error(chalk.yellow(`Warning: Could not save state file: ${error.message}`));
+  }
+}
+
+async function getValidComponents() {
+  try {
+    const items = await fs.readdir(componentsDir);
+    return items.filter(item => 
+      !item.startsWith('_') && 
+      item !== 'p52vid' && 
+      item !== '.ecli-state.json' &&
+      fs.statSync(path.join(componentsDir, item)).isDirectory()
+    );
+  } catch (error) {
+    console.error(chalk.red(`Error reading components directory: ${error.message}`));
+    return [];
+  }
+}
+
+async function hasComponentChanged(componentName, state) {
+  const currentHashes = await getComponentHash(componentName);
+  const storedState = state.components[componentName];
+  
+  if (!storedState) {
+    return true;
+  }
+
+  const storedHashes = storedState.fileHashes;
+  return Object.entries(currentHashes).some(([file, hash]) => 
+    hash !== storedHashes[file]
+  );
+}
+
+async function applyChangedComponents(options = { force: false, dryRun: false }) {
+  try {
+    const state = await loadState();
+    const components = await getValidComponents();
+    
+    if (components.length === 0) {
+      console.log(chalk.yellow('No valid components found.'));
+      return;
+    }
+
+    console.log(chalk.blue('Checking for changed components...'));
+    
+    const changedComponents = [];
+    for (const component of components) {
+      const changed = options.force || await hasComponentChanged(component, state);
+      if (changed) {
+        changedComponents.push(component);
+      }
+    }
+
+    if (changedComponents.length === 0) {
+      console.log(chalk.green('No components have changed.'));
+      return;
+    }
+
+    console.log(chalk.blue(`\nFound ${changedComponents.length} changed components:`));
+    changedComponents.forEach(component => 
+      console.log(chalk.cyan(`- ${component}`))
+    );
+
+    if (options.dryRun) {
+      console.log(chalk.yellow('\nDry run - no changes will be made.'));
+      return;
+    }
+
+    console.log(chalk.blue('\nApplying changes...'));
+    
+    const results = {
+      success: [],
+      failure: []
+    };
+
+    for (const component of changedComponents) {
+      try {
+        console.log(chalk.cyan(`\nApplying ${component}...`));
+        await applyComponents(component);
+        
+        // Update state after successful apply
+        state.components[component] = {
+          lastApplied: new Date().toISOString(),
+          fileHashes: await getComponentHash(component)
+        };
+        
+        results.success.push(component);
+        console.log(chalk.green(`✓ ${component} applied successfully`));
+      } catch (error) {
+        results.failure.push({ component, error: error.message });
+        console.log(chalk.red(`✗ Failed to apply ${component}: ${error.message}`));
+      }
+    }
+
+    // Save state only after all successful applications
+    await saveState(state);
+
+    // Print summary
+    console.log(chalk.blue('\nSummary:'));
+    console.log(chalk.green(`✓ Successfully applied: ${results.success.length}`));
+    if (results.failure.length > 0) {
+      console.log(chalk.red(`✗ Failed to apply: ${results.failure.length}`));
+      console.log(chalk.red('\nFailed components:'));
+      results.failure.forEach(({ component, error }) => 
+        console.log(chalk.red(`- ${component}: ${error}`))
+      );
+    }
+  } catch (error) {
+    console.error(chalk.red(`\nUnexpected error: ${error.message}`));
+  }
+}
+
 const program = new Command();
 
 program
@@ -450,6 +600,13 @@ componentsCommand
   .description("Apply component configuration from local files")
   .arguments("<n>")
   .action(applyComponents);
+
+componentsCommand
+  .command("apply-changed")
+  .description("Apply all components that have changed since last apply")
+  .option("-f, --force", "Force apply all components regardless of changes", false)
+  .option("-d, --dry-run", "Show what would be applied without making changes", false)
+  .action((options) => applyChangedComponents(options));
 
 componentsCommand
   .command("display")
