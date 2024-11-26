@@ -199,20 +199,20 @@ async function newComponent() {
           await fs.writeJson(paths.test, {}, { spaces: 2 });
           await fs.writeFile(
             paths.credits,
-            `function computeCost(context) {\n  return 1;\n}`
+            `function computeCost(context) {\n  return { cost: 1 };\n}`
           );
         } else if (componentData.type === "fetch_api") {
           // For fetch_api, only create workflow.json and credits.js
           await fs.writeJson(paths.workflow, {}, { spaces: 2 });
           await fs.writeFile(
             paths.credits,
-            `function computeCost(context) {\n  return 1;\n}`
+            `function computeCost(context) {\n  return { cost: 1 };\n}`
           );
         } else if (componentData.type === "basic") {
           // For basic, only create credits.js
           await fs.writeFile(
             paths.credits,
-            `function computeCost(context) {\n  return 1;\n}`
+            `function computeCost(context) {\n  return { cost: 1 };\n}`
           );
         }
         
@@ -725,8 +725,25 @@ async function updateComponent(componentName) {
         await fs.writeJson(paths.inputs, {}, { spaces: 2 });
         await fs.writeJson(paths.workflow, {}, { spaces: 2 });
         await fs.writeJson(paths.test, {}, { spaces: 2 });
+        if (!await fs.pathExists(paths.credits)) {
+          await fs.writeFile(
+            paths.credits,
+            `function computeCost(context) {\n  return { cost: 1 };\n}`
+          );
+        }
       } else if (updatedData.type === "fetch_api") {
         await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+        if (!await fs.pathExists(paths.credits)) {
+          await fs.writeFile(
+            paths.credits,
+            `function computeCost(context) {\n  return { cost: 1 };\n}`
+          );
+        }
+      } else if (!await fs.pathExists(paths.credits)) {
+        await fs.writeFile(
+          paths.credits,
+          `function computeCost(context) {\n  return { cost: 1 };\n}`
+        );
       }
     }
 
