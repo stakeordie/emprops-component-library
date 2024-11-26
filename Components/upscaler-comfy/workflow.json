@@ -1,14 +1,8 @@
 {
   "67": {
     "inputs": {
-      "upscale_model": [
-        "68",
-        0
-      ],
-      "image": [
-        "100",
-        0
-      ]
+      "upscale_model": ["68", 0],
+      "image": ["100", 0]
     },
     "class_type": "ImageUpscaleWithModel",
     "_meta": {
@@ -37,10 +31,7 @@
   "102": {
     "inputs": {
       "filename_prefix": "Upscaler",
-      "images": [
-        "104",
-        0
-      ]
+      "images": ["104", 0]
     },
     "class_type": "SaveImage",
     "_meta": {
@@ -51,10 +42,7 @@
     "inputs": {
       "upscale_method": "nearest-exact",
       "scale_by": 4,
-      "image": [
-        "67",
-        0
-      ]
+      "image": ["67", 0]
     },
     "class_type": "ImageScaleBy",
     "_meta": {

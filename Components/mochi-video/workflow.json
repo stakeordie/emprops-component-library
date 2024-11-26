@@ -7,22 +7,10 @@
       "sampler_name": "dpmpp_2m",
       "scheduler": "beta",
       "denoise": 1,
-      "model": [
-        "37",
-        0
-      ],
-      "positive": [
-        "6",
-        0
-      ],
-      "negative": [
-        "7",
-        0
-      ],
-      "latent_image": [
-        "21",
-        0
-      ]
+      "model": ["37", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["21", 0]
     },
     "class_type": "KSampler",
     "_meta": {
@@ -32,10 +20,7 @@
   "6": {
     "inputs": {
       "text": "a nuclear bomb explosion in a city urban night well lit zoom camera and track in building collapses",
-      "clip": [
-        "38",
-        0
-      ]
+      "clip": ["38", 0]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -45,10 +30,7 @@
   "7": {
     "inputs": {
       "text": "",
-      "clip": [
-        "38",
-        0
-      ]
+      "clip": ["38", 0]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -57,14 +39,8 @@
   },
   "8": {
     "inputs": {
-      "samples": [
-        "3",
-        0
-      ],
-      "vae": [
-        "39",
-        0
-      ]
+      "samples": ["3", 0],
+      "vae": ["39", 0]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -123,10 +99,7 @@
       "save_metadata": true,
       "pingpong": true,
       "save_output": true,
-      "images": [
-        "8",
-        0
-      ]
+      "images": ["8", 0]
     },
     "class_type": "VHS_VideoCombine",
     "_meta": {
