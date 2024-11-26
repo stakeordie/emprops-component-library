@@ -613,33 +613,166 @@ async function applyChangedComponents(options = { force: false, dryRun: false })
   }
 }
 
+async function updateComponent(componentName) {
+  try {
+    const config = await fs.readJson(configPath);
+
+    // Get current component data
+    const { data: component, error: componentError } = await fetchGetComponent(
+      config,
+      componentName
+    );
+    if (componentError) {
+      console.error(chalk.red(componentError));
+      return;
+    }
+
+    const { data: servers, error: fetchServersError } = await fetchGetServers(config);
+    if (fetchServersError) {
+      console.error(chalk.red(fetchServersError));
+      return;
+    }
+    
+    const serverChoices = servers
+      .map((server) => ({
+        name: server.name,
+        value: server.id,
+      }))
+      .concat({ name: "None", value: undefined });
+
+    let updatedData;
+    try {
+      updatedData = {
+        name: await input({
+          message: "Enter the new name of the component",
+          default: component.name,
+          required: true,
+        }),
+        label: await input({
+          message: "Enter the new label of the component",
+          default: component.label,
+          required: true,
+        }),
+        description: await input({
+          message: "Enter the new description of the component",
+          default: component.description,
+          required: true,
+        }),
+        server_id: await select({
+          message: "Select the new server",
+          choices: serverChoices,
+          default: component.server_id,
+        }),
+        output_mime_type: await input({
+          message: "Enter the new output mime type",
+          default: component.output_mime_type || "image/png",
+        }),
+        type: await select({
+          message: "Select the new type of the component",
+          choices: [
+            { title: "Basic", value: "basic" },
+            { title: "Comfy Workflow", value: "comfy_workflow" },
+            { title: "Fetch API", value: "fetch_api" },
+          ],
+          default: component.type,
+        }),
+        order: await number({
+          message: "Enter the new order of the component",
+          default: component.order || 0,
+        }),
+      };
+    } catch (error) {
+      return;
+    }
+
+    // If name changed, handle the directory rename
+    if (updatedData.name !== component.name) {
+      const oldPath = path.join(componentsDir, component.name);
+      const newPath = path.join(componentsDir, updatedData.name);
+      
+      if (await fs.pathExists(newPath)) {
+        console.error(chalk.red(`A component with the name "${updatedData.name}" already exists!`));
+        return;
+      }
+
+      try {
+        await fs.move(oldPath, newPath);
+      } catch (error) {
+        console.error(chalk.red(`Failed to rename component directory: ${error.message}`));
+        return;
+      }
+    }
+
+    // If type changed, handle the file structure changes
+    if (updatedData.type !== component.type) {
+      const componentPath = path.join(componentsDir, updatedData.name);
+      const paths = getComponentPaths(updatedData.name);
+
+      // Remove all existing files except credits.js which is common to all types
+      const files = await fs.readdir(componentPath);
+      for (const file of files) {
+        if (file !== 'credits.js' && file !== 'ref') {
+          await fs.remove(path.join(componentPath, file));
+        }
+      }
+
+      // Create new files based on the new type
+      if (updatedData.type === "comfy_workflow") {
+        if (!await fs.pathExists(path.join(componentPath, "ref"))) {
+          await fs.mkdir(path.join(componentPath, "ref"));
+        }
+        await fs.writeJson(paths.form, {}, { spaces: 2 });
+        await fs.writeJson(paths.inputs, {}, { spaces: 2 });
+        await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+        await fs.writeJson(paths.test, {}, { spaces: 2 });
+      } else if (updatedData.type === "fetch_api") {
+        await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+      }
+    }
+
+    // Update component in the API
+    const { error: updateError } = await fetchUpdateComponent(config, component.id, updatedData);
+    
+    if (updateError) {
+      console.error(chalk.red(`Failed to update component: ${updateError}`));
+      return;
+    }
+
+    console.log(chalk.green(`Component "${componentName}" updated successfully!`));
+  } catch (error) {
+    console.error(chalk.red(`Unexpected error: ${error.message}`));
+  }
+}
+
 const program = new Command();
 
 program
   .command("init")
-  .description("Initialize the configuration file")
+  .description("Initialize the CLI configuration")
   .action(initConfig);
 
 const componentsCommand = program
   .command("component")
-  .arguments("<n>")
   .description("Manage components");
 
 componentsCommand
   .command("new")
-  .description("Add a new component")
+  .description("Create a new component")
   .action(newComponent);
 
 componentsCommand
-  .command("remove")
+  .command("update <componentName>")
+  .description("Update component details (name, label, description, etc.)")
+  .action(updateComponent);
+
+componentsCommand
+  .command("remove <componentName>")
   .description("Remove a component")
-  .arguments("<n>")
   .action(removeComponent);
 
 componentsCommand
-  .command("apply")
+  .command("apply <componentName>")
   .description("Apply component configuration from local files")
-  .arguments("<n>")
   .action(applyComponents);
 
 componentsCommand
@@ -650,15 +783,13 @@ componentsCommand
   .action((options) => applyChangedComponents(options));
 
 componentsCommand
-  .command("display")
+  .command("display <componentName>")
   .description("Toggle component visibility")
-  .arguments("<n>")
   .action(displayComponents);
 
 componentsCommand
-  .command("get")
+  .command("get <componentName>")
   .description("Get component details")
-  .arguments("<n>")
   .option("-f, --form", "Get form configuration")
   .option("-i, --input", "Get inputs configuration")
   .option("-w, --workflow", "Get workflow configuration")
