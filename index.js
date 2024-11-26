@@ -157,6 +157,7 @@ async function newComponent() {
           choices: [
             { title: "Basic", value: "basic" },
             { title: "Comfy Workflow", value: "comfy_workflow" },
+            { title: "Fetch API", value: "fetch_api" },
           ],
         }),
         order: await number({
@@ -182,19 +183,32 @@ async function newComponent() {
       const paths = getComponentPaths(componentData.name);
       
       try {
-        // Create component directory and ref subdirectory
+        // Create component directory
         await fs.ensureDir(componentPath);
-        await fs.mkdir(path.join(componentPath, "ref"));
         
-        // Create all required files with empty objects/default content
-        await fs.writeJson(paths.form, {}, { spaces: 2 });
-        await fs.writeJson(paths.inputs, {}, { spaces: 2 });
-        await fs.writeJson(paths.workflow, {}, { spaces: 2 });
-        await fs.writeJson(paths.test, {}, { spaces: 2 });
-        await fs.writeFile(
-          paths.credits,
-          `function computeCost(context) {\n  return 1;\n}`
-        );
+        // Create ref directory only for comfy_workflow type
+        if (componentData.type === "comfy_workflow") {
+          await fs.mkdir(path.join(componentPath, "ref"));
+        }
+        
+        if (componentData.type === "fetch_api") {
+          // For fetch_api, only create workflow.json and credits.js
+          await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+          await fs.writeFile(
+            paths.credits,
+            `function computeCost(context) {\n  return 1;\n}`
+          );
+        } else {
+          // Create all required files with empty objects/default content
+          await fs.writeJson(paths.form, {}, { spaces: 2 });
+          await fs.writeJson(paths.inputs, {}, { spaces: 2 });
+          await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+          await fs.writeJson(paths.test, {}, { spaces: 2 });
+          await fs.writeFile(
+            paths.credits,
+            `function computeCost(context) {\n  return 1;\n}`
+          );
+        }
         
         console.log(chalk.green(`Component "${componentData.name}" added successfully!`));
       } catch (fsError) {
