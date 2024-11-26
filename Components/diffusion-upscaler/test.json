@@ -1,0 +1,15 @@
+{
+  "image": "https://cdn.emprops.ai/blog-posts/stadaii.png",
+  "seed": "21452451",
+  "prompt": "a dog in a car",
+  "negative_prompt": "",
+  "use_upscale": true,
+  "use_color_match": true,
+  "output_size": 2048,
+  "tile_size": 512,
+  "denoising": 0.35,
+  "controlnet_strength": 0.5,
+  "steps": 20,
+  "sampler": "dpmpp_2m",
+  "cfg": 8
+}

@@ -11,16 +11,10 @@
   },
   "30": {
     "inputs": {
-      "prompt": [
-        "209",
-        0
-      ],
+      "prompt": ["209", 0],
       "strength": 1,
       "force_offload": true,
-      "clip": [
-        "20",
-        0
-      ]
+      "clip": ["20", 0]
     },
     "class_type": "CogVideoTextEncode",
     "_meta": {
@@ -32,10 +26,7 @@
       "prompt": "The video is not of a high quality, it has a low resolution. Strange motion trajectory, a poor composition and deformed video, low resolution, duplicate and ugly, strange body structure, long and strange neck, bad teeth, bad eyes, bad limbs, bad hands, blurry camera, shaking camera. Deformation, low-resolution, blurry, ugly, distortion. Camera transitions, screen switching, perspective shifts. Static characters. Static scene. The characters don't move.",
       "strength": 1,
       "force_offload": true,
-      "clip": [
-        "20",
-        0
-      ]
+      "clip": ["20", 0]
     },
     "class_type": "CogVideoTextEncode",
     "_meta": {
@@ -54,10 +45,7 @@
   },
   "44": {
     "inputs": {
-      "frame_rate": [
-        "224",
-        1
-      ],
+      "frame_rate": ["224", 1],
       "loop_count": 0,
       "filename_prefix": "cog_img2video_",
       "format": "video/h265-mp4",
@@ -66,10 +54,7 @@
       "save_metadata": true,
       "pingpong": false,
       "save_output": true,
-      "images": [
-        "219",
-        0
-      ]
+      "images": ["219", 0]
     },
     "class_type": "VHS_VideoCombine",
     "_meta": {
@@ -83,28 +68,13 @@
       "num_frames": 49,
       "steps": 20,
       "cfg": 6,
-      "seed": [
-        "60",
-        0
-      ],
+      "seed": ["60", 0],
       "scheduler": "DPM++",
       "denoise_strength": 1,
-      "pipeline": [
-        "165",
-        0
-      ],
-      "positive": [
-        "30",
-        0
-      ],
-      "negative": [
-        "31",
-        0
-      ],
-      "image_cond_latents": [
-        "58",
-        0
-      ]
+      "pipeline": ["165", 0],
+      "positive": ["30", 0],
+      "negative": ["31", 0],
+      "image_cond_latents": ["58", 0]
     },
     "class_type": "CogVideoSampler",
     "_meta": {
@@ -115,14 +85,8 @@
     "inputs": {
       "chunk_size": 16,
       "enable_tiling": true,
-      "pipeline": [
-        "165",
-        0
-      ],
-      "image": [
-        "197",
-        0
-      ]
+      "pipeline": ["165", 0],
+      "image": ["197", 0]
     },
     "class_type": "CogVideoImageEncode",
     "_meta": {
@@ -144,10 +108,7 @@
       "target_height": 480,
       "feathering": 0,
       "upscale_method": "lanczos",
-      "image": [
-        "36",
-        0
-      ]
+      "image": ["36", 0]
     },
     "class_type": "ImagePadForOutpaintTargetSize",
     "_meta": {
@@ -174,14 +135,8 @@
       "tile_overlap_factor_height": 0.2,
       "tile_overlap_factor_width": 0.2,
       "auto_tile_size": true,
-      "pipeline": [
-        "57",
-        0
-      ],
-      "samples": [
-        "57",
-        1
-      ]
+      "pipeline": ["57", 0],
+      "samples": ["57", 1]
     },
     "class_type": "CogVideoDecode",
     "_meta": {
@@ -199,29 +154,17 @@
   },
   "147": {
     "inputs": {
-      "system_msg": [
-        "148",
-        0
-      ],
-      "prompt": [
-        "183",
-        2
-      ],
+      "system_msg": ["148", 0],
+      "prompt": ["183", 2],
       "max_tokens": 180,
-      "temperature": 0.7000000000000001,
+      "temperature": 0.7,
       "top_p": 0.95,
       "top_k": 40,
       "frequency_penalty": 0,
       "presence_penalty": 0,
       "repeat_penalty": 1.1,
-      "seed": [
-        "60",
-        0
-      ],
-      "model": [
-        "112",
-        0
-      ]
+      "seed": ["60", 0],
+      "model": ["112", 0]
     },
     "class_type": "LLMSampler",
     "_meta": {
@@ -239,10 +182,7 @@
   },
   "150": {
     "inputs": {
-      "text": [
-        "209",
-        0
-      ],
+      "text": ["209", 0],
       "text2": "A digital painting of a colorful abstract design. The abstract digital art piece starts to morph and change, with the pink jellyfish growing larger and more vibrant while its surrounding lines and dots begin to pulse and glow. Next, the two small white spheres start to move outward, extending and stretching like tendrils, as if reacting to the jellyfish's increased energy.assistant\n\nIn one short, direct and affirmative sentence, describe what is happening in the scene and what happens next.\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tentacle-like extensions stretch outwards, further energizing the artwork.assistant\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tentacle-like extensions stretch outwards, further energizing the artwork.assistant\n\nHere is the reformatted response:\n\nThe abstract digital art piece transforms as the jellyfish grows and pulses, and its tent"
     },
     "class_type": "ShowText|pysssss",
@@ -284,18 +224,9 @@
       "num_beams": 3,
       "do_sample": true,
       "output_mask_select": "",
-      "seed": [
-        "60",
-        0
-      ],
-      "image": [
-        "36",
-        0
-      ],
-      "florence2_model": [
-        "181",
-        0
-      ]
+      "seed": ["60", 0],
+      "image": ["36", 0],
+      "florence2_model": ["181", 0]
     },
     "class_type": "Florence2Run",
     "_meta": {
@@ -304,31 +235,16 @@
   },
   "186": {
     "inputs": {
-      "seed": [
-        "60",
-        0
-      ],
+      "seed": ["60", 0],
       "steps": 20,
       "cfg": 7,
       "sampler_name": "dpmpp_2m_sde_gpu",
       "scheduler": "karras",
       "denoise": 1,
-      "model": [
-        "187",
-        0
-      ],
-      "positive": [
-        "193",
-        0
-      ],
-      "negative": [
-        "193",
-        1
-      ],
-      "latent_image": [
-        "193",
-        2
-      ]
+      "model": ["187", 0],
+      "positive": ["193", 0],
+      "negative": ["193", 1],
+      "latent_image": ["193", 2]
     },
     "class_type": "KSampler",
     "_meta": {
@@ -347,10 +263,7 @@
   "188": {
     "inputs": {
       "text": "",
-      "clip": [
-        "187",
-        1
-      ]
+      "clip": ["187", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -360,10 +273,7 @@
   "189": {
     "inputs": {
       "text": "poorly Rendered face\npoorly drawn face\npoor facial details\npoorly drawn hands\npoorly rendered hands\nlow resolution\nImages cut out at the top, left, right, bottom.\nbad composition\nmutated body parts\nblurry image\ndisfigured\noversaturated\nbad anatomy\nbad quality\ndeformed body features\nwatermark",
-      "clip": [
-        "187",
-        1
-      ]
+      "clip": ["187", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -372,14 +282,8 @@
   },
   "190": {
     "inputs": {
-      "samples": [
-        "186",
-        0
-      ],
-      "vae": [
-        "187",
-        2
-      ]
+      "samples": ["186", 0],
+      "vae": ["187", 2]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -388,26 +292,11 @@
   },
   "193": {
     "inputs": {
-      "positive": [
-        "188",
-        0
-      ],
-      "negative": [
-        "189",
-        0
-      ],
-      "vae": [
-        "187",
-        2
-      ],
-      "pixels": [
-        "202",
-        0
-      ],
-      "mask": [
-        "66",
-        1
-      ]
+      "positive": ["188", 0],
+      "negative": ["189", 0],
+      "vae": ["187", 2],
+      "pixels": ["202", 0],
+      "mask": ["66", 1]
     },
     "class_type": "InpaintModelConditioning",
     "_meta": {
@@ -416,14 +305,8 @@
   },
   "197": {
     "inputs": {
-      "any_01": [
-        "190",
-        0
-      ],
-      "any_02": [
-        "66",
-        0
-      ]
+      "any_01": ["190", 0],
+      "any_02": ["66", 0]
     },
     "class_type": "Any Switch (rgthree)",
     "_meta": {
@@ -432,10 +315,7 @@
   },
   "198": {
     "inputs": {
-      "images": [
-        "190",
-        0
-      ]
+      "images": ["190", 0]
     },
     "class_type": "PreviewImage",
     "_meta": {
@@ -446,14 +326,8 @@
     "inputs": {
       "fill": "telea",
       "falloff": 0,
-      "image": [
-        "66",
-        0
-      ],
-      "mask": [
-        "66",
-        1
-      ]
+      "image": ["66", 0],
+      "mask": ["66", 1]
     },
     "class_type": "INPAINT_MaskedFill",
     "_meta": {
@@ -462,10 +336,7 @@
   },
   "206": {
     "inputs": {
-      "text": [
-        "183",
-        2
-      ],
+      "text": ["183", 2],
       "text2": "The image is an abstract digital art piece that appears to be made up of small squares and rectangles in various colors. The squares are arranged in a mosaic-like pattern, with some overlapping each other. The colors range from bright reds and oranges to muted greens and yellows, creating a vibrant and dynamic composition.\n\nIn the center of the image, there is a large pink jellyfish floating on top of a body of water. The jellyfish is surrounded by a network of white lines and dots, representing the interconnectedness of the universe. On the right side of the jellyfish, there are two small white spheres, which could represent the tentacles or tentacles that extend from the body. The background is a mix of gray and white, with hints of blue and pink, giving the image a dreamy and ethereal feel. The overall effect is one of depth and movement, with the colors blending together to create a sense of depth."
     },
     "class_type": "ShowText|pysssss",
@@ -483,18 +354,9 @@
       "num_beams": 3,
       "do_sample": true,
       "output_mask_select": "",
-      "seed": [
-        "60",
-        0
-      ],
-      "image": [
-        "36",
-        0
-      ],
-      "florence2_model": [
-        "181",
-        0
-      ]
+      "seed": ["60", 0],
+      "image": ["36", 0],
+      "florence2_model": ["181", 0]
     },
     "class_type": "Florence2Run",
     "_meta": {
@@ -503,14 +365,8 @@
   },
   "209": {
     "inputs": {
-      "Prepend": [
-        "214",
-        0
-      ],
-      "Append": [
-        "213",
-        0
-      ],
+      "Prepend": ["214", 0],
+      "Append": ["213", 0],
       "Delimiter": " "
     },
     "class_type": "DF_String_Concatenate",
@@ -520,14 +376,8 @@
   },
   "213": {
     "inputs": {
-      "any_01": [
-        "147",
-        0
-      ],
-      "any_02": [
-        "133",
-        0
-      ]
+      "any_01": ["147", 0],
+      "any_02": ["133", 0]
     },
     "class_type": "Any Switch (rgthree)",
     "_meta": {
@@ -536,14 +386,8 @@
   },
   "214": {
     "inputs": {
-      "any_01": [
-        "208",
-        2
-      ],
-      "any_02": [
-        "216",
-        0
-      ]
+      "any_01": ["208", 2],
+      "any_02": ["216", 0]
     },
     "class_type": "Any Switch (rgthree)",
     "_meta": {
@@ -563,17 +407,11 @@
     "inputs": {
       "ckpt_name": "rife49.pth",
       "clear_cache_after_n_frames": 20,
-      "multiplier": [
-        "222",
-        0
-      ],
+      "multiplier": ["222", 0],
       "fast_mode": true,
       "ensemble": true,
       "scale_factor": 1,
-      "frames": [
-        "128",
-        0
-      ]
+      "frames": ["128", 0]
     },
     "class_type": "RIFE VFI",
     "_meta": {
@@ -592,10 +430,7 @@
   "224": {
     "inputs": {
       "expression": "a * 8",
-      "a": [
-        "222",
-        0
-      ]
+      "a": ["222", 0]
     },
     "class_type": "MathExpression|pysssss",
     "_meta": {
@@ -604,10 +439,7 @@
   },
   "230": {
     "inputs": {
-      "images": [
-        "66",
-        0
-      ]
+      "images": ["66", 0]
     },
     "class_type": "Image Overlay",
     "_meta": {

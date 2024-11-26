@@ -1,0 +1,71 @@
+{
+  "3": {
+    "seed": {
+      "value": "seed",
+      "is_required": true
+    },
+    "steps": {
+      "value": "steps",
+      "is_required": false,
+      "default": 25
+    },
+    "cfg": {
+      "value": "cfg",
+      "is_required": false,
+      "default": 4.5
+    },
+    "sampler_name": {
+      "value": "sampler",
+      "is_required": false,
+      "default": "euler"
+    },
+    "scheduler": {
+      "value": "scheduler",
+      "is_required": false,
+      "default": "beta"
+    }
+  },
+  "6": {
+    "text": {
+      "value": "prompt",
+      "default": "",
+      "is_required": false
+    }
+  },
+  "7": {
+    "text": {
+      "value": "negative_prompt",
+      "is_required": false,
+      "default": ""
+    }
+  },
+  "21": {
+    "width": {
+      "value": "width",
+      "is_required": false,
+      "default": 848
+    },
+    "height": {
+      "value": "height",
+      "is_required": false,
+      "default": 480
+    },
+    "length": {
+      "value": "length",
+      "is_required": false,
+      "default": 37
+    }
+  },
+  "41": {
+    "pingpong": {
+      "value": "is_ping_pong",
+      "is_required": false,
+      "default": false
+    },
+    "frame_rate": {
+      "value": "frame_rate",
+      "is_required": false,
+      "default": "24"
+    }
+  }
+}

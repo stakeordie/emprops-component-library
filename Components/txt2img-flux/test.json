@@ -1,0 +1,9 @@
+{
+  "seed": "2145214451",
+  "prompt": "a dog in a car",
+  "steps": "10",
+  "width": "1024",
+  "height": "1024",
+  "sampler": "dpmpp_2m",
+  "scheduler": "beta"
+}

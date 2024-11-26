@@ -1,0 +1,6 @@
+{
+  "model": "4x-UltraSharp.pth",
+  "image": "/asets/stadaII.png",
+  "scale_by": 2,
+  "upscale_method": "nearest-exact"
+}

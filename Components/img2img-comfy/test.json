@@ -1,0 +1,14 @@
+{
+  "model": "Juggernaut-XI-byRunDiffusion.safetensors",
+  "seed": "2145214451",
+  "steps": "20",
+  "cfg": "7",
+  "sampler": "dpmpp_2m",
+  "scheduler": "ddim_uniform",
+  "denoising": "0.7",
+  "image": "/assets/stadaII.png",
+  "width": "1024",
+  "height": "1024",
+  "prompt": "a dog in a car",
+  "negative_prompt": ""
+}

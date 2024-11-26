@@ -1,0 +1,113 @@
+{
+  "1": {
+    "image": {
+      "value": "image",
+      "is_required": true
+    }
+  },
+  "2": {
+    "ckpt_name": {
+      "value": "model",
+      "is_required": false,
+      "default": "juggernaut_reborn.safetensors"
+    }
+  },
+  "5": {
+    "text": {
+      "value": "prompt",
+      "is_required": false,
+      "default": "masterpiece, best quality, highres"
+    }
+  },
+  "6": {
+    "text": {
+      "value": "negative_prompt",
+      "is_required": false,
+      "default": "(worst quality, low quality, normal quality:1.5)"
+    }
+  },
+  "18": {
+    "strength": {
+      "value": "controlnet_strength",
+      "is_required": false,
+      "default": 0.5
+    }
+  },
+  "20": {
+    "sampler_name": {
+      "value": "sampler",
+      "is_required": false,
+      "default": "dpmpp_3m_sde_gpu"
+    }
+  },
+  "21": {
+    "denoise": {
+      "value": "denoising",
+      "is_required": false,
+      "default": 0.35
+    },
+    "steps": {
+      "value": "steps",
+      "is_required": false,
+      "default": 20
+    }
+  },
+  "25": {
+    "noise_seed": {
+      "value": "seed",
+      "is_required": true
+    },
+    "cfg": {
+      "value": "cfg",
+      "is_required": false,
+      "default": 8
+    }
+  },
+  "86": {
+    "value": {
+      "value": "output_size",
+      "is_required": false,
+      "default": 2048
+    }
+  },
+  "99": {
+    "value": {
+      "value": "use_color_match",
+      "is_required": false,
+      "default": true
+    }
+  },
+  "101": {
+    "tile_size": {
+      "value": "tile_size",
+      "is_required": false,
+      "default": 768
+    }
+  },
+  "102": {
+    "tile_size": {
+      "value": "tile_size",
+      "is_required": false,
+      "default": 768
+    }
+  },
+  "104": {
+    "width": {
+      "value": "tile_size",
+      "is_required": false,
+      "default": 768
+    },
+    "height": {
+      "value": "tile_size",
+      "is_required": false,
+      "default": 768
+    }
+  },
+  "110": {
+    "value": {
+      "value": "use_upscale",
+      "is_required": false,
+      "default": true
+    }
+  }
+}
