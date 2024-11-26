@@ -1,0 +1,30 @@
+{
+  "6": {
+    "text": {
+      "value": "prompt",
+      "type": "prompt",
+      "is_required": true
+    }
+  },
+  "7": {
+    "text": {
+      "value": "negative_prompt",
+      "type": "prompt",
+      "is_required": true
+    }
+  },
+  "179": {
+    "video": {
+      "value": "video",
+      "type": "asset",
+      "is_required": true
+    }
+  },
+  "252": {
+    "image": {
+      "value": "image",
+      "type": "asset",
+      "is_required": true
+    }
+  }
+}

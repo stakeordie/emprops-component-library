@@ -1,0 +1,61 @@
+{
+  "16": {
+    "image": {
+      "value": "controlnet_image",
+      "type": "asset",
+      "required": true
+    }
+  },
+  "27": {
+    "seed": {
+      "value": "seed",
+      "required": true
+    }
+  },
+  "33": {
+    "value": {
+      "value": "negative_prompt",
+      "type": "prompt",
+      "default": "embedding:negativeXL_D, (worst quality, low quality, normal quality:1.5)",
+      "required": false
+    }
+  },
+  "35": {
+    "bool": {
+      "value": "use_style_image",
+      "type": "boolean",
+      "default": true,
+      "required": false
+    }
+  },
+  "145": {
+    "image": {
+      "value": "style_image",
+      "type": "asset",
+      "required": false
+    }
+  },
+  "283": {
+    "select_item": {
+      "value": "controlnet_type",
+      "type": "text",
+      "default": "cannyv2",
+      "required": false
+    }
+  },
+  "370": {
+    "body": {
+      "value": "prompt",
+      "type": "prompt",
+      "default": "",
+      "required": false
+    }
+  },
+  "417": {
+    "value": {
+      "value": "denoising",
+      "default": 0.5,
+      "required": false
+    }
+  }
+}

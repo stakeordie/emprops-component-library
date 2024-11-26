@@ -1,0 +1,11 @@
+{
+  "seed": "2145214451",
+  "prompt": "a dog in a car",
+  "image": "https://cdn.emprops.ai/blog-posts/stadaii.png",
+  "steps": "10",
+  "denoising": "1",
+  "sampler": "dpmpp_2m",
+  "scheduler": "beta",
+  "upscale_method": "lanczos",
+  "megapixels": "1"
+}

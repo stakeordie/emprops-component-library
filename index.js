@@ -9,331 +9,416 @@ import { input, select, number, expand } from "@inquirer/prompts";
 const configPath = path.join(process.env.HOME, ".ecli", "config.json");
 const componentsDir = path.join(process.cwd(), "Components");
 
+// File path constants for the new architecture
+const getComponentPaths = (componentName) => ({
+  form: path.join(componentsDir, componentName, "form.json"),
+  inputs: path.join(componentsDir, componentName, "inputs.json"),
+  workflow: path.join(componentsDir, componentName, "workflow.json"),
+  test: path.join(componentsDir, componentName, "test.json"),
+  credits: path.join(componentsDir, componentName, "credits.js"),
+});
+
 async function fetchGetComponent(config, name) {
-  const url = `${config.apiUrl}/workflows/name/${name}`;
-  return fetch(url).then((res) => res.json());
+  try {
+    const url = `${config.apiUrl}/workflows/name/${name}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // API already returns { data, error } structure
+  } catch (error) {
+    return { data: null, error: `Failed to fetch component: ${error.message}` };
+  }
 }
 
 async function fetchGetServers(config) {
-  const url = `${config.apiUrl}/servers`;
-  return fetch(url).then((res) => res.json());
+  try {
+    const url = `${config.apiUrl}/servers`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // API already returns { data, error } structure
+  } catch (error) {
+    return { data: null, error: `Failed to fetch servers: ${error.message}` };
+  }
 }
 
 async function fetchCreateComponent(config, data) {
-  const url = `${config.apiUrl}/workflows`;
-  return fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
+  try {
+    const url = `${config.apiUrl}/workflows`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // API already returns { data, error } structure
+  } catch (error) {
+    return { data: null, error: `Failed to create component: ${error.message}` };
+  }
 }
 
 async function fetchRemoveComponent(config, id) {
-  const url = `${config.apiUrl}/workflows/${id}`;
-  return fetch(url, {
-    method: "DELETE",
-  }).then((res) => res.json());
+  try {
+    const url = `${config.apiUrl}/workflows/${id}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // API already returns { data, error } structure
+  } catch (error) {
+    return { data: null, error: `Failed to remove component: ${error.message}` };
+  }
 }
 
 async function fetchUpdateComponent(config, id, data) {
-  const url = `${config.apiUrl}/workflows/${id}`;
-  return fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
+  try {
+    const url = `${config.apiUrl}/workflows/${id}`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json(); // API already returns { data, error } structure
+  } catch (error) {
+    return { data: null, error: `Failed to update component: ${error.message}` };
+  }
 }
 
 async function initConfig() {
-  const defaultConfig = {
-    apiUrl: "https://cycle-16-dev-api-openstudio.emprops.ai",
-  };
-  await fs.ensureDir(path.dirname(configPath));
-  await fs.writeJson(configPath, defaultConfig, { spaces: 2 });
-  console.log(chalk.green("Configuration file created successfully!"));
+  try {
+    const defaultConfig = {
+      apiUrl: "https://cycle-16-dev-api-openstudio.emprops.ai",
+    };
+    await fs.ensureDir(path.dirname(configPath));
+    await fs.writeJson(configPath, defaultConfig, { spaces: 2 });
+    console.log(chalk.green("Configuration file created successfully!"));
+  } catch (error) {
+    console.error(chalk.red(`Failed to initialize configuration: ${error.message}`));
+  }
 }
 
 async function newComponent() {
-  const config = await fs.readJson(configPath);
+  try {
+    const config = await fs.readJson(configPath);
 
-  const { data: servers, error: fetchServersError } =
-    await fetchGetServers(config);
-  if (fetchServersError != null) {
-    console.error(chalk.red(`Failed to fetch servers: ${fetchServersError}`));
-    return;
+    const { data: servers, error: fetchServersError } = await fetchGetServers(config);
+    if (fetchServersError) {
+      console.error(chalk.red(fetchServersError));
+      return;
+    }
+    
+    const serverChoices = servers
+      .map((server) => ({
+        name: server.name,
+        value: server.id,
+      }))
+      .concat({ name: "None", value: undefined });
+
+    let componentData;
+    try {
+      componentData = {
+        name: await input({
+          message: "Enter the name of the component",
+          required: true,
+        }),
+        label: await input({
+          message: "Enter the label of the component",
+          required: true,
+        }),
+        description: await input({
+          message: "Enter the description of the component",
+          required: true,
+        }),
+        server_id: await select({
+          message: "Select the server",
+          choices: serverChoices,
+        }),
+        output_mime_type: await input({
+          message: "Enter the output mime type",
+          initial: "image/png",
+        }),
+        type: await select({
+          message: "Select the type of the component",
+          choices: [
+            { title: "Basic", value: "basic" },
+            { title: "Comfy Workflow", value: "comfy_workflow" },
+          ],
+        }),
+        order: await number({
+          message: "Enter the order of the component",
+          default: 0,
+        }),
+        display: false,
+      };
+    } catch (error) {
+      return;
+    }
+
+    // Check if the component already exists
+    const componentPath = path.join(componentsDir, componentData.name);
+    const { error: componentCreationError } = await fetchCreateComponent(config, componentData);
+    
+    if (componentCreationError) {
+      console.error(chalk.red(componentCreationError));
+      return;
+    }
+
+    if (!(await fs.pathExists(componentPath))) {
+      const paths = getComponentPaths(componentData.name);
+      
+      try {
+        // Create component directory and ref subdirectory
+        await fs.ensureDir(componentPath);
+        await fs.mkdir(path.join(componentPath, "ref"));
+        
+        // Create all required files with empty objects/default content
+        await fs.writeJson(paths.form, {}, { spaces: 2 });
+        await fs.writeJson(paths.inputs, {}, { spaces: 2 });
+        await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+        await fs.writeJson(paths.test, {}, { spaces: 2 });
+        await fs.writeFile(
+          paths.credits,
+          `function computeCost(context) {\n  return 1;\n}`
+        );
+        
+        console.log(chalk.green(`Component "${componentData.name}" added successfully!`));
+      } catch (fsError) {
+        console.error(chalk.red(`Failed to create component files: ${fsError.message}`));
+        // Attempt to rollback the API creation
+        const { data: component } = await fetchGetComponent(config, componentData.name);
+        if (component?.id) {
+          await fetchRemoveComponent(config, component.id);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
-  const serverChoices = servers.map((server) => ({
-    name: server.name,
-    value: server.id,
-  }));
-
-  const componentData = {
-    name: await input({
-      message: "Enter the name of the component",
-      required: true,
-    }),
-    label: await input({
-      message: "Enter the label of the component",
-      required: true,
-    }),
-    description: await input({
-      message: "Enter the description of the component",
-      required: true,
-    }),
-    server_id: await select({
-      message: "Select the server",
-      choices: serverChoices,
-    }),
-    output_mime_type: await input({
-      message: "Enter the output mime type",
-      initial: "image/png",
-    }),
-    type: await select({
-      message: "Select the type of the component",
-      choices: [
-        { title: "Basic", value: "basic" },
-        { title: "Comfy Workflow", value: "comfy_workflow" },
-      ],
-    }),
-    order: await number({
-      message: "Enter the order of the component",
-      default: 0,
-    }),
-    display: false,
-  };
-
-  // Check if the component already exists
-  const componentPath = path.join(componentsDir, componentData.name);
-  const { error: createComponentError } = await fetchCreateComponent(
-    config,
-    componentData
-  );
-  if (createComponentError != null) {
-    console.createComponentError(
-      chalk.red(`Failed to create component: ${createComponentError}`)
-    );
-    return;
-  }
-
-  if (!(await fs.pathExists(componentPath))) {
-    await fs.ensureDir(componentPath);
-    await fs.mkdir(path.join(componentPath, "ref"));
-    await fs.writeFile(path.join(componentPath, "api.json"), "{}");
-    await fs.writeFile(path.join(componentPath, "form.json"), "{}");
-    await fs.writeFile(
-      path.join(componentPath, "credits.js"),
-      `function computeCost(context) {
-  return 1;
-}`
-    );
-  }
-
-  console.log(
-    chalk.green(`Component "${componentData.name}" added successfully!`)
-  );
 }
 
 async function removeComponent(componentName) {
-  const config = await fs.readJson(configPath);
-  const { data: component, error: getComponentError } = await fetchGetComponent(
-    config,
-    componentName
-  );
-  if (getComponentError != null) {
-    console.error(chalk.red(`Failed to fetch component: ${getComponentError}`));
-    return;
-  }
-  const { error: removeComponentError } = await fetchRemoveComponent(
-    config,
-    component.id
-  );
-  if (removeComponentError != null) {
-    console.error(
-      chalk.red(`Failed to remove component: ${removeComponentError}`)
+  try {
+    const config = await fs.readJson(configPath);
+    const { data: component, error: getComponentError } = await fetchGetComponent(
+      config,
+      componentName
     );
-    return;
+    if (getComponentError) {
+      console.error(chalk.red(getComponentError));
+      return;
+    }
+    const { error: removeComponentError } = await fetchRemoveComponent(
+      config,
+      component.id
+    );
+    if (removeComponentError) {
+      console.error(chalk.red(removeComponentError));
+      return;
+    }
+    
+    const componentPath = path.join(componentsDir, componentName);
+    if (!(await fs.pathExists(componentPath))) {
+      console.error(chalk.red(`Component "${componentName}" does not exist!`));
+      return;
+    }
+    
+    await fs.remove(componentPath);
+    console.log(chalk.green(`Component "${componentName}" removed successfully!`));
+  } catch (error) {
+    console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
-  const componentPath = path.join(componentsDir, componentName);
-  if (!(await fs.pathExists(componentPath))) {
-    console.error(chalk.red(`Component "${componentName}" does not exist!`));
-    return;
-  }
-  await fs.remove(componentPath);
-  console.log(
-    chalk.green(`Component "${componentName}" removed successfully!`)
-  );
 }
 
 async function applyComponents(componentName) {
-  const config = await fs.readJson(configPath);
+  try {
+    const config = await fs.readJson(configPath);
+    const paths = getComponentPaths(componentName);
 
-  const { data: component, error: componentError } = await fetchGetComponent(
-    config,
-    componentName
-  );
-  if (componentError != null) {
-    console.error(chalk.red(`Failed to fetch component: ${componentError}`));
-    return;
-  }
-
-  if (!(await fs.pathExists(configPath))) {
-    console.error(
-      chalk.red("Configuration file not found! Please run `ecli init` first.")
+    const { data: component, error: componentError } = await fetchGetComponent(
+      config,
+      componentName
     );
-    return;
-  }
-
-  const formsFilePath = path.join(componentsDir, componentName, "form.json");
-  const apiFilePath = path.join(componentsDir, componentName, "api.json");
-  const creditsFilePath = path.join(componentsDir, componentName, "credits.js");
-
-  if (!(await fs.pathExists(formsFilePath))) {
-    console.error(
-      chalk.red(`Forms file not found for component "${componentName}"!`)
-    );
-    return;
-  }
-
-  if (!(await fs.pathExists(apiFilePath))) {
-    console.error(
-      chalk.red(`API file not found for component "${componentName}"!`)
-    );
-    return;
-  }
-
-  const form = await fs.readJson(formsFilePath);
-  const api = await fs.readJson(apiFilePath);
-
-  let credits;
-  if (await fs.pathExists(creditsFilePath)) {
-    credits = fs.readFileSync(creditsFilePath, "utf8");
-  }
-
-  console.log(chalk.green(`Applying component "${componentName}"...`));
-
-  const data = {
-    form,
-    inputs: api.inputs,
-    workflow: api.workflow,
-    credits_script: credits,
-    output_node_id: api.output_node_id || null,
-  };
-  const { error: updateError } = await fetchUpdateComponent(
-    config,
-    component.id,
-    {
-      data,
+    if (componentError) {
+      console.error(chalk.red(componentError));
+      return;
     }
-  );
 
-  if (updateError != null) {
-    console.error(chalk.red(`Failed to update component "${componentName}"!`));
-    return;
+    // Check for required files
+    const requiredFiles = [
+      { path: paths.form, name: "Forms" },
+      { path: paths.inputs, name: "Inputs" },
+      { path: paths.workflow, name: "Workflow" }
+    ];
+
+    for (const file of requiredFiles) {
+      if (!(await fs.pathExists(file.path))) {
+        console.error(chalk.red(`${file.name} file not found for component "${componentName}"!`));
+        return;
+      }
+    }
+
+    // Read all component files
+    const form = await fs.readJson(paths.form);
+    const inputs = await fs.readJson(paths.inputs);
+    const workflow = await fs.readJson(paths.workflow);
+    let test = {};
+    let credits;
+
+    // Optional files
+    if (await fs.pathExists(paths.test)) {
+      test = await fs.readJson(paths.test);
+    }
+    if (await fs.pathExists(paths.credits)) {
+      credits = await fs.readFile(paths.credits, "utf8");
+    }
+
+    console.log(chalk.green(`Applying component "${componentName}"...`));
+
+    const data = {
+      form,
+      inputs,
+      workflow,
+      test,
+      credits_script: credits,
+      output_node_id: workflow.output_node_id || null,
+    };
+
+    const { error: updateError } = await fetchUpdateComponent(config, component.id, {
+      data,
+    });
+
+    if (updateError) {
+      console.error(chalk.red(`Failed to update component: ${updateError}`));
+      return;
+    }
+
+    console.log(chalk.green(`Component "${componentName}" applied successfully!`));
+  } catch (error) {
+    console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
-
-  console.log(
-    chalk.green(`Component "${componentName}" applied successfully!`)
-  );
 }
 
 async function getComponent(componentName, options) {
-  console.log(`Getting details of component "${componentName}"...`);
-  const config = await fs.readJson(configPath);
-  const { data: component, error } = await fetchGetComponent(
-    config,
-    componentName
-  );
-  if (error != null) {
-    console.error(chalk.red(`Failed to fetch component: ${error}`));
-    return;
-  }
-  if (options.form) {
-    console.log(
-      chalk.magentaBright(
-        JSON.stringify(component.data.form || "Not Found", null, 2)
-      )
-    );
-  } else if (options.input) {
-    console.log(
-      chalk.magentaBright(
-        JSON.stringify(component.data.inputs || "Not Found", null, 2)
-      )
-    );
-  } else if (options.workflow) {
-    console.log(
-      chalk.magentaBright(
-        JSON.stringify(component.data.workflow || "Not Found", null, 2)
-      )
-    );
-  } else if (options.credits) {
-    console.log(chalk.magenta(component.data.credits_script || "Not Found"));
-  } else {
-    console.log(JSON.stringify(component, null, 2));
+  try {
+    console.log(`Getting details of component "${componentName}"...`);
+    const config = await fs.readJson(configPath);
+    const paths = getComponentPaths(componentName);
+
+    if (options.form) {
+      if (await fs.pathExists(paths.form)) {
+        const form = await fs.readJson(paths.form);
+        console.log(chalk.magentaBright(JSON.stringify(form, null, 2)));
+      } else {
+        console.log(chalk.yellow("Form not found"));
+      }
+    } else if (options.input) {
+      if (await fs.pathExists(paths.inputs)) {
+        const inputs = await fs.readJson(paths.inputs);
+        console.log(chalk.magentaBright(JSON.stringify(inputs, null, 2)));
+      } else {
+        console.log(chalk.yellow("Inputs not found"));
+      }
+    } else if (options.workflow) {
+      if (await fs.pathExists(paths.workflow)) {
+        const workflow = await fs.readJson(paths.workflow);
+        console.log(chalk.magentaBright(JSON.stringify(workflow, null, 2)));
+      } else {
+        console.log(chalk.yellow("Workflow not found"));
+      }
+    } else if (options.credits) {
+      if (await fs.pathExists(paths.credits)) {
+        const credits = await fs.readFile(paths.credits, "utf8");
+        console.log(chalk.magenta(credits));
+      } else {
+        console.log(chalk.yellow("Credits not found"));
+      }
+    } else {
+      // Fetch and display all component data
+      const { data: component, error } = await fetchGetComponent(config, componentName);
+      if (error) {
+        console.error(chalk.red(error));
+        return;
+      }
+      console.log(JSON.stringify(component, null, 2));
+    }
+  } catch (error) {
+    console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
 }
 
 async function displayComponents(componentName) {
-  const config = await fs.readJson(configPath);
-  const { data: components, error: getComponentError } =
-    await fetchGetComponent(config, componentName);
-  if (getComponentError != null) {
-    console.error(
-      chalk.red(`Failed to fetch components: ${getComponentError}`)
-    );
-    return;
-  }
-
-  const answer = await expand({
-    message: `Do you want to display/hide the ${componentName}?`,
-    default: "n",
-    choices: [
-      {
-        key: "y",
-        name: "Display",
-        value: "yes",
-      },
-      {
-        key: "n",
-        name: "Hide",
-        value: "no",
-      },
-      {
-        key: "x",
-        name: "Abort",
-        value: "abort",
-      },
-    ],
-  });
-
-  switch (answer) {
-    case "yes": {
-      const { error } = await fetchUpdateComponent(config, components.id, {
-        display: true,
-      });
-      if (error != null) {
-        console.error(chalk.red(`Failed to update component: ${error}`));
-        return;
-      }
-      console.log(chalk.green("Component displayed successfully!"));
-      break;
+  try {
+    const config = await fs.readJson(configPath);
+    const { data: components, error: getComponentError } =
+      await fetchGetComponent(config, componentName);
+    if (getComponentError) {
+      console.error(chalk.red(getComponentError));
+      return;
     }
-    case "no": {
-      const { error } = await fetchUpdateComponent(config, components.id, {
-        display: false,
-      });
-      if (error != null) {
-        console.error(chalk.red(`Failed to update component: ${error}`));
-        return;
+
+    const answer = await expand({
+      message: `Do you want to display/hide the ${componentName}?`,
+      default: "n",
+      choices: [
+        {
+          key: "y",
+          name: "Display",
+          value: "yes",
+        },
+        {
+          key: "n",
+          name: "Hide",
+          value: "no",
+        },
+        {
+          key: "x",
+          name: "Abort",
+          value: "abort",
+        },
+      ],
+    });
+
+    switch (answer) {
+      case "yes": {
+        const { error } = await fetchUpdateComponent(config, components.id, {
+          display: true,
+        });
+        if (error) {
+          console.error(chalk.red(`Failed to update component: ${error}`));
+          return;
+        }
+        console.log(chalk.green("Component displayed successfully!"));
+        break;
       }
-      console.log(chalk.green("Component hidden successfully!"));
-      break;
+      case "no": {
+        const { error } = await fetchUpdateComponent(config, components.id, {
+          display: false,
+        });
+        if (error) {
+          console.error(chalk.red(`Failed to update component: ${error}`));
+          return;
+        }
+        console.log(chalk.green("Component hidden successfully!"));
+        break;
+      }
+      case "abort":
+        break;
     }
-    case "abort":
-      break;
+  } catch (error) {
+    console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
 }
 
@@ -346,7 +431,7 @@ program
 
 const componentsCommand = program
   .command("component")
-  .arguments("<name>")
+  .arguments("<n>")
   .description("Manage components");
 
 componentsCommand
@@ -357,29 +442,29 @@ componentsCommand
 componentsCommand
   .command("remove")
   .description("Remove a component")
-  .arguments("<name>")
+  .arguments("<n>")
   .action(removeComponent);
 
 componentsCommand
   .command("apply")
-  .description("Apply the components")
-  .arguments("<name>")
+  .description("Apply component configuration from local files")
+  .arguments("<n>")
   .action(applyComponents);
 
 componentsCommand
   .command("display")
-  .description("Display the components")
-  .arguments("<name>")
+  .description("Toggle component visibility")
+  .arguments("<n>")
   .action(displayComponents);
 
 componentsCommand
   .command("get")
-  .description("Get details of a component")
-  .arguments("<name>")
-  .option("-f, --form", "Get form of the component")
-  .option("-i, --input", "Get form of the component")
-  .option("-w, --workflow", "Get API of the component")
-  .option("-c, --credits", "Get credits of the component")
+  .description("Get component details")
+  .arguments("<n>")
+  .option("-f, --form", "Get form configuration")
+  .option("-i, --input", "Get inputs configuration")
+  .option("-w, --workflow", "Get workflow configuration")
+  .option("-c, --credits", "Get credits script")
   .action(getComponent);
 
 program.parse(process.argv);

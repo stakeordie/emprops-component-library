@@ -1,0 +1,46 @@
+{
+  "5": {
+    "width": {
+      "value": "width",
+      "is_required": false,
+      "default": 1024
+    },
+    "height": {
+      "value": "height",
+      "is_required": false,
+      "default": 1024
+    }
+  },
+  "6": {
+    "text": {
+      "value": "prompt",
+      "default": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque background",
+      "is_required": false
+    }
+  },
+  "28:0": {
+    "noise_seed": {
+      "value": "seed",
+      "is_required": true
+    }
+  },
+  "28:1": {
+    "sampler_name": {
+      "value": "sampler",
+      "is_required": false,
+      "default": "dpmpp_2m"
+    }
+  },
+  "28:2": {
+    "steps": {
+      "value": "steps",
+      "is_required": false,
+      "default": 8
+    },
+    "scheduler": {
+      "value": "scheduler",
+      "is_required": false,
+      "default": "beta"
+    }
+  }
+}
