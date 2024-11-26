@@ -191,19 +191,25 @@ async function newComponent() {
           await fs.mkdir(path.join(componentPath, "ref"));
         }
         
-        if (componentData.type === "fetch_api") {
+        if (componentData.type === "comfy_workflow") {
+          // Create all required files with empty objects/default content
+          await fs.writeJson(paths.form, {}, { spaces: 2 });
+          await fs.writeJson(paths.inputs, {}, { spaces: 2 });
+          await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+          await fs.writeJson(paths.test, {}, { spaces: 2 });
+          await fs.writeFile(
+            paths.credits,
+            `function computeCost(context) {\n  return 1;\n}`
+          );
+        } else if (componentData.type === "fetch_api") {
           // For fetch_api, only create workflow.json and credits.js
           await fs.writeJson(paths.workflow, {}, { spaces: 2 });
           await fs.writeFile(
             paths.credits,
             `function computeCost(context) {\n  return 1;\n}`
           );
-        } else {
-          // Create all required files with empty objects/default content
-          await fs.writeJson(paths.form, {}, { spaces: 2 });
-          await fs.writeJson(paths.inputs, {}, { spaces: 2 });
-          await fs.writeJson(paths.workflow, {}, { spaces: 2 });
-          await fs.writeJson(paths.test, {}, { spaces: 2 });
+        } else if (componentData.type === "basic") {
+          // For basic, only create credits.js
           await fs.writeFile(
             paths.credits,
             `function computeCost(context) {\n  return 1;\n}`
@@ -272,12 +278,26 @@ async function applyComponents(componentName) {
       return;
     }
 
-    // Check for required files
-    const requiredFiles = [
-      { path: paths.form, name: "Forms" },
-      { path: paths.inputs, name: "Inputs" },
-      { path: paths.workflow, name: "Workflow" }
-    ];
+    // Check for required files based on component type
+    let requiredFiles = [];
+    
+    if (component.type === "fetch_api") {
+      requiredFiles = [
+        { path: paths.workflow, name: "Workflow" },
+        { path: paths.credits, name: "Credits" }
+      ];
+    } else if (component.type === "basic") {
+      requiredFiles = [
+        { path: paths.credits, name: "Credits" }
+      ];
+    } else if (component.type === "comfy_workflow") {
+      requiredFiles = [
+        { path: paths.form, name: "Forms" },
+        { path: paths.inputs, name: "Inputs" },
+        { path: paths.workflow, name: "Workflow" },
+        { path: paths.credits, name: "Credits" }
+      ];
+    }
 
     for (const file of requiredFiles) {
       if (!(await fs.pathExists(file.path))) {
@@ -286,18 +306,25 @@ async function applyComponents(componentName) {
       }
     }
 
-    // Read all component files
-    const form = await fs.readJson(paths.form);
-    const inputs = await fs.readJson(paths.inputs);
-    const workflow = await fs.readJson(paths.workflow);
+    // Read files based on component type
+    let form = {};
+    let inputs = {};
+    let workflow = {};
     let test = {};
     let credits;
 
-    // Optional files
-    if (await fs.pathExists(paths.test)) {
-      test = await fs.readJson(paths.test);
-    }
-    if (await fs.pathExists(paths.credits)) {
+    if (component.type === "comfy_workflow") {
+      form = await fs.readJson(paths.form);
+      inputs = await fs.readJson(paths.inputs);
+      workflow = await fs.readJson(paths.workflow);
+      if (await fs.pathExists(paths.test)) {
+        test = await fs.readJson(paths.test);
+      }
+      credits = await fs.readFile(paths.credits, "utf8");
+    } else if (component.type === "fetch_api") {
+      workflow = await fs.readJson(paths.workflow);
+      credits = await fs.readFile(paths.credits, "utf8");
+    } else if (component.type === "basic") {
       credits = await fs.readFile(paths.credits, "utf8");
     }
 
