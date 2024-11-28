@@ -1,62 +1,62 @@
 [
   {
-    "name": "DDIM",
-    "value": "ddim"
+    "name": "ddim",
+    "value": "DDIM"
   },
   {
-    "name": "DDPM",
-    "value": "ddpm"
+    "name": "ddpm",
+    "value": "DDPM"
   },
   {
-    "name": "DEIS",
-    "value": "deis"
+    "name": "deis",
+    "value": "DEIS"
   },
   {
-    "name": "DPM2M",
-    "value": "dpm2m"
+    "name": "dpm2m",
+    "value": "DPM2M"
   },
   {
-    "name": "DPMSDE",
-    "value": "dpmsde"
+    "name": "dpmsde",
+    "value": "DPMSDE"
   },
   {
-    "name": "DPM2SA",
-    "value": "dpm2sa"
+    "name": "dpm2sa",
+    "value": "DPM2SA"
   },
   {
-    "name": "EulerA",
-    "value": "eulera"
+    "name": "eulera",
+    "value": "EulerA"
   },
   {
-    "name": "Euler",
-    "value": "euler"
+    "name": "euler",
+    "value": "Euler"
   },
   {
-    "name": "Heun",
-    "value": "heun"
+    "name": "heun",
+    "value": "Heun"
   },
   {
-    "name": "DPM2Karras",
-    "value": "dpm2karras"
+    "name": "dpm2karras",
+    "value": "DPM2Karras"
   },
   {
-    "name": "DPM2AKarras",
-    "value": "dpm2akarras"
+    "name": "dpm2akarras",
+    "value": "DPM2AKarras"
   },
   {
-    "name": "DPM2MKarras",
-    "value": "dpm2mkarras"
+    "name": "dpm2mkarras",
+    "value": "DPM2MKarras"
   },
   {
-    "name": "LCM",
-    "value": "lcm"
+    "name": "lcm",
+    "value": "LCM"
   },
   {
-    "name": "LMS",
-    "value": "lms"
+    "name": "lms",
+    "value": "LMS"
   },
   {
-    "name": "UniPC",
-    "value": "unipc"
+    "name": "unipc",
+    "value": "UniPC"
   }
 ]
