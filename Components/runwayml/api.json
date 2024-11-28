@@ -1,0 +1,25 @@
+{
+  "url": "https://api.dev.runwayml.com/v1/image_to_video",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {{RUNWAYML_API_SECRET}}",
+    "X-Runway-Version": "2024-11-06"
+  },
+  "fetchType": "polling",
+  "polling": {
+    "method": "GET",
+    "url": "https://api.dev.runwayml.com/v1/tasks/{id}",
+    "params": {
+      "id": {
+        "exprJq": ".id"
+      }
+    },
+    "continueWhenExpr": "data.status != 'SUCCEEDED'",
+    "stopWhenExpr": "data.status == 'FAILED'",
+    "outputExprJq": ".output[0]",
+    "successResponseCode": 200,
+    "timeout": 10000
+  },
+  "successResponseCode": 200
+}

@@ -1,0 +1,22 @@
+{
+  "callbacks": [],
+  "steps": [
+    {
+      "$type": "textToImage",
+      "input": {
+        "model": "urn:air:sdxl:checkpoint:civitai:101055@128078",
+        "prompt": "a cat dreaming about being an astronaut, manga drawing",
+        "negativePrompt": "nsfw, nude",
+        "scheduler": "EulerA",
+        "steps": 10,
+        "cfgScale": 7,
+        "width": 1024,
+        "height": 1024,
+        "clipSkip": 2,
+        "quantity": 1,
+        "batchSize": 1,
+        "seed": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "promptImage": "http://example.com",
+  "seed": 4294967295,
+  "model": "gen3a_turbo",
+  "promptText": "string",
+  "watermark": false,
+  "duration": 5,
+  "ratio": "1280:768"
+}

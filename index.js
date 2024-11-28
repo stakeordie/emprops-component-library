@@ -18,6 +18,8 @@ const getComponentPaths = (componentName) => ({
   workflow: path.join(componentsDir, componentName, "workflow.json"),
   test: path.join(componentsDir, componentName, "test.json"),
   credits: path.join(componentsDir, componentName, "credits.js"),
+  api: path.join(componentsDir, componentName, "api.json"),
+  body: path.join(componentsDir, componentName, "body.json"),
 });
 
 async function fetchGetComponent(config, name) {
@@ -193,7 +195,7 @@ async function newComponent() {
         
         if (componentData.type === "comfy_workflow") {
           // Create all required files with empty objects/default content
-          await fs.writeJson(paths.form, {}, { spaces: 2 });
+          await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
           await fs.writeJson(paths.inputs, {}, { spaces: 2 });
           await fs.writeJson(paths.workflow, {}, { spaces: 2 });
           await fs.writeJson(paths.test, {}, { spaces: 2 });
@@ -202,8 +204,11 @@ async function newComponent() {
             `function computeCost(context) {\n  return { cost: 1 };\n}`
           );
         } else if (componentData.type === "fetch_api") {
-          // For fetch_api, only create workflow.json and credits.js
-          await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+          // For fetch_api, create credits.js, form.json, inputs.json, body.json and api.json
+          await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
+          await fs.writeJson(paths.api, {}, { spaces: 2 });
+          await fs.writeJson(paths.inputs, {}, { spaces: 2 });
+          await fs.writeJson(paths.body, {}, { spaces: 2 });
           await fs.writeFile(
             paths.credits,
             `function computeCost(context) {\n  return { cost: 1 };\n}`
@@ -264,12 +269,12 @@ async function removeComponent(componentName) {
   }
 }
 
-async function applyComponents(componentName) {
+async function applyComponents(componentName, options = { verbose: false }) {
   try {
     const config = await fs.readJson(configPath);
     const paths = getComponentPaths(componentName);
 
-    const { data: component, error: componentError } = await fetchGetComponent(
+    const { error: componentError, data: component } = await fetchGetComponent(
       config,
       componentName
     );
@@ -283,7 +288,8 @@ async function applyComponents(componentName) {
     
     if (component.type === "fetch_api") {
       requiredFiles = [
-        { path: paths.workflow, name: "Workflow" },
+        { path: paths.form, name: "Form" },
+        { path: paths.api, name: "API" },
         { path: paths.credits, name: "Credits" }
       ];
     } else if (component.type === "basic") {
@@ -292,9 +298,10 @@ async function applyComponents(componentName) {
       ];
     } else if (component.type === "comfy_workflow") {
       requiredFiles = [
-        { path: paths.form, name: "Forms" },
+        { path: paths.form, name: "Form" },
         { path: paths.inputs, name: "Inputs" },
         { path: paths.workflow, name: "Workflow" },
+        { path: paths.test, name: "Test" },
         { path: paths.credits, name: "Credits" }
       ];
     }
@@ -307,11 +314,13 @@ async function applyComponents(componentName) {
     }
 
     // Read files based on component type
-    let form = {};
-    let inputs = {};
-    let workflow = {};
-    let test = {};
-    let credits;
+    let form = undefined;
+    let inputs = undefined;
+    let workflow = undefined;
+    let test = undefined;
+    let api = undefined;
+    let body = undefined;
+    let credits = undefined;
 
     if (component.type === "comfy_workflow") {
       form = await fs.readJson(paths.form);
@@ -322,7 +331,14 @@ async function applyComponents(componentName) {
       }
       credits = await fs.readFile(paths.credits, "utf8");
     } else if (component.type === "fetch_api") {
-      workflow = await fs.readJson(paths.workflow);
+      form = await fs.readJson(paths.form);
+      api = await fs.readJson(paths.api);
+      if (await fs.pathExists(paths.inputs)) {
+        inputs = await fs.readJson(paths.inputs);
+      }
+      if (await fs.pathExists(paths.body)) {
+        body = await fs.readJson(paths.body);
+      }
       credits = await fs.readFile(paths.credits, "utf8");
     } else if (component.type === "basic") {
       credits = await fs.readFile(paths.credits, "utf8");
@@ -335,9 +351,16 @@ async function applyComponents(componentName) {
       inputs,
       workflow,
       test,
+      api,
+      body,
       credits_script: credits,
-      output_node_id: workflow.output_node_id || null,
+      output_node_id: workflow?.output_node_id || null,
     };
+
+    if (options.verbose) {
+      console.log(chalk.blue("\nSubmitting data:"));
+      console.log(JSON.stringify(data, null, 2));
+    }
 
     const { error: updateError } = await fetchUpdateComponent(config, component.id, {
       data,
@@ -476,12 +499,25 @@ async function calculateFileHash(filePath) {
 
 async function getComponentHash(componentName) {
   const paths = getComponentPaths(componentName);
+  
+  // Get component type first
+  const config = await fs.readJson(configPath);
+  const { data: component } = await fetchGetComponent(config, componentName);
+  
   const hashes = {
-    form: await calculateFileHash(paths.form),
-    inputs: await calculateFileHash(paths.inputs),
-    workflow: await calculateFileHash(paths.workflow),
-    test: await calculateFileHash(paths.test)
+    credits: await calculateFileHash(paths.credits)
   };
+
+  if (component.type === "comfy_workflow") {
+    hashes.form = await calculateFileHash(paths.form);
+    hashes.inputs = await calculateFileHash(paths.inputs);
+    hashes.workflow = await calculateFileHash(paths.workflow);
+    hashes.test = await calculateFileHash(paths.test);
+  } else if (component.type === "fetch_api") {
+    hashes.form = await calculateFileHash(paths.form);
+    hashes.api = await calculateFileHash(paths.api);
+  }
+  
   return hashes;
 }
 
@@ -721,7 +757,7 @@ async function updateComponent(componentName) {
         if (!await fs.pathExists(path.join(componentPath, "ref"))) {
           await fs.mkdir(path.join(componentPath, "ref"));
         }
-        await fs.writeJson(paths.form, {}, { spaces: 2 });
+        await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
         await fs.writeJson(paths.inputs, {}, { spaces: 2 });
         await fs.writeJson(paths.workflow, {}, { spaces: 2 });
         await fs.writeJson(paths.test, {}, { spaces: 2 });
@@ -732,7 +768,10 @@ async function updateComponent(componentName) {
           );
         }
       } else if (updatedData.type === "fetch_api") {
-        await fs.writeJson(paths.workflow, {}, { spaces: 2 });
+        await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
+        await fs.writeJson(paths.api, {}, { spaces: 2 });
+        await fs.writeJson(paths.inputs, {}, { spaces: 2 });
+        await fs.writeJson(paths.body, {}, { spaces: 2 });
         if (!await fs.pathExists(paths.credits)) {
           await fs.writeFile(
             paths.credits,
@@ -790,7 +829,8 @@ componentsCommand
 componentsCommand
   .command("apply <componentName>")
   .description("Apply component configuration from local files")
-  .action(applyComponents);
+  .option("-v, --verbose", "Print submitted data", false)
+  .action((componentName, options) => applyComponents(componentName, options));
 
 componentsCommand
   .command("apply-changed")
