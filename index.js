@@ -156,7 +156,12 @@ async function fetchDeleteFormConfig(config, id) {
 async function initConfig() {
   try {
     const defaultConfig = {
-      apiUrl: "https://cycle-16-dev-api-openstudio.emprops.ai",
+      currentEnv: "dev",
+      environments: {
+        dev: {
+          apiUrl: "https://cycle-16-dev-api-openstudio.emprops.ai"
+        }
+      }
     };
     await fs.ensureDir(path.dirname(configPath));
     await fs.writeJson(configPath, defaultConfig, { spaces: 2 });
@@ -166,9 +171,89 @@ async function initConfig() {
   }
 }
 
-async function newComponent() {
+async function getCurrentEnvironment() {
   try {
     const config = await fs.readJson(configPath);
+    return {
+      name: config.currentEnv,
+      ...config.environments[config.currentEnv]
+    };
+  } catch (error) {
+    console.error(chalk.red(`Failed to get current environment: ${error.message}`));
+    process.exit(1);
+  }
+}
+
+async function addEnvironment(name, apiUrl) {
+  try {
+    const config = await fs.readJson(configPath);
+    if (config.environments[name]) {
+      console.error(chalk.red(`Environment "${name}" already exists`));
+      return;
+    }
+    
+    config.environments[name] = { apiUrl };
+    await fs.writeJson(configPath, config, { spaces: 2 });
+    console.log(chalk.green(`Environment "${name}" added successfully`));
+  } catch (error) {
+    console.error(chalk.red(`Failed to add environment: ${error.message}`));
+  }
+}
+
+async function removeEnvironment(name) {
+  try {
+    const config = await fs.readJson(configPath);
+    if (!config.environments[name]) {
+      console.error(chalk.red(`Environment "${name}" does not exist`));
+      return;
+    }
+    
+    if (config.currentEnv === name) {
+      console.error(chalk.red(`Cannot remove current environment "${name}"`));
+      return;
+    }
+    
+    delete config.environments[name];
+    await fs.writeJson(configPath, config, { spaces: 2 });
+    console.log(chalk.green(`Environment "${name}" removed successfully`));
+  } catch (error) {
+    console.error(chalk.red(`Failed to remove environment: ${error.message}`));
+  }
+}
+
+async function switchEnvironment(name) {
+  try {
+    const config = await fs.readJson(configPath);
+    if (!config.environments[name]) {
+      console.error(chalk.red(`Environment "${name}" does not exist`));
+      return;
+    }
+    
+    config.currentEnv = name;
+    await fs.writeJson(configPath, config, { spaces: 2 });
+    console.log(chalk.green(`Switched to environment "${name}"`));
+  } catch (error) {
+    console.error(chalk.red(`Failed to switch environment: ${error.message}`));
+  }
+}
+
+async function listEnvironments() {
+  try {
+    const config = await fs.readJson(configPath);
+    console.log(chalk.blue("\nAvailable Environments:"));
+    Object.entries(config.environments).forEach(([name, env]) => {
+      const isCurrent = name === config.currentEnv;
+      const prefix = isCurrent ? chalk.green("* ") : "  ";
+      console.log(`${prefix}${name}: ${env.apiUrl}`);
+    });
+  } catch (error) {
+    console.error(chalk.red(`Failed to list environments: ${error.message}`));
+  }
+}
+
+async function newComponent() {
+  try {
+    const config = await getCurrentEnvironment();
 
     const { data: servers, error: fetchServersError } = await fetchGetServers(config);
     if (fetchServersError) {
@@ -290,7 +375,7 @@ async function newComponent() {
 
 async function removeComponent(componentName) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const { data: component, error: getComponentError } = await fetchGetComponent(
       config,
       componentName
@@ -323,7 +408,7 @@ async function removeComponent(componentName) {
 
 async function applyComponents(componentName, options = { verbose: false }) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const paths = getComponentPaths(componentName);
 
     const { error: componentError, data: component } = await fetchGetComponent(
@@ -432,7 +517,7 @@ async function applyComponents(componentName, options = { verbose: false }) {
 async function getComponent(componentName, options) {
   try {
     console.log(`Getting details of component "${componentName}"...`);
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const paths = getComponentPaths(componentName);
 
     if (options.form) {
@@ -479,7 +564,7 @@ async function getComponent(componentName, options) {
 
 async function displayComponents(componentName) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const { data: components, error: getComponentError } =
       await fetchGetComponent(config, componentName);
     if (getComponentError) {
@@ -553,7 +638,7 @@ async function getComponentHash(componentName) {
   const paths = getComponentPaths(componentName);
   
   // Get component type first
-  const config = await fs.readJson(configPath);
+  const config = await getCurrentEnvironment();
   const { data: component } = await fetchGetComponent(config, componentName);
   
   const hashes = {
@@ -703,7 +788,7 @@ async function applyChangedComponents(options = { force: false, dryRun: false })
 
 async function updateComponent(componentName) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
 
     // Get current component data
     const { data: component, error: componentError } = await fetchGetComponent(
@@ -788,7 +873,7 @@ async function updateComponent(componentName) {
 
 async function getFormConfig(fileName) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const result = await fetchGetFormConfig(config, fileName);
     
     if (result.error) {
@@ -804,7 +889,7 @@ async function getFormConfig(fileName) {
 
 async function newFormConfig(fileName) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const formConfigPath = path.join(componentsDir, "_form_confs", fileName);
     
     if (!fs.existsSync(formConfigPath)) {
@@ -829,7 +914,7 @@ async function newFormConfig(fileName) {
 
 async function deleteFormConfig(fileName, options) {
   try {
-    const config = await fs.readJson(configPath);
+    const config = await getCurrentEnvironment();
     const formConfigPath = path.join(componentsDir, "_form_confs", fileName);
     
     const { data: formConfig, error: getFormConfigError } = await fetchGetFormConfig(config, fileName);
@@ -865,6 +950,34 @@ program
   .command("init")
   .description("Initialize the CLI configuration")
   .action(initConfig);
+
+program
+  .command("env")
+  .description("Manage environments")
+  .addCommand(
+    new Command("list")
+      .description("List all environments")
+      .action(listEnvironments)
+  )
+  .addCommand(
+    new Command("add")
+      .argument("<name>", "Environment name")
+      .argument("<apiUrl>", "API URL for the environment")
+      .description("Add a new environment")
+      .action(addEnvironment)
+  )
+  .addCommand(
+    new Command("remove")
+      .argument("<name>", "Environment name")
+      .description("Remove an environment")
+      .action(removeEnvironment)
+  )
+  .addCommand(
+    new Command("switch")
+      .argument("<name>", "Environment name")
+      .description("Switch to an environment")
+      .action(switchEnvironment)
+  );
 
 const componentsCommand = program
   .command("component")
