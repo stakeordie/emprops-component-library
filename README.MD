@@ -2,24 +2,150 @@
 
 ## Setup
 
-Install the CLI
+Install the CLI globally:
 
 ```bash
 npm install
 npm link
 ```
 
-## Usage
-
-Make changes to components, then run the following command to apply changes to the server:
+Initialize the CLI configuration:
 
 ```bash
 ecli init
+```
+
+## Command Reference
+
+### Environment Management
+
+The CLI supports multiple environments (e.g., development, production) with different API endpoints.
+
+```bash
+# List all environments (* indicates current)
+ecli env list
+
+# Add a new environment
+ecli env add <name> <apiUrl>
+
+# Switch to a different environment
+ecli env switch <name>
+
+# Remove an environment (cannot remove current)
+ecli env remove <name>
+```
+
+### Component Management
+
+Components are the building blocks of your application. Each component has its configuration files in the `Components/` directory.
+
+```bash
 # Create a new component
 ecli component new <component_name>
-# Apply changes to the server
+
+# Update component details
+ecli component update <component_name>
+
+# Remove a component
+ecli component remove <component_name>
+
+# Get component details
+ecli component get <component_name>
+  -f, --form      # Get form configuration
+  -i, --input     # Get inputs configuration
+  -w, --workflow  # Get workflow configuration
+  -c, --credits   # Get credits script
+
+# Apply component changes to server
 ecli component apply <component_name>
+  -v, --verbose   # Print submitted data
+
+# Apply all changed components
+ecli component apply-changed
+  -f, --force     # Force apply all components
+  -d, --dry-run   # Show what would be applied
+
+# Toggle component visibility
+ecli component display <component_name>
 ```
+
+### Form Configuration Management
+
+Form configurations are stored in `Components/_form_confs/` and can be managed with these commands:
+
+```bash
+# Get form configuration(s)
+ecli form-config get [fileName]
+
+# Create/Update form configuration
+ecli form-config apply <fileName>
+
+# Delete form configuration
+ecli form-config delete <fileName>
+  -s, --server-only  # Only delete from server, keep local file
+```
+
+## Component Structure
+
+Components can be of three types:
+- `basic`: Simple components with minimal configuration
+- `comfy_workflow`: Components that integrate with ComfyUI workflows
+- `fetch_api`: Components that interact with external APIs
+
+### Directory Structure
+
+```
+Components/
+└── component_name/
+    ├── form.json       # UI configuration
+    ├── inputs.json     # Input mapping
+    ├── workflow.json   # Workflow definition (comfy_workflow only)
+    ├── test.json      # Test configuration
+    ├── credits.js     # Credits calculation
+    ├── api.json       # API configuration (fetch_api only)
+    └── body.json      # Request body template (fetch_api only)
+```
+
+## Form Configuration
+
+The `form.json` file defines the component's UI structure:
+
+```json
+{
+  "main": [
+    {
+      "id": "fieldId",
+      "name": "Field Name",
+      "type": "field_type",
+      "display": true,
+      "default": "default_value",
+      "conf_file": "optional_config.json",
+      "constraints": {
+        "min": 0,
+        "max": 100,
+        "step": 1
+      }
+    }
+  ],
+  "advanced": []
+}
+```
+
+### Field Types
+
+- **`select`**: Dropdown menu with options from conf_file
+- **`prompt_editor`**: Text area for prompts
+- **`aspect_ratio`**: Aspect ratio selector
+- **`slider`**: Numeric input with range
+- **`image_loader`**: Image upload field
+
+### Configuration Files
+
+Common configuration files in `_form_confs/`:
+- `aspect_ratio.json`: Predefined aspect ratios
+- `samplers.json`: Available sampling methods
+- `schedulers.json`: Scheduler configurations
+- `sd_models.json`: Stable Diffusion models
 
 ## Component UI Configuration
 
@@ -145,4 +271,3 @@ cd emprops_component_library/server_scripts
 
 
 eval "docker buildx build $(sed 's/^/--build-arg /' ../global/.env) --builder cloud-emprops-comfy-servers --platform linux/amd64 -t emprops/comfy-basic:v1 --output type=cacheonly --push ."
-```
