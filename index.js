@@ -758,82 +758,16 @@ async function updateComponent(componentName) {
       return;
     }
 
-    // If name changed, handle the directory rename
-    if (updatedData.name !== component.name) {
-      const oldPath = path.join(componentsDir, component.name);
-      const newPath = path.join(componentsDir, updatedData.name);
-      
-      if (await fs.pathExists(newPath)) {
-        console.error(chalk.red(`A component with the name "${updatedData.name}" already exists!`));
-        return;
-      }
-
-      try {
-        await fs.move(oldPath, newPath);
-      } catch (error) {
-        console.error(chalk.red(`Failed to rename component directory: ${error.message}`));
-        return;
-      }
-    }
-
-    // If type changed, handle the file structure changes
-    if (updatedData.type !== component.type) {
-      const componentPath = path.join(componentsDir, updatedData.name);
-      const paths = getComponentPaths(updatedData.name);
-
-      // Remove all existing files except credits.js which is common to all types
-      const files = await fs.readdir(componentPath);
-      for (const file of files) {
-        if (file !== 'credits.js' && file !== 'ref') {
-          await fs.remove(path.join(componentPath, file));
-        }
-      }
-
-      // Create new files based on the new type
-      if (updatedData.type === "comfy_workflow") {
-        if (!await fs.pathExists(path.join(componentPath, "ref"))) {
-          await fs.mkdir(path.join(componentPath, "ref"));
-        }
-        await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
-        await fs.writeJson(paths.inputs, {}, { spaces: 2 });
-        await fs.writeJson(paths.workflow, {}, { spaces: 2 });
-        await fs.writeJson(paths.test, {}, { spaces: 2 });
-        if (!await fs.pathExists(paths.credits)) {
-          await fs.writeFile(
-            paths.credits,
-            `function computeCost(context) {\n  return { cost: 1 };\n}`
-          );
-        }
-      } else if (updatedData.type === "fetch_api") {
-        await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
-        await fs.writeJson(paths.api, {}, { spaces: 2 });
-        await fs.writeJson(paths.inputs, {}, { spaces: 2 });
-        await fs.writeJson(paths.body, {}, { spaces: 2 });
-        if (!await fs.pathExists(paths.credits)) {
-          await fs.writeFile(
-            paths.credits,
-            `function computeCost(context) {\n  return { cost: 1 };\n}`
-          );
-        }
-      } else if (!await fs.pathExists(paths.credits)) {
-        await fs.writeFile(
-          paths.credits,
-          `function computeCost(context) {\n  return { cost: 1 };\n}`
-        );
-      }
-    }
-
-    // Update component in the API
+    // Update the component on the server
     const { error: updateError } = await fetchUpdateComponent(config, component.id, updatedData);
-    
     if (updateError) {
-      console.error(chalk.red(`Failed to update component: ${updateError}`));
+      console.error(chalk.red(updateError));
       return;
     }
 
-    console.log(chalk.green(`Component "${componentName}" updated successfully!`));
+    console.log(chalk.green(`✓ Component ${componentName} updated successfully`));
   } catch (error) {
-    console.error(chalk.red(`Unexpected error: ${error.message}`));
+    console.error(chalk.red(`Failed to update component: ${error.message}`));
   }
 }
 
