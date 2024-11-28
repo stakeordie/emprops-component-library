@@ -101,6 +101,43 @@ async function fetchUpdateComponent(config, id, data) {
   }
 }
 
+async function fetchGetFormConfig(config, name) {
+  try {
+    const url = name 
+      ? `${config.apiUrl}/form-configs/${name}`
+      : `${config.apiUrl}/form-configs`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    return { data: null, error: `Failed to fetch form config: ${error.message}` };
+  }
+}
+
+async function fetchCreateFormConfig(config, name, data) {
+  try {
+    const url = `${config.apiUrl}/form-configs`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        data
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    return { data: null, error: `Failed to create form config: ${error.message}` };
+  }
+}
+
 async function initConfig() {
   try {
     const defaultConfig = {
@@ -800,6 +837,47 @@ async function updateComponent(componentName) {
   }
 }
 
+async function getFormConfig(fileName) {
+  try {
+    const config = await fs.readJson(configPath);
+    const result = await fetchGetFormConfig(config, fileName);
+    
+    if (result.error) {
+      console.error(chalk.red(result.error));
+      return;
+    }
+
+    console.log(JSON.stringify(result.data, null, 2));
+  } catch (error) {
+    console.error(chalk.red(`Error: ${error.message}`));
+  }
+}
+
+async function newFormConfig(fileName) {
+  try {
+    const config = await fs.readJson(configPath);
+    const formConfigPath = path.join(componentsDir, "_form_confs", fileName);
+    
+    if (!fs.existsSync(formConfigPath)) {
+      console.error(chalk.red(`Error: File ${fileName} not found in Components/_form_confs`));
+      return;
+    }
+
+    const fileData = await fs.readJson(formConfigPath);
+    const result = await fetchCreateFormConfig(config, fileName, fileData);
+    
+    if (result.error) {
+      console.error(chalk.red(result.error));
+      return;
+    }
+
+    console.log(chalk.green(`Successfully created form config: ${fileName}`));
+    console.log(JSON.stringify(result.data, null, 2));
+  } catch (error) {
+    console.error(chalk.red(`Error: ${error.message}`));
+  }
+}
+
 const program = new Command();
 
 program
@@ -852,5 +930,19 @@ componentsCommand
   .option("-w, --workflow", "Get workflow configuration")
   .option("-c, --credits", "Get credits script")
   .action(getComponent);
+
+const formConfigCommand = program
+  .command("form-config")
+  .description("Manage form configurations");
+
+formConfigCommand
+  .command("get [fileName]")
+  .description("Get form config(s). If fileName is provided, get specific config")
+  .action(getFormConfig);
+
+formConfigCommand
+  .command("new <fileName>")
+  .description("Create a new form config from file in Components/_form_confs")
+  .action(newFormConfig);
 
 program.parse(process.argv);
