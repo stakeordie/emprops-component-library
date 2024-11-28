@@ -1,0 +1,26 @@
+[
+  {
+    "id": "promptImage",
+    "pathJq": ".promptImage"
+  },
+  {
+    "id": "promptText",
+    "pathJq": ".promptText"
+  },
+  {
+    "id": "watermark",
+    "pathJq": ".watermark"
+  },
+  {
+    "id": "duration",
+    "pathJq": ".duration"
+  },
+  {
+    "id": "ratio",
+    "pathJq": ".ratio"
+  },
+  {
+    "id": "seed",
+    "pathJq": ".seed"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "model",
+    "pathJq": ".steps[0].input.model"
+  },
+  {
+    "id": "prompt",
+    "pathJq": ".steps[0].input.prompt"
+  },
+  {
+    "id": "negativePrompt",
+    "pathJq": ".steps[0].input.negativePrompt"
+  },
+  {
+    "id": "scheduler",
+    "pathJq": ".steps[0].input.scheduler"
+  },
+  {
+    "id": "steps",
+    "pathJq": ".steps[0].input.steps"
+  },
+  {
+    "id": "cfgScale",
+    "pathJq": ".steps[0].input.cfgScale"
+  },
+  {
+    "id": "width",
+    "pathJq": ".steps[0].input.width"
+  },
+  {
+    "id": "height",
+    "pathJq": ".steps[0].input.height"
+  },
+  {
+    "id": "seed",
+    "pathJq": ".steps[0].input.seed"
+  }
+]

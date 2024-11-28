@@ -1,0 +1,13 @@
+{
+  "url": "https://orchestration.civitai.com/v2/consumer/workflows?whatif=false&wait=30&charge=false",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Basic {{CIVITAI_API_KEY}}"
+  },
+  "successResponseCode": [200, 202],
+  "fetchType": "wait",
+  "wait": {
+    "outputExprJq": ".steps[].output.images[].url"
+  }
+}
