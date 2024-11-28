@@ -1,6 +1,6 @@
 [
   {
-    "id": "urn:air:sdxl:checkpoint:civitai:101055@128078",
-    "name": "SDXL"
+    "name": "SDXL",
+    "value": "urn:air:sdxl:checkpoint:civitai:101055@128078"
   }
 ]

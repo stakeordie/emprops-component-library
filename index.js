@@ -104,7 +104,7 @@ async function fetchUpdateComponent(config, id, data) {
 async function fetchGetFormConfig(config, name) {
   try {
     const url = name 
-      ? `${config.apiUrl}/form-configs/${name}`
+      ? `${config.apiUrl}/form-configs/name/${name}`
       : `${config.apiUrl}/form-configs`;
     const response = await fetch(url);
     if (!response.ok) {
@@ -135,6 +135,21 @@ async function fetchCreateFormConfig(config, name, data) {
     return response.json();
   } catch (error) {
     return { data: null, error: `Failed to create form config: ${error.message}` };
+  }
+}
+
+async function fetchDeleteFormConfig(config, id) {
+  try {
+    const url = `${config.apiUrl}/form-configs/${id}`;
+    const response = await fetch(url, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    return { data: null, error: `Failed to delete form config: ${error.message}` };
   }
 }
 
@@ -812,6 +827,38 @@ async function newFormConfig(fileName) {
   }
 }
 
+async function deleteFormConfig(fileName, options) {
+  try {
+    const config = await fs.readJson(configPath);
+    const formConfigPath = path.join(componentsDir, "_form_confs", fileName);
+    
+    const { data: formConfig, error: getFormConfigError } = await fetchGetFormConfig(config, fileName);
+    if (getFormConfigError) {
+      console.error(chalk.red(getFormConfigError));
+      return;
+    }
+    const result = await fetchDeleteFormConfig(config, formConfig.id);
+    if (result.error) {
+      console.error(chalk.red(result.error));
+      return;
+    }
+
+    // Delete local file if --server-only flag is not set
+    if (!options.serverOnly) {
+      if (await fs.pathExists(formConfigPath)) {
+        await fs.remove(formConfigPath);
+        console.log(chalk.green(`Local file "${fileName}" deleted successfully`));
+      } else {
+        console.warn(chalk.yellow(`Local file "${fileName}" not found`));
+      }
+    }
+
+    console.log(chalk.green(`Form config "${fileName}" deleted successfully from server`));
+  } catch (error) {
+    console.error(chalk.red(`Error: ${error.message}`));
+  }
+}
+
 const program = new Command();
 
 program
@@ -875,8 +922,14 @@ formConfigCommand
   .action(getFormConfig);
 
 formConfigCommand
-  .command("new <fileName>")
+  .command("apply <fileName>")
   .description("Create a new form config from file in Components/_form_confs")
   .action(newFormConfig);
+
+formConfigCommand
+  .command("delete <fileName>")
+  .description("Delete a form config")
+  .option("-s, --server-only", "Only delete from server, keep local file", false)
+  .action((fileName, options) => deleteFormConfig(fileName, options));
 
 program.parse(process.argv);
