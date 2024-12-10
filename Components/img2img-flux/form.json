@@ -1,77 +1,81 @@
-{
-  "main": [
-    {
-      "id": "image",
-      "name": "Image",
-      "type": "image_loader",
-      "display": true
+[
+  {
+    "id": "image",
+    "name": "Image",
+    "type": "image_loader",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "prompt",
+    "name": "Prompt",
+    "type": "prompt_editor",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "steps",
+    "name": "Steps",
+    "type": "slider",
+    "default": 8,
+    "constraints": {
+      "min": 1,
+      "max": 30,
+      "step": 1
     },
-    {
-      "id": "prompt",
-      "name": "Prompt",
-      "type": "prompt_editor",
-      "display": true
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "denoising",
+    "name": "Denoising Strength",
+    "type": "slider",
+    "default": 0.7,
+    "constraints": {
+      "min": 0,
+      "max": 1,
+      "step": 0.01
     },
-    {
-      "id": "steps",
-      "name": "Steps",
-      "type": "slider",
-      "default": 8,
-      "constraints": {
-        "min": 1,
-        "max": 30,
-        "step": 1
-      },
-      "display": true
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "sampler",
+    "name": "Sampler",
+    "type": "select",
+    "default": "euler_ancestral",
+    "conf_file": "samplers.json",
+    "display": true,
+    "group": "advanced"
+  },
+  {
+    "id": "scheduler",
+    "name": "Scheduler",
+    "type": "select",
+    "default": "beta",
+    "conf_file": "schedulers.json",
+    "display": true,
+    "group": "advanced"
+  },
+  {
+    "id": "upscale_method",
+    "name": "Upscale Method",
+    "default": "lanczos",
+    "is_required": false,
+    "display": false,
+    "group": "advanced"
+  },
+  {
+    "id": "megapixel",
+    "name": "MegaPixel Output",
+    "type": "slider",
+    "default": 1,
+    "constraints": {
+      "min": 0.5,
+      "max": 4,
+      "step": 0.5
     },
-    {
-      "id": "denoising",
-      "name": "Denoising Strength",
-      "type": "slider",
-      "default": 0.7,
-      "constraints": {
-        "min": 0,
-        "max": 1,
-        "step": 0.01
-      },
-      "display": true
-    }
-  ],
-  "advanced": [
-    {
-      "id": "sampler",
-      "name": "Sampler",
-      "type": "select",
-      "default": "euler_ancestral",
-      "conf_file": "samplers.json",
-      "display": true
-    },
-    {
-      "id": "scheduler",
-      "name": "Scheduler",
-      "type": "select",
-      "default": "beta",
-      "conf_file": "schedulers.json",
-      "display": true
-    },
-    {
-      "id": "upscale_method",
-      "name": "Upscale Method",
-      "default": "lanczos",
-      "is_required": false,
-      "display": false
-    },
-    {
-      "id": "megapixel",
-      "name": "MegaPixel Output",
-      "type": "slider",
-      "default": 1,
-      "constraints": {
-        "min": 0.5,
-        "max": 4,
-        "step": 0.5
-      },
-      "display": false
-    }
-  ]
-}
+    "display": false,
+    "group": "advanced"
+  }
+]

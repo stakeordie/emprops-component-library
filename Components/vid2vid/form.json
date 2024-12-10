@@ -1,32 +1,33 @@
-{
-  "main": [
-    {
-      "id": "image",
-      "name": "Image",
-      "type": "image_loader",
-      "display": true
-    },
-    {
-      "id": "video",
-      "name": "Video",
-      "type": "image_loader",
-      "display": true
-    },
-    {
-      "id": "prompt",
-      "name": "Prompt",
-      "type": "prompt_editor",
-      "placeholder": "Enter a prompt...",
-      "display": true
-    },
-    {
-      "id": "negative_prompt",
-      "name": "Negative Prompt",
-      "type": "prompt_editor",
-      "placeholder": "Enter a negative prompt...",
-      "default": "test",
-      "display": true
-    }
-  ],
-  "advanced": []
-}
+[
+  {
+    "id": "image",
+    "name": "Image",
+    "type": "image_loader",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "video",
+    "name": "Video",
+    "type": "image_loader",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "prompt",
+    "name": "Prompt",
+    "type": "prompt_editor",
+    "placeholder": "Enter a prompt...",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "negative_prompt",
+    "name": "Negative Prompt",
+    "type": "prompt_editor",
+    "placeholder": "Enter a negative prompt...",
+    "default": "test",
+    "display": true,
+    "group": "main"
+  }
+]

@@ -1,41 +1,41 @@
-{
-  "main": [
-    {
-      "id": "image",
-      "name": "Image",
-      "type": "image_loader",
-      "default": "",
-      "display": true
+[
+  {
+    "id": "image",
+    "name": "Image",
+    "type": "image_loader",
+    "default": "",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "name": "Model",
+    "id": "model",
+    "type": "select",
+    "default": "4x-UltraSharp.pth",
+    "conf_file": "upscale-models.json",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "name": "Scale By",
+    "id": "scale_by",
+    "type": "slider",
+    "default": 2,
+    "constraints": {
+      "min": 2,
+      "max": 4,
+      "step": 1
     },
-    {
-      "name": "Model",
-      "id": "model",
-      "type": "select",
-      "default": "4x-UltraSharp.pth",
-      "conf_file": "upscale-models.json",
-      "display": true
-    },
-    {
-      "name": "Scale By",
-      "id": "scale_by",
-      "type": "slider",
-      "default": 2,
-      "constraints": {
-        "min": 2,
-        "max": 4,
-        "step": 1
-      },
-      "display": true
-    }
-  ],
-  "advanced": [
-    {
-      "name": "Upscale Method",
-      "id": "upscale_method",
-      "type": "select",
-      "default": "nearest-exact",
-      "conf_file": "upscale-method.json",
-      "display": true
-    }
-  ]
-}
+    "display": true,
+    "group": "main"
+  },
+  {
+    "name": "Upscale Method",
+    "id": "upscale_method",
+    "type": "select",
+    "default": "nearest-exact",
+    "conf_file": "upscale-method.json",
+    "display": true,
+    "group": "advanced"
+  }
+]
