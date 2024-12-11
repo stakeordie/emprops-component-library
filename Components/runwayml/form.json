@@ -1,47 +1,49 @@
-{
-  "main": [
-    {
-      "id": "promptImage",
-      "name": "Prompt Image",
-      "type": "image_loader",
-      "default": "",
-      "display": true
+[
+  {
+    "id": "promptImage",
+    "name": "Prompt Image",
+    "type": "image_loader",
+    "default": "",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "promptText",
+    "name": "Prompt Text",
+    "type": "prompt_editor",
+    "placeholder": "Enter a prompt...",
+    "default": "",
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "watermark",
+    "name": "Watermark",
+    "type": "checkbox",
+    "default": false,
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "duration",
+    "name": "Duration",
+    "type": "slider",
+    "default": 5,
+    "constraints": {
+      "min": 5,
+      "max": 10,
+      "step": 1
     },
-    {
-      "id": "promptText",
-      "name": "Prompt Text",
-      "type": "prompt_editor",
-      "placeholder": "Enter a prompt...",
-      "default": "",
-      "display": true
-    },
-    {
-      "id": "watermark",
-      "name": "Watermark",
-      "type": "checkbox",
-      "default": false,
-      "display": true
-    },
-    {
-      "id": "duration",
-      "name": "Duration",
-      "type": "slider",
-      "default": 5,
-      "constraints": {
-        "min": 5,
-        "max": 10,
-        "step": 1
-      },
-      "display": true
-    },
-    {
-      "id": "ratio",
-      "name": "Ratio",
-      "type": "select",
-      "default": "1280:768",
-      "conf_file": "runwayml_ratios.json",
-      "display": true
-    }
-  ],
-  "advanced": []
-}
+    "display": true,
+    "group": "main"
+  },
+  {
+    "id": "ratio",
+    "name": "Ratio",
+    "type": "select",
+    "default": "1280:768",
+    "conf_file": "runwayml_ratios.json",
+    "display": true,
+    "group": "main"
+  }
+]
