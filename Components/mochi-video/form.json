@@ -1,117 +1,122 @@
-[
-  {
-    "id": "prompt",
-    "name": "Prompt",
-    "type": "prompt_editor",
-    "placeholder": "Enter a prompt... ",
-    "display": true,
-    "group": "main"
+{
+  "config": {
+    "groupOrder": ["main", "advanced"]
   },
-  {
-    "id": "negative_prompt",
-    "name": "Negative Prompt",
-    "type": "prompt_editor",
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "steps",
-    "name": "Steps",
-    "type": "slider",
-    "default": 30,
-    "constraints": {
-      "min": 1,
-      "max": 40,
-      "step": 1
+  "fields": [
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "placeholder": "Enter a prompt... ",
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "width",
-    "name": "Width",
-    "type": "slider",
-    "default": 848,
-    "constraints": {
-      "min": 240,
-      "max": 848,
-      "step": 16
+    {
+      "id": "negative_prompt",
+      "name": "Negative Prompt",
+      "type": "prompt_editor",
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "height",
-    "name": "Height",
-    "type": "slider",
-    "default": 480,
-    "constraints": {
-      "min": 240,
-      "max": 848,
-      "step": 16
+    {
+      "id": "steps",
+      "name": "Steps",
+      "type": "slider",
+      "default": 30,
+      "constraints": {
+        "min": 1,
+        "max": 40,
+        "step": 1
+      },
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "length",
-    "name": "Length (Frames)",
-    "type": "slider",
-    "default": 37,
-    "constraints": {
-      "min": 7,
-      "max": 49,
-      "step": 6
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 848,
+      "constraints": {
+        "min": 240,
+        "max": 848,
+        "step": 16
+      },
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "is_ping_pong",
-    "name": "Ping Pong?",
-    "type": "checkbox",
-    "default": false,
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "sampler",
-    "name": "Sampler",
-    "type": "select",
-    "default": "euler",
-    "conf_file": "samplers.json",
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "scheduler",
-    "name": "Scheduler",
-    "type": "select",
-    "default": "ddim_uniform",
-    "conf_file": "schedulers.json",
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "cfg",
-    "name": "Guidance (CFG)",
-    "type": "slider",
-    "default": 4.5,
-    "constraints": {
-      "min": 0,
-      "max": 50,
-      "step": 0.01
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 480,
+      "constraints": {
+        "min": 240,
+        "max": 848,
+        "step": 16
+      },
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "advanced"
-  },
-  {
-    "id": "frame_rate",
-    "name": "Frame Rate",
-    "type": "select",
-    "conf_file": "frame_rates.json",
-    "default": 24,
-    "display": true,
-    "group": "advanced"
-  }
-]
+    {
+      "id": "length",
+      "name": "Length (Frames)",
+      "type": "slider",
+      "default": 37,
+      "constraints": {
+        "min": 7,
+        "max": 49,
+        "step": 6
+      },
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "is_ping_pong",
+      "name": "Ping Pong?",
+      "type": "checkbox",
+      "default": false,
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "euler",
+      "conf_file": "samplers.json",
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "ddim_uniform",
+      "conf_file": "schedulers.json",
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "cfg",
+      "name": "Guidance (CFG)",
+      "type": "slider",
+      "default": 4.5,
+      "constraints": {
+        "min": 0,
+        "max": 50,
+        "step": 0.01
+      },
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "frame_rate",
+      "name": "Frame Rate",
+      "type": "select",
+      "conf_file": "frame_rates.json",
+      "default": 24,
+      "display": true,
+      "group": "advanced"
+    }
+  ]
+}

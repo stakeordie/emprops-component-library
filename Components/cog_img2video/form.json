@@ -1,57 +1,62 @@
-[
-  {
-    "id": "image",
-    "name": "Image",
-    "type": "image_loader",
-    "default": "",
-    "display": true,
-    "group": "main"
+{
+  "config": {
+    "groupOrder": ["main", "advanced"]
   },
-  {
-    "id": "prompt",
-    "name": "Prompt",
-    "type": "prompt_editor",
-    "default": "",
-    "display": true,
-    "group": "advanced"
-  },
-  {
-    "name": "Steps",
-    "id": "steps",
-    "type": "slider",
-    "default": 20,
-    "constraints": {
-      "min": 1,
-      "max": 50,
-      "step": 1
+  "fields": [
+    {
+      "id": "image",
+      "name": "Image",
+      "type": "image_loader",
+      "default": "",
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "advanced"
-  },
-  {
-    "name": "Guidance (CFG)",
-    "id": "cfg",
-    "type": "slider",
-    "default": 6,
-    "constraints": {
-      "min": 0,
-      "max": 50,
-      "step": 0.01
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "default": "",
+      "display": true,
+      "group": "advanced"
     },
-    "display": true,
-    "group": "advanced"
-  },
-  {
-    "name": "Denoising Strength",
-    "id": "denoising",
-    "type": "slider",
-    "default": 1,
-    "constraints": {
-      "min": 0,
-      "max": 1,
-      "step": 0.01
+    {
+      "name": "Steps",
+      "id": "steps",
+      "type": "slider",
+      "default": 20,
+      "constraints": {
+        "min": 1,
+        "max": 50,
+        "step": 1
+      },
+      "display": true,
+      "group": "advanced"
     },
-    "display": true,
-    "group": "advanced"
-  }
-]
+    {
+      "name": "Guidance (CFG)",
+      "id": "cfg",
+      "type": "slider",
+      "default": 6,
+      "constraints": {
+        "min": 0,
+        "max": 50,
+        "step": 0.01
+      },
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "name": "Denoising Strength",
+      "id": "denoising",
+      "type": "slider",
+      "default": 1,
+      "constraints": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "display": true,
+      "group": "advanced"
+    }
+  ]
+}

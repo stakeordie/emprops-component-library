@@ -1,66 +1,71 @@
-[
-  {
-    "id": "prompt",
-    "name": "Prompt",
-    "type": "prompt_editor",
-    "display": true,
-    "group": "main"
+{
+  "config": {
+    "groupOrder": ["main", "advanced"]
   },
-  {
-    "id": "width",
-    "name": "Width",
-    "type": "slider",
-    "default": 1024,
-    "constraints": {
-      "min": 64,
-      "max": 1600,
-      "step": 64
+  "fields": [
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "height",
-    "name": "Height",
-    "type": "slider",
-    "default": 1024,
-    "constraints": {
-      "min": 64,
-      "max": 1600,
-      "step": 64
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "steps",
-    "name": "Steps",
-    "type": "slider",
-    "default": 10,
-    "constraints": {
-      "min": 1,
-      "max": 60,
-      "step": 1
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": "main"
     },
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "sampler",
-    "name": "Sampler",
-    "type": "select",
-    "default": "dpm_2",
-    "conf_file": "samplers.json",
-    "display": true,
-    "group": "advanced"
-  },
-  {
-    "id": "scheduler",
-    "name": "Scheduler",
-    "type": "select",
-    "default": "ddim_uniform",
-    "conf_file": "schedulers.json",
-    "display": true,
-    "group": "advanced"
-  }
-]
+    {
+      "id": "steps",
+      "name": "Steps",
+      "type": "slider",
+      "default": 10,
+      "constraints": {
+        "min": 1,
+        "max": 60,
+        "step": 1
+      },
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "dpm_2",
+      "conf_file": "samplers.json",
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "ddim_uniform",
+      "conf_file": "schedulers.json",
+      "display": true,
+      "group": "advanced"
+    }
+  ]
+}
