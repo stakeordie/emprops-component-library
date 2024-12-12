@@ -1,33 +1,38 @@
-[
-  {
-    "id": "image",
-    "name": "Image",
-    "type": "image_loader",
-    "display": true,
-    "group": "main"
+{
+  "config": {
+    "groupOrder": ["main", "advanced"]
   },
-  {
-    "id": "video",
-    "name": "Video",
-    "type": "image_loader",
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "prompt",
-    "name": "Prompt",
-    "type": "prompt_editor",
-    "placeholder": "Enter a prompt...",
-    "display": true,
-    "group": "main"
-  },
-  {
-    "id": "negative_prompt",
-    "name": "Negative Prompt",
-    "type": "prompt_editor",
-    "placeholder": "Enter a negative prompt...",
-    "default": "test",
-    "display": true,
-    "group": "main"
-  }
-]
+  "fields": [
+    {
+      "id": "image",
+      "name": "Image",
+      "type": "image_loader",
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "video",
+      "name": "Video",
+      "type": "image_loader",
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "placeholder": "Enter a prompt...",
+      "display": true,
+      "group": "main"
+    },
+    {
+      "id": "negative_prompt",
+      "name": "Negative Prompt",
+      "type": "prompt_editor",
+      "placeholder": "Enter a negative prompt...",
+      "default": "test",
+      "display": true,
+      "group": "main"
+    }
+  ]
+}
