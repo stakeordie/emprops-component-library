@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import path from "path";
 import { input, select, number, expand } from "@inquirer/prompts";
 import crypto from 'crypto';
+import { validateComponent } from './schemas.js';
 
 const configPath = path.join(process.env.HOME, ".ecli", "config.json");
 const componentsDir = path.join(process.cwd(), "Components");
@@ -274,6 +275,12 @@ async function newComponent() {
         name: await input({
           message: "Enter the name of the component",
           required: true,
+          validate: (input) => {
+            if (!/^[a-z0-9-]+$/.test(input)) {
+              return 'Component name must contain only lowercase letters, numbers, and hyphens';
+            }
+            return true;
+          }
         }),
         label: await input({
           message: "Enter the label of the component",
@@ -290,6 +297,12 @@ async function newComponent() {
         output_mime_type: await input({
           message: "Enter the output mime type",
           initial: "image/png",
+          validate: (input) => {
+            if (!/^[a-z]+\/[a-z0-9.+-]+$/.test(input)) {
+              return 'Invalid MIME type format (e.g., image/png, video/mp4)';
+            }
+            return true;
+          }
         }),
         type: await select({
           message: "Select the type of the component",
@@ -417,6 +430,16 @@ async function applyComponents(componentName, options = { verbose: false }) {
     );
     if (componentError) {
       console.error(chalk.red(componentError));
+      return;
+    }
+
+    // Validate component files
+    const validationResult = await validateComponent(path.join(componentsDir, componentName), component.type);
+    if (!validationResult.valid) {
+      console.error(chalk.red('Validation errors:'));
+      validationResult.errors.forEach(error => {
+        console.error(chalk.red(`- ${error}`));
+      });
       return;
     }
 
