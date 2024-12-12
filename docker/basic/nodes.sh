@@ -2,7 +2,7 @@
 
 ROOT=/comfyui-launcher
 
-mkdir -p ${ROOT}/nodes \
+mkdir -p ${ROOT}/nodes
 cd ${ROOT}/nodes && git clone https://github.com/ltdrdata/ComfyUI-Manager
 cd ${ROOT}/nodes && git clone https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet && cd "$(basename "$_" .git)" && git reset --hard "b9c8bdc6dd47f3eb322c3194bee10afe80c5fbad"
 cd ${ROOT}/nodes && git clone https://github.com/Extraltodeus/ComfyUI-AutomaticCFG && cd "$(basename "$_" .git)" && git reset --hard "2e395317b65c05a97a0ef566c4a8c7969305dafa"
