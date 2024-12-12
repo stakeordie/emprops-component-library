@@ -35,8 +35,7 @@
   "5": {
     "width": {
       "value": "width",
-      "is_required": false,
-      "default": 1024
+      "is_required": true
     },
     "height": {
       "value": "height",

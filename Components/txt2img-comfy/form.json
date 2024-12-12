@@ -1,4 +1,4 @@
-[
+[  
   {
     "id": "model",
     "name": "Model",
@@ -6,7 +6,11 @@
     "default": "sd_xl_base_1.0_0.9vae.safetensors",
     "conf_file": "sd_models.json",
     "display": true,
-    "group": "main"
+    "group": [
+      "basic",
+      "main",
+      "advanced"
+    ]
   },
   {
     "id": "prompt",
@@ -14,7 +18,11 @@
     "type": "prompt_editor",
     "default": "",
     "display": true,
-    "group": "main"
+    "group": [
+      "basic",
+      "main",
+      "advanced"
+    ]
   },
   {
     "id": "negative_prompt",
@@ -22,7 +30,9 @@
     "type": "prompt_editor",
     "default": "",
     "display": true,
-    "group": "main"
+    "group": [
+      "advanced"
+    ]
   },
   {
     "id": "width",
@@ -35,7 +45,10 @@
       "step": 64
     },
     "display": true,
-    "group": "main"
+    "group": [
+      "main",
+      "advanced"
+    ]
   },
   {
     "id": "height",
@@ -48,7 +61,10 @@
       "step": 64
     },
     "display": true,
-    "group": "main"
+    "group": [
+      "main",
+      "advanced"
+    ]
   },
   {
     "id": "steps",
@@ -61,7 +77,10 @@
       "step": 1
     },
     "display": true,
-    "group": "main"
+    "group": [
+      "main",
+      "advanced"
+    ]
   },
   {
     "id": "sampler",
@@ -70,7 +89,9 @@
     "default": "euler_ancestral",
     "conf_file": "samplers.json",
     "display": true,
-    "group": "advanced"
+    "group": [
+      "advanced"
+    ]
   },
   {
     "id": "scheduler",
@@ -79,7 +100,9 @@
     "default": "normal",
     "conf_file": "schedulers.json",
     "display": true,
-    "group": "advanced"
+    "group": [
+      "advanced"
+    ]
   },
   {
     "id": "cfg",
@@ -92,6 +115,8 @@
       "step": 0.01
     },
     "display": true,
-    "group": "advanced"
+    "group": [
+      "advanced"
+    ]
   }
 ]
