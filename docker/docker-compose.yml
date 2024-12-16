@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  comfyui-video:
+    image: emprops/comfy-video:v6
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=video
+        - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+      platforms:
+        - linux/amd64
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./config/video:/home/ubuntu/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-flux:
+    image: emprops/comfy-flux:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=flux
+        - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+      platforms:
+        - linux/amd64
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./config/flux:/home/ubuntu/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-basic:
+    image: emprops/comfy-basic:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=basic
+        - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+      platforms:
+        - linux/amd64
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./config/basic:/home/ubuntu/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-tester:
+    image: emprops/comfy-tester:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=${CONFIG_TYPE:-tester}
+        - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+      platforms:
+        - linux/amd64
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./config/tester:/home/ubuntu/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
