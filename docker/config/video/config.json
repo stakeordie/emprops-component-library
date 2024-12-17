@@ -1,0 +1,380 @@
+{
+  "comfy_version": "915fdb57454c094391d830cefb4ffdd24ed8088c",
+  "nodes": [
+    {
+      "name": "eden_comfy_pipelines",
+      "url": "https://github.com/edenartlab/eden_comfy_pipelines.git",
+      "requirements": true,
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    },
+    {
+      "name": "ComfyUI_ModdedNodes",
+      "url": "https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes",
+      "requirements": true
+    },
+    {
+      "name": "comfyui-dreambait-nodes",
+      "url": "https://github.com/drmbt/comfyui-dreambait-nodes",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Frame-Interpolation",
+      "url": "https://github.com/Fannovel16/ComfyUI-Frame-Interpolation",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Crystools",
+      "url": "https://github.com/crystian/ComfyUI-Crystools",
+      "requirements": true
+    },
+    {
+      "name": "execution-inversion-demo-comfyui",
+      "url": "https://github.com/BadCafeCode/execution-inversion-demo-comfyui.git",
+      "requirements": true
+    },
+    {
+      "name": "comfyui_controlnet_aux",
+      "url": "https://github.com/Fannovel16/comfyui_controlnet_aux",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI_FizzNodes",
+      "url": "https://github.com/FizzleDorf/ComfyUI_FizzNodes",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Advanced-ControlNet",
+      "url": "https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-AnimateDiff-Evolved",
+      "url": "https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-VideoHelperSuite",
+      "url": "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite",
+      "requirements": true
+    },
+    {
+      "name": "SeargeSDXL",
+      "url": "https://github.com/SeargeDP/SeargeSDXL",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUi_NNLatentUpscale",
+      "url": "https://github.com/Ttl/ComfyUi_NNLatentUpscale",
+      "requirements": true
+    },
+    {
+      "name": "was-node-suite-comfyui",
+      "url": "https://github.com/WASasquatch/was-node-suite-comfyui",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Manager",
+      "url": "https://github.com/aiXander/ComfyUI-Manager.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI_IPAdapter_plus",
+      "url": "https://github.com/cubiq/ComfyUI_IPAdapter_plus.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI_essentials",
+      "url": "https://github.com/cubiq/ComfyUI_essentials",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-DepthAnythingV2",
+      "url": "https://github.com/kijai/ComfyUI-DepthAnythingV2",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Florence2",
+      "url": "https://github.com/kijai/ComfyUI-Florence2",
+      "requirements": true
+    },
+    {
+      "name": "efficiency-nodes-comfyui",
+      "url": "https://github.com/jags111/efficiency-nodes-comfyui",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-KJNodes",
+      "url": "https://github.com/kijai/ComfyUI-KJNodes",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Manager-ltdrdata",
+      "url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
+      "requirements": true
+    },
+    {
+      "name": "rgthree-comfy",
+      "url": "https://github.com/rgthree/rgthree-comfy",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Depthflow-Nodes",
+      "url": "https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes",
+      "requirements": false
+    },
+    {
+      "name": "comfyui_segment_anything",
+      "url": "https://github.com/storyicon/comfyui_segment_anything",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI_ExtraModels",
+      "url": "https://github.com/city96/ComfyUI_ExtraModels.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Custom-Scripts",
+      "url": "https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-LLaVA-OneVision",
+      "url": "https://github.com/kijai/ComfyUI-LLaVA-OneVision.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI_Primere_Nodes",
+      "url": "https://github.com/CosmicLaca/ComfyUI_Primere_Nodes.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Universal-Styler",
+      "url": "https://github.com/KoreTeknology/ComfyUI-Universal-Styler.git",
+      "requirements": true
+    },
+    {
+      "name": "DJZ-Nodes",
+      "url": "https://github.com/MushroomFleet/DJZ-Nodes.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-Easy-Use",
+      "url": "https://github.com/yolain/ComfyUI-Easy-Use.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI_LayerStyle",
+      "url": "https://github.com/chflame163/ComfyUI_LayerStyle.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-MochiWrapper",
+      "url": "https://github.com/kijai/ComfyUI-MochiWrapper.git",
+      "requirements": true
+    },
+    {
+      "name": "ComfyUI-MochiEdit",
+      "url": "https://github.com/logtd/ComfyUI-MochiEdit.git",
+      "requirements": true
+    }
+  ],
+  "models": [
+    {
+      "name": "realismBYSTABLEYOGI_v4LCM.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/realismBYSTABLEYOGI_v4LCM.safetensors",
+      "path": "models/checkpoints/SD15/LCM/"
+    },
+    {
+      "name": "Eden_SDXL.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/models/checkpoints/Eden_SDXL.safetensors",
+      "path": "models/checkpoints/"
+    },
+    {
+      "name": "A_black_image.jpg",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/assets/A_black_image.jpg",
+      "path": "input/"
+    },
+    {
+      "name": "A_white_image.jpg",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/assets/A_white_image.jpg",
+      "path": "input/"
+    },
+    {
+      "name": "a_black_video.mp4",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/assets/a_black_video.mp4",
+      "path": "input/"
+    },
+    {
+      "name": "depth_anything_v2_vitl_fp16.safetensors",
+      "url": "https://huggingface.co/Kijai/DepthAnythingV2-safetensors/resolve/main/depth_anything_v2_vitl_fp16.safetensors",
+      "path": "models/depthanything/"
+    },
+    {
+      "name": "depth_anything_v2_vitl.pth",
+      "url": "https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth",
+      "path": "custom_nodes/comfyui_controlnet_aux/ckpts/depth-anything/Depth-Anything-V2-Large/"
+    },
+    {
+      "name": "NEG_EMBED_STABLE_YOGI_V3.pt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/embeddings/NEG_EMBED_STABLE_YOGI_V3.pt",
+      "path": "models/embeddings/"
+    },
+    {
+      "name": "AnimateLCM_sd15_t2v.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/animatediff_models/AnimateLCM_sd15_t2v.ckpt",
+      "path": "models/animatediff_models/"
+    },
+    {
+      "name": "v3_sd15_mm.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/animatediff_models/v3_sd15_mm.ckpt",
+      "path": "models/animatediff_models/"
+    },
+    {
+      "name": "sd15_t2v_beta.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/animatediff_models/sd15_t2v_beta.ckpt",
+      "path": "models/animatediff_models/"
+    },
+    {
+      "name": "juggernaut_reborn-inpainting.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/juggernaut_reborn-inpainting.safetensors",
+      "path": "models/checkpoints/"
+    },
+    {
+      "name": "juggerxlInpaint_juggerInpaintV8.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/juggerxlInpaint_juggerInpaintV8.safetensors",
+      "path": "models/checkpoints/"
+    },
+    {
+      "name": "juggernaut_reborn.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/juggernaut_reborn.safetensors",
+      "path": "models/checkpoints/"
+    },
+    {
+      "name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/clip_vision/CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "path": "models/clip_vision/"
+    },
+    {
+      "name": "adiff_ControlGIF_controlnet.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/adiff_ControlGIF_controlnet.ckpt",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "control_v11p_sd15_canny_fp16.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/control_v11p_sd15_canny_fp16.safetensors",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "control_v11f1p_sd15_depth.pth",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/control_v11f1p_sd15_depth.pth",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "control_v11p_sd15_canny.pth",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/control_v11p_sd15_canny.pth",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "control_v11p_sd15_lineart.pth",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/control_v11p_sd15_lineart.pth",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "control_v11p_sd15_openpose.pth",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/control_v11p_sd15_openpose.pth",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "control_v11p_sd15_scribble.pth",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/control_v11p_sd15_scribble.pth",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "controlnetQRPatternQR_v2Sd15.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/controlnetQRPatternQR_v2Sd15.safetensors",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "v3_sd15_sparsectrl_rgb.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/v3_sd15_sparsectrl_rgb.ckpt",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "v3_sd15_sparsectrl_scribble.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/v3_sd15_sparsectrl_scribble.ckpt",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "controlnet_checkpoint.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/controlnet/controlnet_checkpoint.ckpt",
+      "path": "models/controlnet/"
+    },
+    {
+      "name": "ip-adapter-plus_sd15.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/ipadapter/ip-adapter-plus_sd15.safetensors",
+      "path": "models/ipadapter/"
+    },
+    {
+      "name": "v3_sd15_adapter.ckpt",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/loras/v3_sd15_adapter.ckpt",
+      "path": "models/loras/"
+    },
+    {
+      "name": "RealESRGAN_x2plus.pth",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/upscale_models/RealESRGAN_x2plus.pth",
+      "path": "models/upscale_models/"
+    },
+    {
+      "name": "rife47.pth",
+      "url": "https://github.com/styler00dollar/VSGAN-tensorrt-docker/releases/download/models/rife47.pth",
+      "path": "custom_nodes/ComfyUI-Frame-Interpolation/ckpts/rife/"
+    },
+    {
+      "name": "mm_sd_v15_v2.ckpt",
+      "url": "https://huggingface.co/guoyww/animatediff/resolve/main/mm_sd_v15_v2.ckpt",
+      "path": "models/animatediff_models/"
+    },
+    {
+      "name": "zavychromaxl_v80.safetensors",
+      "url": "https://edenartlab-lfs.s3.amazonaws.com/comfyui/models2/checkpoints/zavychromaxl_v80.safetensors",
+      "path": "models/checkpoints/"
+    },
+    {
+      "name": "hsxl_temporal_layers.f16.safetensors",
+      "url": "https://huggingface.co/hotshotco/Hotshot-XL/resolve/main/hsxl_temporal_layers.f16.safetensors",
+      "path": "models/animatediff_models/"
+    },
+    {
+      "name": "diffusion_pytorch_model.safetensors",
+      "url": "https://huggingface.co/xinsir/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors",
+      "path": "models/controlnet/SDXL/controlnet-depth-sdxl-1.0/"
+    },
+    {
+      "name": "diffusion_pytorch_model_V2.safetensors",
+      "url": "https://huggingface.co/xinsir/controlnet-canny-sdxl-1.0/resolve/main/diffusion_pytorch_model_V2.safetensors",
+      "path": "models/controlnet/SDXL/controlnet-canny-sdxl-1.0/"
+    },
+    {
+      "name": "ip-adapter-plus_sdxl_vit-h.safetensors",
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors",
+      "path": "models/ipadapter/"
+    },
+    {
+      "name": "mochi_preview_fp8_scaled.safetensors",
+      "url": "https://huggingface.co/Comfy-Org/mochi_preview_repackaged/resolve/main/split_files/diffusion_models/mochi_preview_fp8_scaled.safetensors",
+      "path": "models/diffusion_models/"
+    },
+    {
+      "name": "t5xxl_fp8_e4m3fn_scaled.safetensors",
+      "url": "https://huggingface.co/Comfy-Org/mochi_preview_repackaged/resolve/main/split_files/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors",
+      "path": "models/clip/"
+    },
+    {
+      "name": "mochi_vae.safetensors",
+      "url": "https://huggingface.co/Comfy-Org/mochi_preview_repackaged/resolve/main/split_files/vae/mochi_vae.safetensors",
+      "path": "models/vae/"
+    }
+  ]
+}

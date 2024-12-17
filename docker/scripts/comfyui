@@ -1,0 +1,171 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          comfyui
+# Required-Start:    $network
+# Required-Stop:     $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start ComfyUI
+### END INIT INFO
+
+# Paths
+ROOT="${ROOT:-/workspace}"
+COMFYUI_HOME="$ROOT/.comfyui"
+LOG_DIR="$COMFYUI_HOME/log"
+DEBUG_LOG="$LOG_DIR/debug.log"
+OUTPUT_LOG="$LOG_DIR/output.log"
+
+# ComfyUI specific paths
+COMFY_DIR="${COMFY_DIR:-${ROOT}/ComfyUI}"
+WORK_DIR="$COMFY_DIR"
+SCRIPT_PATH="$COMFY_DIR/main.py"
+PID_FILE="$COMFYUI_HOME/comfyui.pid"
+
+# Ensure log directory exists with correct permissions
+prepare_logs() {
+    mkdir -p "$COMFYUI_HOME/log"
+    chmod 755 "$COMFYUI_HOME"
+    chmod 755 "$COMFYUI_HOME/log"
+}
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$DEBUG_LOG"
+}
+
+start() {
+    # Prepare log directory
+    prepare_logs
+
+    # Extensive logging
+    log "=== ComfyUI Service Start Diagnostics ==="
+    log "Current User: $(whoami)"
+    log "Current Working Directory: $(pwd)"
+    log "Script Path: $SCRIPT_PATH"
+    log "Working Directory: $WORK_DIR"
+    log "Log Directory: $LOG_DIR"
+    log "Debug Log: $DEBUG_LOG"
+    log "Output Log: $OUTPUT_LOG"
+
+    # Validate paths
+    if [ ! -d "$WORK_DIR" ]; then
+        log "ERROR: Working directory does not exist: $WORK_DIR"
+        return 1
+    fi
+
+    if [ ! -f "$SCRIPT_PATH" ]; then
+        log "ERROR: ComfyUI main script not found at $SCRIPT_PATH"
+        return 1
+    fi
+    
+    # Verify Python environment
+    ACTIVE_PYTHON=$(which python)
+    log "Active Python Path: $ACTIVE_PYTHON"
+    python --version
+
+    # Check for CUDA availability
+    CUDA_CHECK=$(python -c "
+import torch
+try:
+        cuda_available = torch.cuda.is_available()
+        device_count = torch.cuda.device_count()
+        print(f'CUDA_AVAILABLE:{cuda_available}')
+        print(f'CUDA_DEVICE_COUNT:{device_count}')
+except Exception as e:
+        print(f'CUDA_ERROR:{str(e)}')
+")
+
+    # Parse CUDA check results
+    CUDA_AVAILABLE=$(echo "$CUDA_CHECK" | grep "CUDA_AVAILABLE:" | cut -d: -f2)
+    CUDA_DEVICE_COUNT=$(echo "$CUDA_CHECK" | grep "CUDA_DEVICE_COUNT:" | cut -d: -f2)
+    CUDA_ERROR=$(echo "$CUDA_CHECK" | grep "CUDA_ERROR:" | cut -d: -f2)
+
+    # Log CUDA detection results
+    log "CUDA Check Results:"
+    log "CUDA Available: $CUDA_AVAILABLE"
+    log "CUDA Device Count: $CUDA_DEVICE_COUNT"
+    
+    # Prepare run command
+    RUN_COMMAND=(python "$SCRIPT_PATH" --listen 127.0.0.1 --port 8188 --verbose)
+    
+    # If no CUDA, force CPU mode
+    if [ "$CUDA_AVAILABLE" != "True" ] || [ "$CUDA_DEVICE_COUNT" = "0" ]; then
+        log "No CUDA devices found. Forcing CPU mode."
+        RUN_COMMAND+=("--cpu")
+        export CUDA_VISIBLE_DEVICES=""
+    fi
+
+    # Log the exact command being run
+    log "Executing ComfyUI start command: ${RUN_COMMAND[@]}"
+
+    # Start ComfyUI as ubuntu user
+    PYTHONUNBUFFERED=1 \
+        "${RUN_COMMAND[@]}" >> "$OUTPUT_LOG" 2>&1 &
+    local pid=$!
+
+    # Wait a moment to ensure process started
+    sleep 2
+
+    # Check if process is running
+    if kill -0 "$pid" 2>/dev/null; then
+        echo "$pid" > "$PID_FILE"
+        log "ComfyUI started with PID $pid. Full command: ${RUN_COMMAND[@]}"
+        return 0
+    else
+        log "Failed to start ComfyUI. Command used: ${RUN_COMMAND[@]}"
+        return 1
+    fi
+}
+
+stop() {
+    log "Stopping ComfyUI service..."
+    
+    if [ -f "$PID_FILE" ]; then
+        PID=$(cat "$PID_FILE")
+        if kill -0 "$PID" 2>/dev/null; then
+            kill "$PID"
+            log "Sent termination signal to ComfyUI (PID: $PID)"
+        else
+            log "No running ComfyUI process found"
+        fi
+        rm -f "$PID_FILE"
+    else
+        log "No PID file found"
+    fi
+}
+
+status() {
+    if [ -f "$PID_FILE" ]; then
+        PID=$(cat "$PID_FILE")
+        if kill -0 "$PID" 2>/dev/null; then
+            echo "ComfyUI is running (PID: $PID)"
+            return 0
+        else
+            echo "ComfyUI is not running (stale PID file)"
+            return 1
+        fi
+    else
+        echo "ComfyUI is not running"
+        return 1
+    fi
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+esac
+
+exit $?

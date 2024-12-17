@@ -1,56 +1,64 @@
-# Setup a server ready to accept component requests
-# Use ubuntu user, not root
-# Use a venv for ComfyUI
+# Builder stage for SSH key
+FROM pytorch/pytorch:latest as start
 
-FROM pytorch/pytorch:latest AS start
-
-# ARG DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
-
-RUN apt update && apt-get install -y git rsync nginx wget nano ffmpeg libsm6 libxext6 cron sudo ssh && apt-get clean
-
-ARG GITACCESSKEY
-
-RUN useradd -m -d /home/ubuntu -s /bin/bash ubuntu
-RUN usermod -aG sudo ubuntu
-RUN mkdir -p /home/ubuntu/.ssh && touch /home/ubuntu/.ssh/authorized_keys
-RUN echo ${GITACCESSKEY} >> /home/ubuntu/.ssh/authorized_keys
-RUN chown -R ubuntu:ubuntu /home/ubuntu/.ssh
-
-RUN mkdir -p /etc/ssh/sshd_config.d
-RUN touch /etc/ssh/sshd_config.d/ubuntu.conf
-RUN echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config.d/ubuntu.conf
-RUN echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.d/ubuntu.conf
-
-RUN service ssh restart
-RUN sudo cp /etc/sudoers /etc/sudoers.bak
-RUN echo 'ubuntu ALL=(ALL:ALL) NOPASSWD: ALL' >> /etc/sudoers
+RUN apt update && apt-get install -y \
+    git git-lfs rsync nginx wget curl nano ffmpeg libsm6 libxext6 \
+    cron sudo ssh zstd jq build-essential cmake ninja-build \
+    gcc g++ openssh-client aria2 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 FROM start AS middle
 
-RUN su - ubuntu
-
-RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo ${GITACCESSKEY} >> ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
-
-ENV ROOT=/comfyui-launcher
-
-RUN eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_ed25519 && ssh-keyscan github.com > ~/.ssh/githubKey && ssh-keygen -lf ~/.ssh/githubKey && cat ~/.ssh/githubKey >> ~/.ssh/known_hosts
+ENV ROOT=/workspace
+ENV PATH="${ROOT}/.local/bin:${PATH}"
+ENV CONFIG_DIR=${ROOT}/config
+ENV COMFY_DIR=${ROOT}/ComfyUI
 
 WORKDIR ${ROOT}
 
-# COPY ./build.sh /scripts/build.sh
-
-# RUN /scripts/build.sh
-
-COPY ./nodes.sh /nodes.sh
-RUN /nodes.sh
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
+    cd ${COMFY_DIR} && \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install huggingface_hub[hf_transfer] && \
+    pip install tqdm
 
 FROM middle AS end
 
-COPY --from=scripts . /scripts/
-RUN chmod +x /scripts/*.sh
+COPY config/ ${CONFIG_DIR}/
 
-RUN mv /nodes.sh /scripts/nodes.sh
+# Debug: List config files
+RUN find ${CONFIG_DIR} -name "config.json"
 
-COPY ./models.sh /scripts/models.sh
-      
-CMD  ["/scripts/start.sh"]
+# Set default config type
+ARG CONFIG_TYPE
+
+# Copy type-specific config files
+COPY config/${CONFIG_TYPE} ${CONFIG_DIR}/
+
+# Copy init.d script
+COPY scripts/comfyui /etc/init.d/comfyui
+RUN chmod +x /etc/init.d/comfyui && \
+    update-rc.d comfyui defaults
+
+# Copy startup script
+COPY scripts/start.sh /start.sh
+RUN chmod +x /start.sh
+
+COPY scripts ${ROOT}/scripts
+
+RUN rm -rf ${ROOT}/scripts/start.sh && rm -rf ${ROOT}/scripts/comfyui
+
+
+# RUN usermod -aG crontab ubuntu
+# Create cron pid directory with correct permissions
+RUN mkdir -p /var/run/cron \
+    && touch /var/run/cron/crond.pid \
+    && chmod 644 /var/run/cron/crond.pid
+RUN sed -i 's/touch $PIDFILE/# touch $PIDFILE/g' /etc/init.d/cron
+
+RUN cd ${ROOT} && git-lfs install 
+
+# Start services and application
+CMD ["/start.sh"]
