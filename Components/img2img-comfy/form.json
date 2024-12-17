@@ -1,7 +1,6 @@
 {
   "config": {
-    "groupOrder": ["main", "advanced"],
-    "maxNumberOfGenerations": 4
+    "groupOrder": ["main", "advanced"]
   },
   "fields": [
     {
