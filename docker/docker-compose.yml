@@ -1,0 +1,84 @@
+services:
+  comfyui-video:
+    image: emprops/comfy-video:v6
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=video
+      platforms:
+        - linux/amd64
+    volumes:
+      - ./config/video:/workspace/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-flux:
+    image: emprops/comfy-flux:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=flux
+      platforms:
+        - linux/amd64
+    volumes:
+      - ./config/flux:/workspace/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-basic:
+    image: emprops/comfy-basic:v6
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=basic
+      platforms:
+        - linux/amd64
+    volumes:
+      - ./config/basic:/workspace/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-tester:
+    image: emprops/comfy-tester:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CONFIG_TYPE=tester
+      platforms:
+        - linux/amd64
+    volumes:
+      - ./config/tester:/workspace/config
+    restart: unless-stopped
+    platform: linux/amd64
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
