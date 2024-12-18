@@ -5,7 +5,7 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
 import { input, select, number, expand } from "@inquirer/prompts";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 const configPath = path.join(process.env.HOME, ".ecli", "config.json");
 const componentsDir = path.join(process.cwd(), "Components");
@@ -63,7 +63,10 @@ async function fetchCreateComponent(config, data) {
     }
     return response.json(); // API already returns { data, error } structure
   } catch (error) {
-    return { data: null, error: `Failed to create component: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to create component: ${error.message}`,
+    };
   }
 }
 
@@ -78,7 +81,10 @@ async function fetchRemoveComponent(config, id) {
     }
     return response.json(); // API already returns { data, error } structure
   } catch (error) {
-    return { data: null, error: `Failed to remove component: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to remove component: ${error.message}`,
+    };
   }
 }
 
@@ -97,13 +103,16 @@ async function fetchUpdateComponent(config, id, data) {
     }
     return response.json(); // API already returns { data, error } structure
   } catch (error) {
-    return { data: null, error: `Failed to update component: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to update component: ${error.message}`,
+    };
   }
 }
 
 async function fetchGetFormConfig(config, name) {
   try {
-    const url = name 
+    const url = name
       ? `${config.apiUrl}/form-configs/name/${name}`
       : `${config.apiUrl}/form-configs`;
     const response = await fetch(url);
@@ -112,7 +121,10 @@ async function fetchGetFormConfig(config, name) {
     }
     return response.json();
   } catch (error) {
-    return { data: null, error: `Failed to fetch form config: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to fetch form config: ${error.message}`,
+    };
   }
 }
 
@@ -120,13 +132,13 @@ async function fetchCreateFormConfig(config, name, data) {
   try {
     const url = `${config.apiUrl}/form-configs`;
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         name,
-        data
+        data,
       }),
     });
     if (!response.ok) {
@@ -134,7 +146,10 @@ async function fetchCreateFormConfig(config, name, data) {
     }
     return response.json();
   } catch (error) {
-    return { data: null, error: `Failed to create form config: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to create form config: ${error.message}`,
+    };
   }
 }
 
@@ -142,14 +157,17 @@ async function fetchDeleteFormConfig(config, id) {
   try {
     const url = `${config.apiUrl}/form-configs/${id}`;
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: "DELETE",
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.json();
   } catch (error) {
-    return { data: null, error: `Failed to delete form config: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to delete form config: ${error.message}`,
+    };
   }
 }
 
@@ -159,15 +177,17 @@ async function initConfig() {
       currentEnv: "dev",
       environments: {
         dev: {
-          apiUrl: "https://cycle-16-dev-api-openstudio.emprops.ai"
-        }
-      }
+          apiUrl: "https://cycle-16-dev-api-openstudio.emprops.ai",
+        },
+      },
     };
     await fs.ensureDir(path.dirname(configPath));
     await fs.writeJson(configPath, defaultConfig, { spaces: 2 });
     console.log(chalk.green("Configuration file created successfully!"));
   } catch (error) {
-    console.error(chalk.red(`Failed to initialize configuration: ${error.message}`));
+    console.error(
+      chalk.red(`Failed to initialize configuration: ${error.message}`),
+    );
   }
 }
 
@@ -176,10 +196,12 @@ async function getCurrentEnvironment() {
     const config = await fs.readJson(configPath);
     return {
       name: config.currentEnv,
-      ...config.environments[config.currentEnv]
+      ...config.environments[config.currentEnv],
     };
   } catch (error) {
-    console.error(chalk.red(`Failed to get current environment: ${error.message}`));
+    console.error(
+      chalk.red(`Failed to get current environment: ${error.message}`),
+    );
     process.exit(1);
   }
 }
@@ -191,7 +213,7 @@ async function addEnvironment(name, apiUrl) {
       console.error(chalk.red(`Environment "${name}" already exists`));
       return;
     }
-    
+
     config.environments[name] = { apiUrl };
     await fs.writeJson(configPath, config, { spaces: 2 });
     console.log(chalk.green(`Environment "${name}" added successfully`));
@@ -207,12 +229,12 @@ async function removeEnvironment(name) {
       console.error(chalk.red(`Environment "${name}" does not exist`));
       return;
     }
-    
+
     if (config.currentEnv === name) {
       console.error(chalk.red(`Cannot remove current environment "${name}"`));
       return;
     }
-    
+
     delete config.environments[name];
     await fs.writeJson(configPath, config, { spaces: 2 });
     console.log(chalk.green(`Environment "${name}" removed successfully`));
@@ -228,7 +250,7 @@ async function switchEnvironment(name) {
       console.error(chalk.red(`Environment "${name}" does not exist`));
       return;
     }
-    
+
     config.currentEnv = name;
     await fs.writeJson(configPath, config, { spaces: 2 });
     console.log(chalk.green(`Switched to environment "${name}"`));
@@ -255,12 +277,13 @@ async function newComponent() {
   try {
     const config = await getCurrentEnvironment();
 
-    const { data: servers, error: fetchServersError } = await fetchGetServers(config);
+    const { data: servers, error: fetchServersError } =
+      await fetchGetServers(config);
     if (fetchServersError) {
       console.error(chalk.red(fetchServersError));
       return;
     }
-    
+
     const serverChoices = servers
       .map((server) => ({
         name: server.name,
@@ -311,8 +334,11 @@ async function newComponent() {
 
     // Check if the component already exists
     const componentPath = path.join(componentsDir, componentData.name);
-    const { error: componentCreationError } = await fetchCreateComponent(config, componentData);
-    
+    const { error: componentCreationError } = await fetchCreateComponent(
+      config,
+      componentData,
+    );
+
     if (componentCreationError) {
       console.error(chalk.red(componentCreationError));
       return;
@@ -320,49 +346,64 @@ async function newComponent() {
 
     if (!(await fs.pathExists(componentPath))) {
       const paths = getComponentPaths(componentData.name);
-      
+
       try {
         // Create component directory
         await fs.ensureDir(componentPath);
-        
+
         // Create ref directory only for comfy_workflow type
         if (componentData.type === "comfy_workflow") {
           await fs.mkdir(path.join(componentPath, "ref"));
         }
-        
+
         if (componentData.type === "comfy_workflow") {
           // Create all required files with empty objects/default content
-          await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
+          await fs.writeJson(
+            paths.form,
+            { main: [], advanced: [] },
+            { spaces: 2 },
+          );
           await fs.writeJson(paths.inputs, {}, { spaces: 2 });
           await fs.writeJson(paths.workflow, {}, { spaces: 2 });
           await fs.writeJson(paths.test, {}, { spaces: 2 });
           await fs.writeFile(
             paths.credits,
-            `function computeCost(context) {\n  return { cost: 1 };\n}`
+            `function computeCost(context) {\n  return { cost: 1 };\n}`,
           );
         } else if (componentData.type === "fetch_api") {
           // For fetch_api, create credits.js, form.json, inputs.json, body.json and api.json
-          await fs.writeJson(paths.form, { main: [], advanced: [] }, { spaces: 2 });
+          await fs.writeJson(
+            paths.form,
+            { main: [], advanced: [] },
+            { spaces: 2 },
+          );
           await fs.writeJson(paths.api, {}, { spaces: 2 });
           await fs.writeJson(paths.inputs, {}, { spaces: 2 });
           await fs.writeJson(paths.body, {}, { spaces: 2 });
           await fs.writeFile(
             paths.credits,
-            `function computeCost(context) {\n  return { cost: 1 };\n}`
+            `function computeCost(context) {\n  return { cost: 1 };\n}`,
           );
         } else if (componentData.type === "basic") {
           // For basic, only create credits.js
           await fs.writeFile(
             paths.credits,
-            `function computeCost(context) {\n  return { cost: 1 };\n}`
+            `function computeCost(context) {\n  return { cost: 1 };\n}`,
           );
         }
-        
-        console.log(chalk.green(`Component "${componentData.name}" added successfully!`));
+
+        console.log(
+          chalk.green(`Component "${componentData.name}" added successfully!`),
+        );
       } catch (fsError) {
-        console.error(chalk.red(`Failed to create component files: ${fsError.message}`));
+        console.error(
+          chalk.red(`Failed to create component files: ${fsError.message}`),
+        );
         // Attempt to rollback the API creation
-        const { data: component } = await fetchGetComponent(config, componentData.name);
+        const { data: component } = await fetchGetComponent(
+          config,
+          componentData.name,
+        );
         if (component?.id) {
           await fetchRemoveComponent(config, component.id);
         }
@@ -376,31 +417,31 @@ async function newComponent() {
 async function removeComponent(componentName) {
   try {
     const config = await getCurrentEnvironment();
-    const { data: component, error: getComponentError } = await fetchGetComponent(
-      config,
-      componentName
-    );
+    const { data: component, error: getComponentError } =
+      await fetchGetComponent(config, componentName);
     if (getComponentError) {
       console.error(chalk.red(getComponentError));
       return;
     }
     const { error: removeComponentError } = await fetchRemoveComponent(
       config,
-      component.id
+      component.id,
     );
     if (removeComponentError) {
       console.error(chalk.red(removeComponentError));
       return;
     }
-    
+
     const componentPath = path.join(componentsDir, componentName);
     if (!(await fs.pathExists(componentPath))) {
       console.error(chalk.red(`Component "${componentName}" does not exist!`));
       return;
     }
-    
+
     await fs.remove(componentPath);
-    console.log(chalk.green(`Component "${componentName}" removed successfully!`));
+    console.log(
+      chalk.green(`Component "${componentName}" removed successfully!`),
+    );
   } catch (error) {
     console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
@@ -413,7 +454,7 @@ async function applyComponents(componentName, options = { verbose: false }) {
 
     const { error: componentError, data: component } = await fetchGetComponent(
       config,
-      componentName
+      componentName,
     );
     if (componentError) {
       console.error(chalk.red(componentError));
@@ -422,30 +463,32 @@ async function applyComponents(componentName, options = { verbose: false }) {
 
     // Check for required files based on component type
     let requiredFiles = [];
-    
+
     if (component.type === "fetch_api") {
       requiredFiles = [
         { path: paths.form, name: "Form" },
         { path: paths.api, name: "API" },
-        { path: paths.credits, name: "Credits" }
+        { path: paths.credits, name: "Credits" },
       ];
     } else if (component.type === "basic") {
-      requiredFiles = [
-        { path: paths.credits, name: "Credits" }
-      ];
+      requiredFiles = [{ path: paths.credits, name: "Credits" }];
     } else if (component.type === "comfy_workflow") {
       requiredFiles = [
         { path: paths.form, name: "Form" },
         { path: paths.inputs, name: "Inputs" },
         { path: paths.workflow, name: "Workflow" },
         { path: paths.test, name: "Test" },
-        { path: paths.credits, name: "Credits" }
+        { path: paths.credits, name: "Credits" },
       ];
     }
 
     for (const file of requiredFiles) {
       if (!(await fs.pathExists(file.path))) {
-        console.error(chalk.red(`${file.name} file not found for component "${componentName}"!`));
+        console.error(
+          chalk.red(
+            `${file.name} file not found for component "${componentName}"!`,
+          ),
+        );
         return;
       }
     }
@@ -499,16 +542,22 @@ async function applyComponents(componentName, options = { verbose: false }) {
       console.log(JSON.stringify(data, null, 2));
     }
 
-    const { error: updateError } = await fetchUpdateComponent(config, component.id, {
-      data,
-    });
+    const { error: updateError } = await fetchUpdateComponent(
+      config,
+      component.id,
+      {
+        data,
+      },
+    );
 
     if (updateError) {
       console.error(chalk.red(`Failed to update component: ${updateError}`));
       return;
     }
 
-    console.log(chalk.green(`Component "${componentName}" applied successfully!`));
+    console.log(
+      chalk.green(`Component "${componentName}" applied successfully!`),
+    );
   } catch (error) {
     console.error(chalk.red(`Unexpected error: ${error.message}`));
   }
@@ -550,7 +599,10 @@ async function getComponent(componentName, options) {
       }
     } else {
       // Fetch and display all component data
-      const { data: component, error } = await fetchGetComponent(config, componentName);
+      const { data: component, error } = await fetchGetComponent(
+        config,
+        componentName,
+      );
       if (error) {
         console.error(chalk.red(error));
         return;
@@ -627,8 +679,8 @@ async function displayComponents(componentName) {
 
 async function calculateFileHash(filePath) {
   try {
-    const content = await fs.readFile(filePath, 'utf8');
-    return crypto.createHash('sha256').update(content).digest('hex');
+    const content = await fs.readFile(filePath, "utf8");
+    return crypto.createHash("sha256").update(content).digest("hex");
   } catch (error) {
     return null;
   }
@@ -636,13 +688,13 @@ async function calculateFileHash(filePath) {
 
 async function getComponentHash(componentName) {
   const paths = getComponentPaths(componentName);
-  
+
   // Get component type first
   const config = await getCurrentEnvironment();
   const { data: component } = await fetchGetComponent(config, componentName);
-  
+
   const hashes = {
-    credits: await calculateFileHash(paths.credits)
+    credits: await calculateFileHash(paths.credits),
   };
 
   if (component.type === "comfy_workflow") {
@@ -654,7 +706,7 @@ async function getComponentHash(componentName) {
     hashes.form = await calculateFileHash(paths.form);
     hashes.api = await calculateFileHash(paths.api);
   }
-  
+
   return hashes;
 }
 
@@ -665,7 +717,9 @@ async function loadState() {
     }
     return { components: {} };
   } catch (error) {
-    console.error(chalk.yellow(`Warning: Could not load state file: ${error.message}`));
+    console.error(
+      chalk.yellow(`Warning: Could not load state file: ${error.message}`),
+    );
     return { components: {} };
   }
 }
@@ -674,21 +728,26 @@ async function saveState(state) {
   try {
     await fs.writeJson(stateFilePath, state, { spaces: 2 });
   } catch (error) {
-    console.error(chalk.yellow(`Warning: Could not save state file: ${error.message}`));
+    console.error(
+      chalk.yellow(`Warning: Could not save state file: ${error.message}`),
+    );
   }
 }
 
 async function getValidComponents() {
   try {
     const items = await fs.readdir(componentsDir);
-    return items.filter(item => 
-      !item.startsWith('_') && 
-      item !== 'p52vid' && 
-      item !== '.ecli-state.json' &&
-      fs.statSync(path.join(componentsDir, item)).isDirectory()
+    return items.filter(
+      (item) =>
+        !item.startsWith("_") &&
+        item !== "p52vid" &&
+        item !== ".ecli-state.json" &&
+        fs.statSync(path.join(componentsDir, item)).isDirectory(),
     );
   } catch (error) {
-    console.error(chalk.red(`Error reading components directory: ${error.message}`));
+    console.error(
+      chalk.red(`Error reading components directory: ${error.message}`),
+    );
     return [];
   }
 }
@@ -696,75 +755,82 @@ async function getValidComponents() {
 async function hasComponentChanged(componentName, state) {
   const currentHashes = await getComponentHash(componentName);
   const storedState = state.components[componentName];
-  
+
   if (!storedState) {
     return true;
   }
 
   const storedHashes = storedState.fileHashes;
-  return Object.entries(currentHashes).some(([file, hash]) => 
-    hash !== storedHashes[file]
+  return Object.entries(currentHashes).some(
+    ([file, hash]) => hash !== storedHashes[file],
   );
 }
 
-async function applyChangedComponents(options = { force: false, dryRun: false }) {
+async function applyChangedComponents(
+  options = { force: false, dryRun: false },
+) {
   try {
     const state = await loadState();
     const components = await getValidComponents();
-    
+
     if (components.length === 0) {
-      console.log(chalk.yellow('No valid components found.'));
+      console.log(chalk.yellow("No valid components found."));
       return;
     }
 
-    console.log(chalk.blue('Checking for changed components...'));
-    
+    console.log(chalk.blue("Checking for changed components..."));
+
     const changedComponents = [];
     for (const component of components) {
-      const changed = options.force || await hasComponentChanged(component, state);
+      const changed =
+        options.force || (await hasComponentChanged(component, state));
       if (changed) {
         changedComponents.push(component);
       }
     }
 
     if (changedComponents.length === 0) {
-      console.log(chalk.green('No components have changed.'));
+      console.log(chalk.green("No components have changed."));
       return;
     }
 
-    console.log(chalk.blue(`\nFound ${changedComponents.length} changed components:`));
-    changedComponents.forEach(component => 
-      console.log(chalk.cyan(`- ${component}`))
+    console.log(
+      chalk.blue(`\nFound ${changedComponents.length} changed components:`),
+    );
+    changedComponents.forEach((component) =>
+      console.log(chalk.cyan(`- ${component}`)),
     );
 
     if (options.dryRun) {
-      console.log(chalk.yellow('\nDry run - no changes will be made.'));
+      console.log(chalk.yellow("\nDry run - no changes will be made."));
       return;
     }
 
-    console.log(chalk.blue('\nApplying changes...'));
-    
+    console.log(chalk.blue("\nApplying changes..."));
+
     const results = {
       success: [],
-      failure: []
+      failure: [],
     };
 
     for (const component of changedComponents) {
       try {
         console.log(chalk.cyan(`\nApplying ${component}...`));
         await applyComponents(component);
-        
+
         // Update state after successful apply
         state.components[component] = {
           lastApplied: new Date().toISOString(),
-          fileHashes: await getComponentHash(component)
+          fileHashes: await getComponentHash(component),
         };
-        
+
         results.success.push(component);
         console.log(chalk.green(`✓ ${component} applied successfully`));
       } catch (error) {
         results.failure.push({ component, error: error.message });
-        console.log(chalk.red(`✗ Failed to apply ${component}: ${error.message}`));
+        console.log(
+          chalk.red(`✗ Failed to apply ${component}: ${error.message}`),
+        );
       }
     }
 
@@ -772,13 +838,15 @@ async function applyChangedComponents(options = { force: false, dryRun: false })
     await saveState(state);
 
     // Print summary
-    console.log(chalk.blue('\nSummary:'));
-    console.log(chalk.green(`✓ Successfully applied: ${results.success.length}`));
+    console.log(chalk.blue("\nSummary:"));
+    console.log(
+      chalk.green(`✓ Successfully applied: ${results.success.length}`),
+    );
     if (results.failure.length > 0) {
       console.log(chalk.red(`✗ Failed to apply: ${results.failure.length}`));
-      console.log(chalk.red('\nFailed components:'));
-      results.failure.forEach(({ component, error }) => 
-        console.log(chalk.red(`- ${component}: ${error}`))
+      console.log(chalk.red("\nFailed components:"));
+      results.failure.forEach(({ component, error }) =>
+        console.log(chalk.red(`- ${component}: ${error}`)),
       );
     }
   } catch (error) {
@@ -793,19 +861,20 @@ async function updateComponent(componentName) {
     // Get current component data
     const { data: component, error: componentError } = await fetchGetComponent(
       config,
-      componentName
+      componentName,
     );
     if (componentError) {
       console.error(chalk.red(componentError));
       return;
     }
 
-    const { data: servers, error: fetchServersError } = await fetchGetServers(config);
+    const { data: servers, error: fetchServersError } =
+      await fetchGetServers(config);
     if (fetchServersError) {
       console.error(chalk.red(fetchServersError));
       return;
     }
-    
+
     const serverChoices = servers
       .map((server) => ({
         name: server.name,
@@ -859,13 +928,19 @@ async function updateComponent(componentName) {
     }
 
     // Update the component on the server
-    const { error: updateError } = await fetchUpdateComponent(config, component.id, updatedData);
+    const { error: updateError } = await fetchUpdateComponent(
+      config,
+      component.id,
+      updatedData,
+    );
     if (updateError) {
       console.error(chalk.red(updateError));
       return;
     }
 
-    console.log(chalk.green(`✓ Component ${componentName} updated successfully`));
+    console.log(
+      chalk.green(`✓ Component ${componentName} updated successfully`),
+    );
   } catch (error) {
     console.error(chalk.red(`Failed to update component: ${error.message}`));
   }
@@ -875,7 +950,7 @@ async function getFormConfig(fileName) {
   try {
     const config = await getCurrentEnvironment();
     const result = await fetchGetFormConfig(config, fileName);
-    
+
     if (result.error) {
       console.error(chalk.red(result.error));
       return;
@@ -891,15 +966,19 @@ async function newFormConfig(fileName) {
   try {
     const config = await getCurrentEnvironment();
     const formConfigPath = path.join(componentsDir, "_form_confs", fileName);
-    
+
     if (!fs.existsSync(formConfigPath)) {
-      console.error(chalk.red(`Error: File ${fileName} not found in Components/_form_confs`));
+      console.error(
+        chalk.red(
+          `Error: File ${fileName} not found in Components/_form_confs`,
+        ),
+      );
       return;
     }
 
     const fileData = await fs.readJson(formConfigPath);
     const result = await fetchCreateFormConfig(config, fileName, fileData);
-    
+
     if (result.error) {
       console.error(chalk.red(result.error));
       return;
@@ -916,8 +995,9 @@ async function deleteFormConfig(fileName, options) {
   try {
     const config = await getCurrentEnvironment();
     const formConfigPath = path.join(componentsDir, "_form_confs", fileName);
-    
-    const { data: formConfig, error: getFormConfigError } = await fetchGetFormConfig(config, fileName);
+
+    const { data: formConfig, error: getFormConfigError } =
+      await fetchGetFormConfig(config, fileName);
     if (getFormConfigError) {
       console.error(chalk.red(getFormConfigError));
       return;
@@ -932,15 +1012,68 @@ async function deleteFormConfig(fileName, options) {
     if (!options.serverOnly) {
       if (await fs.pathExists(formConfigPath)) {
         await fs.remove(formConfigPath);
-        console.log(chalk.green(`Local file "${fileName}" deleted successfully`));
+        console.log(
+          chalk.green(`Local file "${fileName}" deleted successfully`),
+        );
       } else {
         console.warn(chalk.yellow(`Local file "${fileName}" not found`));
       }
     }
 
-    console.log(chalk.green(`Form config "${fileName}" deleted successfully from server`));
+    console.log(
+      chalk.green(`Form config "${fileName}" deleted successfully from server`),
+    );
   } catch (error) {
     console.error(chalk.red(`Error: ${error.message}`));
+  }
+}
+
+async function listComponents(showAll = false) {
+  try {
+    const config = await getCurrentEnvironment();
+    if (!config) {
+      console.error(
+        chalk.red("No environment configured. Please run `ecli init` first."),
+      );
+      return;
+    }
+
+    const components = await getValidComponents();
+    if (components.length === 0) {
+      console.log(
+        chalk.yellow("\nNo components found in the current directory."),
+      );
+      return;
+    }
+
+    console.log(chalk.blue("\nAvailable Components:"));
+
+    for (const component of components) {
+      const { data: apiComponent, error: apiError } = await fetchGetComponent(
+        config,
+        component,
+      );
+
+      if (apiError) {
+        console.log(
+          `  ${chalk.white(component)} (${chalk.red("error fetching status")})`,
+        );
+        continue;
+      }
+
+      const isEnabled = apiComponent?.display ?? true;
+      if (showAll || isEnabled) {
+        const status = isEnabled
+          ? chalk.green("enabled")
+          : chalk.yellow("disabled");
+        console.log(
+          `  ${chalk.white(apiComponent.name)} (${apiComponent.id}) (${status})`,
+        );
+      }
+    }
+    console.log(); // Empty line for better readability
+  } catch (error) {
+    console.error(chalk.red(`Error listing components: ${error.message}`));
   }
 }
 
@@ -957,26 +1090,26 @@ program
   .addCommand(
     new Command("list")
       .description("List all environments")
-      .action(listEnvironments)
+      .action(listEnvironments),
   )
   .addCommand(
     new Command("add")
       .argument("<name>", "Environment name")
       .argument("<apiUrl>", "API URL for the environment")
       .description("Add a new environment")
-      .action(addEnvironment)
+      .action(addEnvironment),
   )
   .addCommand(
     new Command("remove")
       .argument("<name>", "Environment name")
       .description("Remove an environment")
-      .action(removeEnvironment)
+      .action(removeEnvironment),
   )
   .addCommand(
     new Command("switch")
       .argument("<name>", "Environment name")
       .description("Switch to an environment")
-      .action(switchEnvironment)
+      .action(switchEnvironment),
   );
 
 const componentsCommand = program
@@ -1007,8 +1140,16 @@ componentsCommand
 componentsCommand
   .command("apply-changed")
   .description("Apply all components that have changed since last apply")
-  .option("-f, --force", "Force apply all components regardless of changes", false)
-  .option("-d, --dry-run", "Show what would be applied without making changes", false)
+  .option(
+    "-f, --force",
+    "Force apply all components regardless of changes",
+    false,
+  )
+  .option(
+    "-d, --dry-run",
+    "Show what would be applied without making changes",
+    false,
+  )
   .action((options) => applyChangedComponents(options));
 
 componentsCommand
@@ -1025,13 +1166,23 @@ componentsCommand
   .option("-c, --credits", "Get credits script")
   .action(getComponent);
 
+componentsCommand
+  .command("list")
+  .description("List available components")
+  .option("--all", "Show all components including disabled ones")
+  .action((options) => {
+    listComponents(options.all);
+  });
+
 const formConfigCommand = program
   .command("form-config")
   .description("Manage form configurations");
 
 formConfigCommand
   .command("get [fileName]")
-  .description("Get form config(s). If fileName is provided, get specific config")
+  .description(
+    "Get form config(s). If fileName is provided, get specific config",
+  )
   .action(getFormConfig);
 
 formConfigCommand
@@ -1042,7 +1193,11 @@ formConfigCommand
 formConfigCommand
   .command("delete <fileName>")
   .description("Delete a form config")
-  .option("-s, --server-only", "Only delete from server, keep local file", false)
+  .option(
+    "-s, --server-only",
+    "Only delete from server, keep local file",
+    false,
+  )
   .action((fileName, options) => deleteFormConfig(fileName, options));
 
 program.parse(process.argv);
