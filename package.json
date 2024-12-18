@@ -15,5 +15,8 @@
   "devDependencies": {
     "lerna": "^6.0.0",
     "yarn": "^1.22.19"
+  },
+  "bin": {
+    "ecli": "./packages/components/index.js"
   }
 }
