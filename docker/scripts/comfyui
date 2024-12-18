@@ -85,7 +85,8 @@ except Exception as e:
     log "CUDA Device Count: $CUDA_DEVICE_COUNT"
     
     # Prepare run command
-    RUN_COMMAND=(python "$SCRIPT_PATH" --listen 127.0.0.1 --port 8188 --verbose)
+    PORT="${PORT:-8188}"
+    RUN_COMMAND=(python "$SCRIPT_PATH" --listen 127.0.0.1 --port "$PORT")
     
     # If no CUDA, force CPU mode
     if [ "$CUDA_AVAILABLE" != "True" ] || [ "$CUDA_DEVICE_COUNT" = "0" ]; then

@@ -2,6 +2,11 @@
   "comfy_version": "915fdb57454c094391d830cefb4ffdd24ed8088c",
   "nodes": [
     {
+      "name": "ComfyUI-Manager",
+      "url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
+      "requirements": true
+    },
+    {
       "name": "eden_comfy_pipelines",
       "url": "https://github.com/edenartlab/eden_comfy_pipelines.git",
       "requirements": true,
@@ -57,7 +62,8 @@
     {
       "name": "ComfyUI-VideoHelperSuite",
       "url": "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite",
-      "requirements": true
+      "requirements": true,
+      "commit": "0d44f4b46dd05303664a1aa26e87534d5eef3ac8"
     },
     {
       "name": "SeargeSDXL",
@@ -72,11 +78,6 @@
     {
       "name": "was-node-suite-comfyui",
       "url": "https://github.com/WASasquatch/was-node-suite-comfyui",
-      "requirements": true
-    },
-    {
-      "name": "ComfyUI-Manager",
-      "url": "https://github.com/aiXander/ComfyUI-Manager.git",
       "requirements": true
     },
     {
@@ -110,11 +111,6 @@
       "requirements": true
     },
     {
-      "name": "ComfyUI-Manager-ltdrdata",
-      "url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
-      "requirements": true
-    },
-    {
       "name": "rgthree-comfy",
       "url": "https://github.com/rgthree/rgthree-comfy",
       "requirements": true
@@ -122,7 +118,7 @@
     {
       "name": "ComfyUI-Depthflow-Nodes",
       "url": "https://github.com/akatz-ai/ComfyUI-Depthflow-Nodes",
-      "requirements": false
+      "requirements": true
     },
     {
       "name": "comfyui_segment_anything",
@@ -142,11 +138,6 @@
     {
       "name": "ComfyUI-LLaVA-OneVision",
       "url": "https://github.com/kijai/ComfyUI-LLaVA-OneVision.git",
-      "requirements": true
-    },
-    {
-      "name": "ComfyUI_Primere_Nodes",
-      "url": "https://github.com/CosmicLaca/ComfyUI_Primere_Nodes.git",
       "requirements": true
     },
     {
