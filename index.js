@@ -243,7 +243,7 @@ async function removeEnvironment(name) {
   }
 }
 
-async function switchEnvironment(name) {
+async function setEnvironment(name) {
   try {
     const config = await fs.readJson(configPath);
     if (!config.environments[name]) {
@@ -1106,10 +1106,10 @@ program
       .action(removeEnvironment),
   )
   .addCommand(
-    new Command("switch")
-      .argument("<name>", "Environment name")
-      .description("Switch to an environment")
-      .action(switchEnvironment),
+    new Command("set")
+      .argument("<name>", "Name of the environment")
+      .description("Set the current environment")
+      .action(setEnvironment),
   );
 
 const componentsCommand = program
