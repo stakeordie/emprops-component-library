@@ -1,3 +1,4 @@
+    # Setup and start services
 #!/bin/bash
 set -o pipefail  # Capture errors in pipe chains
 
@@ -119,7 +120,12 @@ setup_comfyui() {
     else 
         log "Switching ComfyUI to commit: $COMFY_COMMIT"
         cd "$COMFY_DIR"
-        git checkout "$COMFY_COMMIT"
+        git reset --hard "$COMFY_COMMIT"
+    fi
+
+    if [ -d "/workspace/shared_custom_nodes" ]; then
+        log "Copying and overriding shared custom nodes"
+        cp -rf /workspace/shared_custom_nodes/* "$COMFY_DIR/custom_nodes/"
     fi
 
     # Get number of available GPUs
