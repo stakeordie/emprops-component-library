@@ -1,9 +1,12 @@
 {
   "nodes": [
     {
-      "name": "ComfyUI-Manager",
-      "url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
-      "requirements": true
+      "name": "eden_comfy_pipelines",
+      "url": "https://github.com/edenartlab/eden_comfy_pipelines.git",
+      "requirements": true,
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
     }
   ],
   "models": [

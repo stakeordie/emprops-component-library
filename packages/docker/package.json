@@ -1,0 +1,14 @@
+{
+  "name": "@emprops/docker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "docker compose build",
+    "build:service": "docker compose build $SERVICE",
+    "up": "docker compose up -d",
+    "up:service": "docker compose up -d $SERVICE",
+    "up:service:build": "docker compose up -d --build $SERVICE",
+    "down": "docker compose down",
+    "down:service": "docker compose down $SERVICE"
+  }
+}

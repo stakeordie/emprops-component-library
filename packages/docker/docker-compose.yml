@@ -1,84 +1,63 @@
+x-base-service: &base-service
+  env_file:
+    - .env.local
+  ports:
+    - "8188:8188"
+    - "8189:8189"
+    - "8190:8190"
+    - "8191:8191"
+    - "8192:8192"
+    - "8193:8193"
+    - "8194:8194"
+    - "8195:8195"
+  build:
+    context: .
+    dockerfile: Dockerfile
+    platforms:
+      - linux/amd64
+  restart: unless-stopped
+  platform: linux/amd64
+  # deploy:
+  #   resources:
+  #     reservations:
+  #       devices:
+  #         - driver: nvidia
+  #           count: 1
+  #           capabilities: [gpu]
+
 services:
   comfyui-video:
+    <<: *base-service
     image: emprops/comfy-video:v6
     build:
-      context: .
-      dockerfile: Dockerfile
       args:
         - CONFIG_TYPE=video
-      platforms:
-        - linux/amd64
     volumes:
       - ./config/video:/workspace/config
-    restart: unless-stopped
-    platform: linux/amd64
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
   comfyui-flux:
+    <<: *base-service
     image: emprops/comfy-flux:latest
     build:
-      context: .
-      dockerfile: Dockerfile
       args:
         - CONFIG_TYPE=flux
-      platforms:
-        - linux/amd64
     volumes:
       - ./config/flux:/workspace/config
-    restart: unless-stopped
-    platform: linux/amd64
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
   comfyui-basic:
+    <<: *base-service
     image: emprops/comfy-basic:v6
     build:
-      context: .
-      dockerfile: Dockerfile
       args:
         - CONFIG_TYPE=basic
-      platforms:
-        - linux/amd64
     volumes:
       - ./config/basic:/workspace/config
-    restart: unless-stopped
-    platform: linux/amd64
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
   comfyui-tester:
+    <<: *base-service
     image: emprops/comfy-tester:v1
     build:
-      context: .
-      dockerfile: Dockerfile
       args:
         - CONFIG_TYPE=tester
-      platforms:
-        - linux/amd64
     volumes:
       - ./config/tester:/workspace/config
-    restart: unless-stopped
-    platform: linux/amd64
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]

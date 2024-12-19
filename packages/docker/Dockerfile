@@ -49,7 +49,13 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
     pip install huggingface_hub[hf_transfer] && \
     pip install tqdm
 
-FROM middle AS end
+FROM middle AS shared
+
+COPY config/shared ${ROOT}/shared_custom_nodes
+
+RUN find ${ROOT}/shared_custom_nodes -name "requirements.txt" -execdir pip install -r {} \;
+
+FROM shared AS end
 
 COPY config/ ${CONFIG_DIR}/
 
