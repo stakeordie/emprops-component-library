@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "format": "prettier --write ./Components/**/*.json"
+    "format": "prettier --write ./Components/**/*.json ./index.js"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.0.1",
