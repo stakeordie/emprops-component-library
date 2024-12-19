@@ -10,7 +10,14 @@
     "clean": "yarn workspaces run clean",
     "build": "yarn workspaces run build",
     "test": "yarn workspaces run test",
-    "link": "workspace @emprops/component-library npm link"
+    "link": "workspace @emprops/component-library npm link",
+    "docker:build": "workspace @emprops/docker docker compose build",
+    "docker:build:service": "workspace @emprops/docker docker compose build $SERVICE",
+    "docker:up": "workspace @emprops/docker docker compose up -d",
+    "docker:up:service": "workspace @emprops/docker docker compose up -d $SERVICE",
+    "docker:up:service:build": "workspace @emprops/docker docker compose up -d --build $SERVICE",
+    "docker:down": "workspace @emprops/docker docker compose down",
+    "docker:down:service": "workspace @emprops/docker docker compose down $SERVICE"
   },
   "devDependencies": {
     "lerna": "^6.0.0",

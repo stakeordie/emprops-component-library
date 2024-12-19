@@ -2,11 +2,6 @@
   "comfy_version": "915fdb57454c094391d830cefb4ffdd24ed8088c",
   "nodes": [
     {
-      "name": "ComfyUI-Manager",
-      "url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
-      "requirements": true
-    },
-    {
       "name": "eden_comfy_pipelines",
       "url": "https://github.com/edenartlab/eden_comfy_pipelines.git",
       "requirements": true,
