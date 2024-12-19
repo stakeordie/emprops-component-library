@@ -1,6 +1,7 @@
 {
   "config": {
-    "groupOrder": ["main", "advanced"]
+    "groupOrder": ["main", "advanced"],
+    "maxNumberOfGenerations": 6
   },
   "fields": [
     {
@@ -8,14 +9,14 @@
       "name": "Image",
       "type": "image_loader",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "prompt",
       "name": "Prompt",
       "type": "prompt_editor",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "steps",
@@ -28,7 +29,7 @@
         "step": 1
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "denoising",
@@ -41,7 +42,7 @@
         "step": 0.01
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "sampler",

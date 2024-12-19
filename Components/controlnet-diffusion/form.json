@@ -1,6 +1,9 @@
 {
   "config": {
-    "groupOrder": ["main", "advanced"]
+    "groupOrder": ["main", "advanced"],
+    "maxNumberOfGenerations": 1,
+    "type": "diffusion",
+    "category": "Image"
   },
   "fields": [
     {
@@ -10,14 +13,14 @@
       "default": "cannyv2",
       "conf_file": "controlnet_types.json",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "controlnet_image",
       "name": "Controlnet Image",
       "type": "image_loader",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "use_style_image",
@@ -25,7 +28,7 @@
       "type": "checkbox",
       "default": false,
       "display": true,
-      "group": "main"
+      "group": ["advanced"]
     },
     {
       "id": "style_image",
@@ -33,7 +36,7 @@
       "type": "image_loader",
       "required": false,
       "display": true,
-      "group": "main"
+      "group": ["advanced"]
     },
     {
       "id": "prompt",
@@ -41,7 +44,7 @@
       "type": "prompt_editor",
       "default": "",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "negative_prompt",
@@ -49,7 +52,7 @@
       "type": "prompt_editor",
       "default": "",
       "display": true,
-      "group": "main"
+      "group": ["advanced"]
     },
     {
       "id": "denoising",
@@ -62,7 +65,7 @@
         "step": 0.001
       },
       "display": true,
-      "group": "main"
+      "group": ["advanced"]
     }
   ]
 }

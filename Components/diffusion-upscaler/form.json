@@ -1,6 +1,7 @@
 {
   "config": {
-    "groupOrder": ["main", "advanced"]
+    "groupOrder": ["basic", "main", "advanced"],
+    "maxNumberOfGenerations": 1
   },
   "fields": [
     {
@@ -9,7 +10,7 @@
       "type": "image_loader",
       "default": "",
       "display": true,
-      "group": "main"
+      "group": ["basic", "main", "advanced"]
     },
     {
       "id": "prompt",
@@ -17,7 +18,7 @@
       "type": "prompt_editor",
       "default": "",
       "display": true,
-      "group": "main"
+      "group": ["basic", "main", "advanced"]
     },
     {
       "id": "negative_prompt",
@@ -25,7 +26,7 @@
       "type": "prompt_editor",
       "default": "",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "use_upscale",
@@ -33,7 +34,7 @@
       "type": "checkbox",
       "default": true,
       "display": true,
-      "group": "main"
+      "group": "advanced"
     },
     {
       "id": "use_color_match",
@@ -41,7 +42,7 @@
       "type": "checkbox",
       "default": true,
       "display": true,
-      "group": "main"
+      "group": "advanced"
     },
     {
       "id": "output_size",
@@ -50,7 +51,7 @@
       "default": 2048,
       "conf_file": "output-size.json",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "tile_size",
@@ -59,7 +60,7 @@
       "default": 768,
       "conf_file": "tile-size.json",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "denoising",
@@ -72,7 +73,7 @@
         "step": 0.001
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "controlnet_strength",
@@ -85,7 +86,7 @@
         "step": 0.001
       },
       "display": true,
-      "group": "main"
+      "group": "advanced"
     },
     {
       "id": "steps",
@@ -98,13 +99,13 @@
         "step": 20
       },
       "display": true,
-      "group": "advanced"
+      "group": ["main", "advanced"]
     },
     {
       "id": "sampler",
       "name": "Sampler",
       "type": "select",
-      "default": "dpmpp_3m_sde",
+      "default": "dpmpp_2m",
       "conf_file": "samplers.json",
       "display": true,
       "group": "advanced"

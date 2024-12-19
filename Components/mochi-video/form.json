@@ -10,14 +10,14 @@
       "type": "prompt_editor",
       "placeholder": "Enter a prompt... ",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "negative_prompt",
       "name": "Negative Prompt",
       "type": "prompt_editor",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "steps",
@@ -30,7 +30,7 @@
         "step": 1
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "width",
@@ -43,7 +43,7 @@
         "step": 16
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "height",
@@ -56,7 +56,7 @@
         "step": 16
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "length",
@@ -69,7 +69,7 @@
         "step": 6
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "is_ping_pong",
@@ -77,7 +77,7 @@
       "type": "checkbox",
       "default": false,
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "sampler",
@@ -86,7 +86,7 @@
       "default": "euler",
       "conf_file": "samplers.json",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "scheduler",
@@ -95,7 +95,7 @@
       "default": "ddim_uniform",
       "conf_file": "schedulers.json",
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "cfg",

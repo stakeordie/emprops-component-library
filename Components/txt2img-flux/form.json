@@ -1,6 +1,7 @@
 {
   "config": {
-    "groupOrder": ["main", "advanced"]
+    "groupOrder": ["main", "advanced"],
+    "maxNumberOfGenerations": 6
   },
   "fields": [
     {
@@ -21,7 +22,7 @@
         "step": 64
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "height",
@@ -34,7 +35,7 @@
         "step": 64
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "steps",
@@ -47,7 +48,7 @@
         "step": 1
       },
       "display": true,
-      "group": "main"
+      "group": ["main", "advanced"]
     },
     {
       "id": "sampler",
