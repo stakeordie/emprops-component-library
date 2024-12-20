@@ -73,13 +73,19 @@ COPY scripts/comfyui /etc/init.d/comfyui
 RUN chmod +x /etc/init.d/comfyui && \
     update-rc.d comfyui defaults
 
+COPY ./scripts/mgpu /usr/local/bin/mgpu
+RUN chmod +x /usr/local/bin/mgpu
+
+COPY ./scripts/setup_symlinks.sh /usr/local/bin/setup_symlinks.sh
+RUN chmod +x /usr/local/bin/setup_symlinks.sh
+
 # Copy startup script
 COPY scripts/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh
 
 COPY scripts ${ROOT}/scripts
 
-RUN rm -rf ${ROOT}/scripts/start.sh && rm -rf ${ROOT}/scripts/comfyui
+RUN rm -rf ${ROOT}/scripts/start.sh && rm -rf ${ROOT}/scripts/comfyui && rm -rf ${ROOT}/scripts/mgpu && rm -rf ${ROOT}/scripts/setup_symlinks.sh
 
 
 # RUN usermod -aG crontab ubuntu

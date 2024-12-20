@@ -7,14 +7,13 @@ CONFIG_DIR="${CONFIG_DIR:-${ROOT}/config}"
 COMFY_DIR="${COMFY_DIR:-${ROOT}/ComfyUI}"
 CONFIG_FILE="$CONFIG_DIR/config.json"
 
-# Setup logging
-LOG_FILE="${ROOT}/start.log"
-mkdir -p "$(dirname "$LOG_FILE")"
-touch "$LOG_FILE"
-
-log() {
-    local msg="[$(date +'%Y-%m-%d %H:%M:%S')] $*"
-    echo "$msg" | tee -a "$LOG_FILE"
+# Setup logging for each GPU
+setup_logging() {
+    for gpu in $(seq 0 1); do  # Adjust range based on the number of GPUs
+        LOG_DIR="${ROOT}/comfyui_gpu${gpu}/logs"
+        mkdir -p "$LOG_DIR"
+        touch "$LOG_DIR/debug.log" "$LOG_DIR/output.log"
+    done
 }
 
 check_env_vars() {
@@ -117,20 +116,53 @@ setup_comfyui() {
     if [ -z "$COMFY_COMMIT" ] || [ "$COMFY_COMMIT" = "null" ]; then
         log "WARNING: No comfy_version found, defaulting to 'main'"
         COMFY_COMMIT="main"
-    else 
-        log "Switching ComfyUI to commit: $COMFY_COMMIT"
-        cd "$COMFY_DIR"
-        git reset --hard "$COMFY_COMMIT"
     fi
+
+    # Update base ComfyUI to correct commit
+    cd "$COMFY_DIR"
+    git reset --hard "$COMFY_COMMIT"
+
+    # Get number of GPUs, allowing override with FORCE_NUM_GPUS
+    if [ -n "$FORCE_NUM_GPUS" ]; then
+        GPU_COUNT=$FORCE_NUM_GPUS
+        log "Using forced GPU count: $GPU_COUNT"
+    else
+        GPU_COUNT=$(python -c "import torch; print(torch.cuda.device_count())")
+        log "Detected $GPU_COUNT GPUs"
+    fi
+    
+    export NUM_GPUS=$GPU_COUNT
+
+    # Create shared directories
+    mkdir -p "${ROOT}/shared/models"
+    mkdir -p "${ROOT}/shared/custom_nodes"
 
     if [ -d "/workspace/shared_custom_nodes" ]; then
-        log "Copying and overriding shared custom nodes"
-        cp -rf /workspace/shared_custom_nodes/* "$COMFY_DIR/custom_nodes/"
+        log "Copying shared custom nodes to shared directory"
+        cp -rf /workspace/shared_custom_nodes/* "${ROOT}/shared/custom_nodes/"
     fi
 
-    # Get number of available GPUs
-    GPU_COUNT=$(python -c "import torch; print(torch.cuda.device_count())")
-    log "Found $GPU_COUNT GPUs"
+    # Copy ComfyUI for each GPU
+    for gpu in $(seq 0 $((GPU_COUNT-1))); do
+        GPU_DIR="${ROOT}/comfyui_gpu${gpu}"
+        
+        log "Setting up ComfyUI for GPU $gpu..."
+        
+        # Copy ComfyUI if it doesn't exist
+        if [ ! -d "$GPU_DIR" ]; then
+            log "Copying ComfyUI for GPU $gpu..."
+            cp -r "$COMFY_DIR" "$GPU_DIR"
+            
+            # Remove default models and custom_nodes directories
+            rm -rf "$GPU_DIR/models"
+            rm -rf "$GPU_DIR/custom_nodes"
+        fi
+
+        # Create symlinks for shared resources
+        log "Creating symlinks for GPU $gpu..."
+        ln -sfn "${ROOT}/shared/models" "$GPU_DIR/models"
+        ln -sfn "${ROOT}/shared/custom_nodes" "$GPU_DIR/custom_nodes"
+    done
 
     if [ "$GPU_COUNT" -eq 0 ]; then
         log "No GPUs found - setting up CPU instance"
@@ -172,34 +204,17 @@ export PORT=${port}" "$service_file"
 }
 
 start_comfyui() {
-    # Get number of available GPUs
-    GPU_COUNT=$(python -c "import torch; print(torch.cuda.device_count())")
+    log "Starting ComfyUI services..."
     
-    if [ "$GPU_COUNT" -eq 0 ]; then
-        log "Starting CPU instance"
-        service "comfyui_cpu" start
-        log "Started ComfyUI CPU service on port 8188"
-    else
-        # Start each GPU service
-        for gpu in $(seq 0 $((GPU_COUNT-1))); do
-            port=$((8188 + gpu))
-            service_name="comfyui_gpu${gpu}"
-            
-            service "$service_name" start
-            log "Started ComfyUI service for GPU $gpu on port $port"
-        done
+    # Start all GPU instances using mgpu
+    mgpu start-all
+    
+    if [ $? -ne 0 ]; then
+        log "Failed to start ComfyUI services"
+        return 1
     fi
-}
-# Function to download models
-
-normalize_path() {
-    local path="$1"
-    # Only normalize if it's not a URL (doesn't start with http:// or https://)
-    if [[ "$path" != http://* ]] && [[ "$path" != https://* ]]; then
-        echo "${path//\/\//\/}"
-    else
-        echo "$path"
-    fi
+    
+    log "All ComfyUI services started successfully"
 }
 
 download_model() {
@@ -226,38 +241,26 @@ download_model() {
     
     log "Using download path: $primary_path"
     
-    local target_dir="$(normalize_path "$COMFY_DIR/$primary_path")"
+    local target_dir="$(normalize_path "${ROOT}/shared/$primary_path")"
     local target_file="$(normalize_path "$target_dir/$filename")"
     
     mkdir -p "$target_dir"
     
-    # First, try using Python script for Hugging Face download
-    if [[ "$url" == *"huggingface.co"* ]]; then
-        python "${ROOT}/scripts/download_model.py" \
-            "$url" "$target_dir" "$filename" >> "$LOG_FILE" 2>&1
-        
-        # Check download result
-        if [ $? -eq 0 ] && [ -s "$target_file" ]; then
-            log "Successfully downloaded $url using Python script"
-            return 0
-        fi
-    fi
+    # Download using wget
+    log "Downloading from: $url"
+    log "Saving to: $target_file"
     
-    # If Python script fails or not a HF URL, try wget
     wget \
         --progress=bar:force:noscroll \
-        --no-verbose \
-        -q \
         -O "$target_file" \
         "$url" >> "$LOG_FILE" 2>&1
     
     # Check wget result
     if [ $? -eq 0 ] && [ -s "$target_file" ]; then
-        log "Successfully downloaded $url using wget"
+        log "Successfully downloaded $url"
         return 0
     fi
     
-    # If both methods fail
     log "Failed to download $url"
     return 1
 }
@@ -267,23 +270,6 @@ download_models() {
         log "No config file found at $CONFIG_FILE"
         return 0
     fi
-
-    HF_HUB_ENABLE_HF_TRANSFER=1
-
-    # Try to import huggingface_hub
-    if python -c "import huggingface_hub" 2>/dev/null; then
-        # Login to Hugging Face using environment variable
-        if [ -n "$HF_TOKEN" ]; then
-            log "Logging into Hugging Face"
-            python -c "from huggingface_hub import login; login(token='$HF_TOKEN')"
-        fi
-    else
-        log "huggingface_hub not found. Falling back to wget downloads."
-        return 1
-    fi
-
-    local models_dir="/home/ubuntu/ComfyUI/models/checkpoints"
-    mkdir -p "$models_dir"
 
     # Process each model in the configuration
     local models
@@ -320,9 +306,10 @@ install_nodes() {
     if [ ! -f "$CONFIG_FILE" ]; then
         log "Config not found: $CONFIG_FILE"
         return
-    fi
+    }
 
-    cd "$COMFY_DIR/custom_nodes"
+    # Use shared custom_nodes directory
+    cd "${ROOT}/shared/custom_nodes"
     
     while IFS= read -r node; do
         name=$(echo "$node" | jq -r '.name')
@@ -393,92 +380,39 @@ start_nginx() {
     service nginx start
 }
 
-monitor_services() {
-    # Get number of GPUs
-    GPU_COUNT=$(python -c "import torch; print(torch.cuda.device_count())")
-    RESTART_ATTEMPTS=0
-    MAX_RESTART_ATTEMPTS=5
-    COMFYUI_DEBUG_LOG="$ROOT/.comfyui/log/debug.log"
-
-    while true; do
-        if [ "$GPU_COUNT" -eq 0 ]; then
-            # Monitor CPU instance
-            if ! service comfyui_cpu status >/dev/null 2>&1; then
-                log "ComfyUI CPU service stopped unexpectedly"
-                log "=== ComfyUI Debug Log ==="
-                tail -n 50 "$COMFYUI_DEBUG_LOG"
-                
-                if [ $RESTART_ATTEMPTS -lt $MAX_RESTART_ATTEMPTS ]; then
-                    log "Attempting to restart ComfyUI CPU service (Attempt $((RESTART_ATTEMPTS+1))/$MAX_RESTART_ATTEMPTS)..."
-                    service comfyui_cpu start
-                    RESTART_ATTEMPTS=$((RESTART_ATTEMPTS+1))
-                else
-                    log "MAX RESTART ATTEMPTS REACHED. Giving up on ComfyUI CPU service."
-                    break
-                fi
-            fi
-        else
-            # Monitor each GPU instance
-            for gpu in $(seq 0 $((GPU_COUNT-1))); do
-                service_name="comfyui_gpu${gpu}"
-                if ! service "$service_name" status >/dev/null 2>&1; then
-                    log "ComfyUI GPU $gpu service stopped unexpectedly"
-                    log "=== ComfyUI Debug Log for GPU $gpu ==="
-                    tail -n 50 "$COMFYUI_DEBUG_LOG"
-                    
-                    if [ $RESTART_ATTEMPTS -lt $MAX_RESTART_ATTEMPTS ]; then
-                        log "Attempting to restart ComfyUI GPU $gpu service (Attempt $((RESTART_ATTEMPTS+1))/$MAX_RESTART_ATTEMPTS)..."
-                        service "$service_name" start
-                        RESTART_ATTEMPTS=$((RESTART_ATTEMPTS+1))
-                    else
-                        log "MAX RESTART ATTEMPTS REACHED. Giving up on ComfyUI GPU $gpu service."
-                        break 2  # Break out of both loops
-                    fi
-                fi
-            done
-        fi
-        
-        # Reset restart attempts if all services are running
-        RESTART_ATTEMPTS=0
-        sleep 30
-    done
-}
-
 main() {
-    log "Starting setup process..."
-
+    log "Starting initialization..."
+    
+    # Setup logging
+    setup_logging
+    
     # Check environment variables
-    check_env_vars
-
-    # SSH Key Setup
-    setup_ssh_access
-
-    # Initial setup
-    setup_nginx
-    setup_comfyui
-
-    # Process config and install components
-    if [ -f "$CONFIG_FILE" ]; then
-        install_nodes
-        download_models
-    else
-        log "No config found at: $CONFIG_FILE"
-        log "Continuing with default configuration..."
-    fi
-
-    # Setup and start services
-    setup_services
-    start_nginx
-
-    # Start ComfyUI service
-    log "Starting ComfyUI service..."
-    start_comfyui
-
-    # Monitor services
-    monitor_services
-
-    log "SLEEPING..."
-
+    check_env_vars || exit 1
+    
+    # Setup SSH access
+    setup_ssh_access || exit 1
+    
+    # Setup nginx
+    setup_nginx || exit 1
+    
+    # Setup ComfyUI instances
+    setup_comfyui || exit 1
+    
+    # Download models if specified in config
+    download_models || exit 1
+    
+    # Install custom nodes if specified in config
+    install_nodes || exit 1
+    
+    # Start ComfyUI services
+    start_comfyui || exit 1
+    
+    # Start nginx
+    start_nginx || exit 1
+    
+    log "Initialization complete"
+    
+    # Keep container running
     sleep infinity
 }
 

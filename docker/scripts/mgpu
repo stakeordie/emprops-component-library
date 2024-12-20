@@ -1,0 +1,219 @@
+#!/bin/bash
+
+# Base directory for your ComfyUI instances
+ROOT="${ROOT:-/workspace}"
+NUM_GPUS="${NUM_GPUS:-1}"  # Use the environment variable set during startup
+
+# Validate GPU ID
+validate_gpu_id() {
+    local gpu_id=$1
+
+    if ! [[ "$gpu_id" =~ ^[0-9]+$ ]]; then
+        echo "Error: GPU ID must be a number"
+        return 1
+    fi
+
+    if [ "$gpu_id" -ge "$NUM_GPUS" ]; then
+        echo "Error: GPU ID $gpu_id is not available. Only $NUM_GPUS GPU(s) configured."
+        return 1
+    fi
+}
+
+# Function to show logs for a specific GPU
+show_logs() {
+    local gpu_id=$1
+    LOG_DIR="$ROOT/comfyui_gpu${gpu_id}/logs"
+    DEBUG_LOG="$LOG_DIR/debug.log"
+    OUTPUT_LOG="$LOG_DIR/output.log"
+
+    echo "=== Showing logs for GPU $gpu_id ==="
+    if [ -f "$DEBUG_LOG" ]; then
+        echo "=== Debug Log ==="
+        tail -n 50 "$DEBUG_LOG"
+    else
+        echo "No debug log found."
+    fi
+
+    if [ -f "$OUTPUT_LOG" ]; then
+        echo "=== Output Log ==="
+        tail -n 50 "$OUTPUT_LOG"
+    else
+        echo "No output log found."
+    fi
+}
+
+# Function to show logs for all GPUs
+show_all_logs() {
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        show_logs "$gpu"
+        echo "----------------------------------------"
+    done
+}
+
+# Function to restart a specific GPU service
+restart_service() {
+    local gpu_id=$1
+    echo "Restarting service for GPU $gpu_id..."
+    service "comfyui_gpu${gpu_id}" restart
+    echo "Service for GPU $gpu_id restarted."
+}
+
+# Function to restart all GPU services
+restart_all_services() {
+    echo "Restarting all GPU services..."
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        restart_service "$gpu"
+    done
+    echo "All GPU services restarted."
+}
+
+# Function to check status of a specific GPU service
+check_status() {
+    local gpu_id=$1
+    echo "=== Status for GPU $gpu_id ==="
+    service "comfyui_gpu${gpu_id}" status
+}
+
+# Function to check status of all GPU services
+check_all_status() {
+    echo "Checking status for all GPUs..."
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        check_status "$gpu"
+        echo "----------------------------------------"
+    done
+}
+
+# Function to stop a specific GPU service
+stop_service() {
+    local gpu_id=$1
+    echo "Stopping service for GPU $gpu_id..."
+    service "comfyui_gpu${gpu_id}" stop
+    echo "Service for GPU $gpu_id stopped."
+}
+
+# Function to stop all GPU services
+stop_all_services() {
+    echo "Stopping all GPU services..."
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        stop_service "$gpu"
+    done
+    echo "All GPU services stopped."
+}
+
+# Function to start a specific GPU service
+start_service() {
+    local gpu_id=$1
+    echo "Starting service for GPU $gpu_id..."
+    service "comfyui_gpu${gpu_id}" start
+    echo "Service for GPU $gpu_id started."
+}
+
+# Function to start all GPU services
+start_all_services() {
+    echo "Starting all GPU services..."
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        start_service "$gpu"
+    done
+    echo "All GPU services started."
+}
+
+# Show usage information
+show_usage() {
+    echo "Usage: $0 COMMAND [GPU_ID]"
+    echo
+    echo "Commands:"
+    echo "  logs <gpu_id>    Show logs for specific GPU"
+    echo "  logs-all         Show logs for all GPUs"
+    echo "  restart <gpu_id> Restart service for specific GPU"
+    echo "  restart-all      Restart all GPU services"
+    echo "  status <gpu_id>  Check status for specific GPU"
+    echo "  status-all       Check status of all GPU services"
+    echo "  stop <gpu_id>    Stop service for specific GPU"
+    echo "  stop-all         Stop all GPU services"
+    echo "  start <gpu_id>   Start service for specific GPU"
+    echo "  start-all        Start all GPU services"
+    echo "  count            Show number of configured GPUs"
+    echo
+    echo "GPU_ID should be between 0 and $((NUM_GPUS-1))"
+}
+
+# Main command handling
+case "$1" in
+    logs)
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            show_usage
+            exit 1
+        fi
+        if ! validate_gpu_id "$2"; then
+            exit 1
+        fi
+        show_logs "$2"
+        ;;
+    logs-all)
+        show_all_logs
+        ;;
+    restart)
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            show_usage
+            exit 1
+        fi
+        if ! validate_gpu_id "$2"; then
+            exit 1
+        fi
+        restart_service "$2"
+        ;;
+    restart-all)
+        restart_all_services
+        ;;
+    status)
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            show_usage
+            exit 1
+        fi
+        if ! validate_gpu_id "$2"; then
+            exit 1
+        fi
+        check_status "$2"
+        ;;
+    status-all)
+        check_all_status
+        ;;
+    stop)
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            show_usage
+            exit 1
+        fi
+        if ! validate_gpu_id "$2"; then
+            exit 1
+        fi
+        stop_service "$2"
+        ;;
+    stop-all)
+        stop_all_services
+        ;;
+    start)
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            show_usage
+            exit 1
+        fi
+        if ! validate_gpu_id "$2"; then
+            exit 1
+        fi
+        start_service "$2"
+        ;;
+    start-all)
+        start_all_services
+        ;;
+    count)
+        echo "Configured GPUs: $NUM_GPUS"
+        ;;
+    *)
+        show_usage
+        exit 1
+        ;;
+esac

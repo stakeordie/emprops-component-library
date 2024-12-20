@@ -10,95 +10,79 @@
 
 # Paths
 ROOT="${ROOT:-/workspace}"
-COMFYUI_HOME="$ROOT/.comfyui"
-LOG_DIR="$COMFYUI_HOME/log"
-DEBUG_LOG="$LOG_DIR/debug.log"
-OUTPUT_LOG="$LOG_DIR/output.log"
-
-# ComfyUI specific paths
-COMFY_DIR="${COMFY_DIR:-${ROOT}/ComfyUI}"
-WORK_DIR="$COMFY_DIR"
-SCRIPT_PATH="$COMFY_DIR/main.py"
-PID_FILE="$COMFYUI_HOME/comfyui.pid"
-
-# Ensure log directory exists with correct permissions
-prepare_logs() {
-    mkdir -p "$COMFYUI_HOME/log"
-    chmod 755 "$COMFYUI_HOME"
-    chmod 755 "$COMFYUI_HOME/log"
-}
+NUM_GPUS="${NUM_GPUS:-1}"
 
 log() {
+    local GPU_ID=$1
+    shift
+    LOG_DIR="${ROOT}/comfyui_gpu${GPU_ID}/logs"
+    DEBUG_LOG="${LOG_DIR}/debug.log"
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$DEBUG_LOG"
 }
 
+prepare_logs() {
+    local GPU_ID=$1
+    LOG_DIR="${ROOT}/comfyui_gpu${GPU_ID}/logs"
+    mkdir -p "$LOG_DIR"
+    chmod 755 "$LOG_DIR"
+}
+
 start() {
+    local GPU_ID=$1
+    
+    # Validate GPU ID
+    if ! [[ "$GPU_ID" =~ ^[0-9]+$ ]] || [ "$GPU_ID" -ge "$NUM_GPUS" ]; then
+        echo "Error: Invalid GPU ID $GPU_ID. Must be between 0 and $((NUM_GPUS-1))"
+        return 1
+    fi
+
+    # Set GPU-specific paths
+    local GPU_DIR="${ROOT}/comfyui_gpu${GPU_ID}"
+    local SCRIPT_PATH="${GPU_DIR}/main.py"
+    local PID_FILE="${GPU_DIR}/comfyui.pid"
+    local OUTPUT_LOG="${GPU_DIR}/logs/output.log"
+
     # Prepare log directory
-    prepare_logs
+    prepare_logs "$GPU_ID"
 
     # Extensive logging
-    log "=== ComfyUI Service Start Diagnostics ==="
-    log "Current User: $(whoami)"
-    log "Current Working Directory: $(pwd)"
-    log "Script Path: $SCRIPT_PATH"
-    log "Working Directory: $WORK_DIR"
-    log "Log Directory: $LOG_DIR"
-    log "Debug Log: $DEBUG_LOG"
-    log "Output Log: $OUTPUT_LOG"
+    log "$GPU_ID" "=== ComfyUI Service Start Diagnostics ==="
+    log "$GPU_ID" "Current User: $(whoami)"
+    log "$GPU_ID" "GPU ID: $GPU_ID"
+    log "$GPU_ID" "Script Path: $SCRIPT_PATH"
+    log "$GPU_ID" "Working Directory: $GPU_DIR"
+    log "$GPU_ID" "Log Directory: ${GPU_DIR}/logs"
 
     # Validate paths
-    if [ ! -d "$WORK_DIR" ]; then
-        log "ERROR: Working directory does not exist: $WORK_DIR"
+    if [ ! -d "$GPU_DIR" ]; then
+        log "$GPU_ID" "ERROR: Working directory does not exist: $GPU_DIR"
         return 1
     fi
 
     if [ ! -f "$SCRIPT_PATH" ]; then
-        log "ERROR: ComfyUI main script not found at $SCRIPT_PATH"
+        log "$GPU_ID" "ERROR: ComfyUI main script not found at $SCRIPT_PATH"
         return 1
     fi
     
     # Verify Python environment
     ACTIVE_PYTHON=$(which python)
-    log "Active Python Path: $ACTIVE_PYTHON"
+    log "$GPU_ID" "Active Python Path: $ACTIVE_PYTHON"
     python --version
 
-    # Check for CUDA availability
-    CUDA_CHECK=$(python -c "
-import torch
-try:
-        cuda_available = torch.cuda.is_available()
-        device_count = torch.cuda.device_count()
-        print(f'CUDA_AVAILABLE:{cuda_available}')
-        print(f'CUDA_DEVICE_COUNT:{device_count}')
-except Exception as e:
-        print(f'CUDA_ERROR:{str(e)}')
-")
+    # Set GPU-specific environment variables
+    export CUDA_VISIBLE_DEVICES=$GPU_ID
+    PORT="${PORT:-$((8188 + GPU_ID))}"
 
-    # Parse CUDA check results
-    CUDA_AVAILABLE=$(echo "$CUDA_CHECK" | grep "CUDA_AVAILABLE:" | cut -d: -f2)
-    CUDA_DEVICE_COUNT=$(echo "$CUDA_CHECK" | grep "CUDA_DEVICE_COUNT:" | cut -d: -f2)
-    CUDA_ERROR=$(echo "$CUDA_CHECK" | grep "CUDA_ERROR:" | cut -d: -f2)
-
-    # Log CUDA detection results
-    log "CUDA Check Results:"
-    log "CUDA Available: $CUDA_AVAILABLE"
-    log "CUDA Device Count: $CUDA_DEVICE_COUNT"
-    
     # Prepare run command
-    PORT="${PORT:-8188}"
-    RUN_COMMAND=(python "$SCRIPT_PATH" --listen 127.0.0.1 --port "$PORT")
+    RUN_COMMAND=(python "$SCRIPT_PATH" --listen 0.0.0.0 --port "$PORT")
     
-    # If no CUDA, force CPU mode
-    if [ "$CUDA_AVAILABLE" != "True" ] || [ "$CUDA_DEVICE_COUNT" = "0" ]; then
-        log "No CUDA devices found. Forcing CPU mode."
-        RUN_COMMAND+=("--cpu")
-        export CUDA_VISIBLE_DEVICES=""
-    fi
-
     # Log the exact command being run
-    log "Executing ComfyUI start command: ${RUN_COMMAND[@]}"
+    log "$GPU_ID" "Executing ComfyUI start command: ${RUN_COMMAND[@]}"
+    log "$GPU_ID" "Using GPU: $GPU_ID (CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES)"
+    log "$GPU_ID" "Port: $PORT"
 
-    # Start ComfyUI as ubuntu user
+    # Start ComfyUI
+    cd "$GPU_DIR"
     PYTHONUNBUFFERED=1 \
         "${RUN_COMMAND[@]}" >> "$OUTPUT_LOG" 2>&1 &
     local pid=$!
@@ -109,63 +93,91 @@ except Exception as e:
     # Check if process is running
     if kill -0 "$pid" 2>/dev/null; then
         echo "$pid" > "$PID_FILE"
-        log "ComfyUI started with PID $pid. Full command: ${RUN_COMMAND[@]}"
+        log "$GPU_ID" "ComfyUI started with PID $pid. Full command: ${RUN_COMMAND[@]}"
         return 0
     else
-        log "Failed to start ComfyUI. Command used: ${RUN_COMMAND[@]}"
+        log "$GPU_ID" "Failed to start ComfyUI. Command used: ${RUN_COMMAND[@]}"
         return 1
     fi
 }
 
 stop() {
-    log "Stopping ComfyUI service..."
+    local GPU_ID=$1
+    local GPU_DIR="${ROOT}/comfyui_gpu${GPU_ID}"
+    local PID_FILE="${GPU_DIR}/comfyui.pid"
+
+    log "$GPU_ID" "Stopping ComfyUI service for GPU $GPU_ID..."
     
     if [ -f "$PID_FILE" ]; then
         PID=$(cat "$PID_FILE")
         if kill -0 "$PID" 2>/dev/null; then
             kill "$PID"
-            log "Sent termination signal to ComfyUI (PID: $PID)"
+            log "$GPU_ID" "Sent termination signal to ComfyUI (PID: $PID)"
         else
-            log "No running ComfyUI process found"
+            log "$GPU_ID" "No running ComfyUI process found"
         fi
         rm -f "$PID_FILE"
     else
-        log "No PID file found"
+        log "$GPU_ID" "No PID file found"
     fi
 }
 
 status() {
+    local GPU_ID=$1
+    local GPU_DIR="${ROOT}/comfyui_gpu${GPU_ID}"
+    local PID_FILE="${GPU_DIR}/comfyui.pid"
+
     if [ -f "$PID_FILE" ]; then
         PID=$(cat "$PID_FILE")
         if kill -0 "$PID" 2>/dev/null; then
-            echo "ComfyUI is running (PID: $PID)"
+            echo "ComfyUI is running on GPU $GPU_ID (PID: $PID)"
             return 0
         else
-            echo "ComfyUI is not running (stale PID file)"
+            echo "ComfyUI is not running on GPU $GPU_ID (stale PID file)"
             return 1
         fi
     else
-        echo "ComfyUI is not running"
+        echo "ComfyUI is not running on GPU $GPU_ID"
         return 1
     fi
 }
 
 case "$1" in
     start)
-        start
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            echo "Usage: $0 start <GPU_ID>"
+            exit 1
+        fi
+        start "$2"
         ;;
     stop)
-        stop
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            echo "Usage: $0 stop <GPU_ID>"
+            exit 1
+        fi
+        stop "$2"
         ;;
     status)
-        status
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            echo "Usage: $0 status <GPU_ID>"
+            exit 1
+        fi
+        status "$2"
         ;;
     restart)
-        stop
-        start
+        if [ -z "$2" ]; then
+            echo "Error: GPU ID required"
+            echo "Usage: $0 restart <GPU_ID>"
+            exit 1
+        fi
+        stop "$2"
+        start "$2"
         ;;
     *)
-        echo "Usage: $0 {start|stop|status|restart}"
+        echo "Usage: $0 {start|stop|status|restart} <GPU_ID>"
         exit 1
 esac
 
