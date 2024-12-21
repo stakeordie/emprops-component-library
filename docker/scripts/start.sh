@@ -643,7 +643,7 @@ verify_services() {
         
         # Test NGINX auth separately from service
         log "Testing NGINX auth on port 3188..."
-        if ! curl -I -s --fail -u "$COMFY_AUTH" "http://localhost:3188/"; then
+        if ! make_auth_request "http://localhost:3188/system_stats"; then
             log "ERROR: NGINX auth test failed"
             log "Curl verbose output:"
             curl -v -I -u "$COMFY_AUTH" "http://localhost:3188/" 2>&1 | while read -r line; do log "  $line"; done
@@ -655,6 +655,7 @@ verify_services() {
     
     # 2. Verify ComfyUI Services
     log "=== Verifying ComfyUI Services ==="
+    log "How many GPUs: $NUM_GPUS"
     if [ "$NUM_GPUS" -eq 0 ]; then
         # CPU mode
         log "Checking CPU mode..."
@@ -776,8 +777,8 @@ setup_preinstalled_nodes() {
 
 setup_auth() {
     if [ -n "$SERVER_CREDS" ]; then
-        # Just base64 encode, curl will add "Basic " prefix
-        COMFY_AUTH="$SERVER_CREDS"
+        # Add "sd:" prefix and base64 encode
+        COMFY_AUTH=$(echo -n "sd:$SERVER_CREDS" | base64)
     else
         log "WARNING: SERVER_CREDS not set, authentication may fail"
     fi
@@ -788,7 +789,9 @@ make_auth_request() {
     local auth_opts=""
     
     if [ -n "$COMFY_AUTH" ]; then
-        auth_opts="-u '$COMFY_AUTH'"
+        # Decode base64 credentials for curl
+        local decoded_creds=$(echo "$COMFY_AUTH" | base64 -d)
+        auth_opts="-u '$decoded_creds'"
     fi
     
     if [ "$2" = "verbose" ]; then

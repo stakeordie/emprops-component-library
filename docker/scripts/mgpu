@@ -95,9 +95,22 @@ restart_service() {
     # Wait for port to be released (up to 30 seconds)
     local port=$((8188 + gpu_id))
     local wait_time=0
+    
+    # First check if process is still running
+    local pid
+    pid=$(lsof -t -i ":$port" 2>/dev/null)
+    if [ -n "$pid" ]; then
+        log "Process still using port $port (PID: $pid), killing..."
+        kill -9 "$pid"
+        sleep 2
+    fi
+    
+    # Double-check port is free
     while lsof -i ":$port" >/dev/null 2>&1; do
         if [ "$wait_time" -ge 30 ]; then
             log "ERROR: Port $port still in use after 30 seconds"
+            log "Current port status:"
+            lsof -i ":$port" 2>&1 | while read -r line; do log "  $line"; done
             return 1
         fi
         log "Waiting for port $port to be released..."
@@ -105,12 +118,10 @@ restart_service() {
         wait_time=$((wait_time + 2))
     done
     
-    # Additional wait to ensure clean shutdown
-    sleep 2
-    
-    # Start the service
+    # Start the service with the correct port
+    export COMFY_PORT="$port"
     if ! start_service "$gpu_id"; then
-        log "ERROR: Failed to restart service for GPU $gpu_id"
+        log "ERROR: Failed to start ComfyUI service for GPU $gpu_id"
         return 1
     fi
     
