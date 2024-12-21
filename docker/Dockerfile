@@ -2,7 +2,7 @@
 FROM pytorch/pytorch:latest AS start
 
 RUN apt update && apt-get install -y \
-    git git-lfs rsync nginx wget curl nano ffmpeg libsm6 libxext6 \
+    git git-lfs rsync nginx wget curl nano net-tools ffmpeg libsm6 libxext6 \
     cron sudo ssh zstd jq build-essential cmake ninja-build \
     gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
@@ -45,9 +45,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
     cd ${COMFY_DIR} && \
     pip install --upgrade pip && \
     pip install --upgrade onnxruntime-gpu mmengine opencv-python imgui-bundle && \
-    pip install -r requirements.txt && \
-    pip install huggingface_hub[hf_transfer] && \
-    pip install tqdm
+    pip install -r requirements.txt
 
 FROM middle AS shared
 
@@ -76,17 +74,11 @@ RUN chmod +x /etc/init.d/comfyui && \
 COPY ./scripts/mgpu /usr/local/bin/mgpu
 RUN chmod +x /usr/local/bin/mgpu
 
-COPY ./scripts/setup_symlinks.sh /usr/local/bin/setup_symlinks.sh
-RUN chmod +x /usr/local/bin/setup_symlinks.sh
-
 # Copy startup script
 COPY scripts/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh
 
-COPY scripts ${ROOT}/scripts
-
-RUN rm -rf ${ROOT}/scripts/start.sh && rm -rf ${ROOT}/scripts/comfyui && rm -rf ${ROOT}/scripts/mgpu && rm -rf ${ROOT}/scripts/setup_symlinks.sh
-
+COPY scripts/comfy_dir_config.yaml ${ROOT}/shared/comfy_dir_config.yaml
 
 # RUN usermod -aG crontab ubuntu
 # Create cron pid directory with correct permissions
@@ -97,5 +89,15 @@ RUN sed -i 's/touch $PIDFILE/# touch $PIDFILE/g' /etc/init.d/cron
 
 RUN cd ${ROOT} && git-lfs install 
 
+# Copy cleanup script and setup cron
+COPY scripts/cleanup_outputs.sh /usr/local/bin/cleanup_outputs.sh
+RUN chmod +x /usr/local/bin/cleanup_outputs.sh && \
+    echo "*/15 * * * * /usr/local/bin/cleanup_outputs.sh >> /var/log/cleanup.log 2>&1" > /etc/cron.d/cleanup && \
+    chmod 0644 /etc/cron.d/cleanup && \
+    mkdir -p /var/run/cron && \
+    touch /var/run/cron/crond.pid && \
+    chmod 644 /var/run/cron/crond.pid && \
+    sed -i 's/touch $PIDFILE/# touch $PIDFILE/g' /etc/init.d/cron
+    
 # Start services and application
 CMD ["/scripts/start.sh"]

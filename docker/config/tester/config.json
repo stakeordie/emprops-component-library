@@ -1,6 +1,25 @@
 {
   "nodes": [
+    {
+      "name": "eden_comfy_pipelines",
+      "url": "https://github.com/edenartlab/eden_comfy_pipelines.git",
+      "requirements": true,
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    },
+    {
+      "name": "ComfyUI_ModdedNodes",
+      "url": "https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes",
+      "requirements": true
+    }
   ],
   "models": [
+    {
+      "name": "v1-5-pruned-emaonly.ckpt",
+      "url": "https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt",
+      "path": "models/checkpoints/"
+    }
+    
   ]
 }

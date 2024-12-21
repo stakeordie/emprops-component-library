@@ -2,7 +2,32 @@
 
 # Base directory for your ComfyUI instances
 ROOT="${ROOT:-/workspace}"
-NUM_GPUS="${NUM_GPUS:-1}"  # Use the environment variable set during startup
+
+# Get number of GPUs - use TEST_GPUS if set, otherwise check nvidia-smi
+if [ -n "${TEST_GPUS:-}" ]; then
+    NUM_GPUS="$TEST_GPUS"  # Use test GPUs
+else
+    NUM_GPUS="${NUM_GPUS:-0}"  # Default to CPU mode if not set
+fi
+
+log() {
+    local msg="$1"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local log_line="[$timestamp] [MGPU] $msg"
+    
+    # Always write to start.log during initialization
+    echo "$log_line" >> "${ROOT}/logs/start.log"
+    
+    # Also write to service-specific log if it's a GPU message
+    if [[ "$msg" =~ ^GPU[[:space:]]*[0-9]+: ]]; then
+        local gpu_num
+        gpu_num=$(echo "$msg" | grep -o 'GPU[[:space:]]*[0-9]\+' | grep -o '[0-9]\+')
+        echo "$log_line" >> "${ROOT}/comfyui_gpu${gpu_num}/logs/service.log"
+    fi
+    
+    # Always echo to stdout
+    echo "$log_line"
+}
 
 # Validate GPU ID
 validate_gpu_id() {
@@ -22,56 +47,90 @@ validate_gpu_id() {
 # Function to show logs for a specific GPU
 show_logs() {
     local gpu_id=$1
-    LOG_DIR="$ROOT/comfyui_gpu${gpu_id}/logs"
-    DEBUG_LOG="$LOG_DIR/debug.log"
-    OUTPUT_LOG="$LOG_DIR/output.log"
-
-    echo "=== Showing logs for GPU $gpu_id ==="
-    if [ -f "$DEBUG_LOG" ]; then
-        echo "=== Debug Log ==="
-        tail -n 50 "$DEBUG_LOG"
-    else
-        echo "No debug log found."
+    local log_file="${ROOT}/comfyui_gpu${gpu_id}/logs/output.log"
+    
+    if [ ! -f "$log_file" ]; then
+        log "ERROR: Log file not found for GPU $gpu_id"
+        return 1
     fi
-
-    if [ -f "$OUTPUT_LOG" ]; then
-        echo "=== Output Log ==="
-        tail -n 50 "$OUTPUT_LOG"
-    else
-        echo "No output log found."
-    fi
+    
+    log "Showing logs for GPU $gpu_id (Ctrl+C to exit)..."
+    tail -f "$log_file"
 }
 
 # Function to show logs for all GPUs
 show_all_logs() {
-    for gpu in $(seq 0 $((NUM_GPUS-1))); do
-        show_logs "$gpu"
-        echo "----------------------------------------"
+    local temp_dir
+    temp_dir=$(mktemp -d)
+    local pids=()
+    
+    log "Showing logs for all GPUs (Ctrl+C to exit)..."
+    
+    # Start tail processes for each GPU
+    for ((i=0; i<NUM_GPUS; i++)); do
+        local log_file="${ROOT}/comfyui_gpu${i}/logs/output.log"
+        if [ -f "$log_file" ]; then
+            # Add GPU prefix to each line and write to temp file
+            tail -f "$log_file" | sed "s/^/[GPU $i] /" > "$temp_dir/gpu$i" &
+            pids+=($!)
+        fi
     done
+    
+    # Combine all logs in real-time
+    tail -f "$temp_dir"/gpu* 2>/dev/null
+    
+    # Cleanup on exit
+    trap 'kill ${pids[@]} 2>/dev/null; rm -rf "$temp_dir"' EXIT
+    wait
 }
 
 # Function to restart a specific GPU service
 restart_service() {
     local gpu_id=$1
-    echo "Restarting service for GPU $gpu_id..."
-    service "comfyui_gpu${gpu_id}" restart
-    echo "Service for GPU $gpu_id restarted."
+    log "Restarting service for GPU $gpu_id..."
+    
+    # Stop the service
+    stop_service "$gpu_id"
+    
+    # Wait for port to be released (up to 30 seconds)
+    local port=$((8188 + gpu_id))
+    local wait_time=0
+    while lsof -i ":$port" >/dev/null 2>&1; do
+        if [ "$wait_time" -ge 30 ]; then
+            log "ERROR: Port $port still in use after 30 seconds"
+            return 1
+        fi
+        log "Waiting for port $port to be released..."
+        sleep 2
+        wait_time=$((wait_time + 2))
+    done
+    
+    # Additional wait to ensure clean shutdown
+    sleep 2
+    
+    # Start the service
+    if ! start_service "$gpu_id"; then
+        log "ERROR: Failed to restart service for GPU $gpu_id"
+        return 1
+    fi
+    
+    log "Service for GPU $gpu_id restarted successfully"
 }
 
 # Function to restart all GPU services
 restart_all_services() {
-    echo "Restarting all GPU services..."
+    log "=== Restarting All GPU Services ==="
     for gpu in $(seq 0 $((NUM_GPUS-1))); do
         restart_service "$gpu"
     done
-    echo "All GPU services restarted."
+    log "All GPU services restarted."
 }
 
 # Function to check status of a specific GPU service
 check_status() {
     local gpu_id=$1
     echo "=== Status for GPU $gpu_id ==="
-    service "comfyui_gpu${gpu_id}" status
+    service "comfyui" status "$gpu_id"
 }
 
 # Function to check status of all GPU services
@@ -86,35 +145,90 @@ check_all_status() {
 # Function to stop a specific GPU service
 stop_service() {
     local gpu_id=$1
-    echo "Stopping service for GPU $gpu_id..."
-    service "comfyui_gpu${gpu_id}" stop
-    echo "Service for GPU $gpu_id stopped."
+    log "Stopping service for GPU $gpu_id..."
+    
+    service "comfyui" stop "$gpu_id"
+    
+    if ! service "comfyui" status "$gpu_id" >/dev/null 2>&1; then
+        log "Service stopped successfully"
+    else
+        log "WARNING: Service may still be running"
+    fi
 }
 
 # Function to stop all GPU services
 stop_all_services() {
-    echo "Stopping all GPU services..."
+    log "=== Stopping All GPU Services ==="
     for gpu in $(seq 0 $((NUM_GPUS-1))); do
         stop_service "$gpu"
     done
-    echo "All GPU services stopped."
+    log "All GPU services stopped"
 }
 
 # Function to start a specific GPU service
 start_service() {
     local gpu_id=$1
-    echo "Starting service for GPU $gpu_id..."
-    service "comfyui_gpu${gpu_id}" start
-    echo "Service for GPU $gpu_id started."
+    
+    if ! service comfyui start "$gpu_id" "${TEST_GPUS:-}"; then
+        log "ERROR: Failed to start ComfyUI service for GPU $gpu_id"
+        return 1
+    fi
 }
 
 # Function to start all GPU services
 start_all_services() {
-    echo "Starting all GPU services..."
+    log "=== Starting All GPU Services ==="
+    log "Number of GPUs: $NUM_GPUS"
+    
+    # Exit early if in CPU mode
+    if [ "$NUM_GPUS" -eq 0 ]; then
+        log "Running in CPU mode, no GPU services to start"
+        return 0
+    fi
+    
+    # Check GPU availability
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        log "GPU Information:"
+        nvidia-smi --query-gpu=index,gpu_name,memory.total,memory.free --format=csv,noheader | while read -r line; do
+            log "  $line"
+        done
+    else
+        log "WARNING: nvidia-smi not found"
+    fi
+    
+    # Start each GPU service
+    local failed=false
     for gpu in $(seq 0 $((NUM_GPUS-1))); do
-        start_service "$gpu"
+        if ! start_service "$gpu"; then
+            failed=true
+            break
+        fi
+        sleep 2
     done
-    echo "All GPU services started."
+    
+    if [ "$failed" = true ]; then
+        log "ERROR: Failed to start all GPU services"
+        return 1
+    fi
+    
+    log "All GPU services started successfully"
+}
+
+# Function to restart a specific GPU service
+restart_service() {
+    local gpu_id=$1
+    log "Restarting service for GPU $gpu_id..."
+    stop_service "$gpu_id"
+    sleep 2
+    start_service "$gpu_id"
+}
+
+# Function to restart all GPU services
+restart_all_services() {
+    log "=== Restarting All GPU Services ==="
+    stop_all_services
+    sleep 2
+    start_all_services
 }
 
 # Show usage information

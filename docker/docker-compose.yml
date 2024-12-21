@@ -2,21 +2,19 @@ x-base-service: &base-service
   env_file:
     - .env.local
   ports:
-    - "8188:8188"
-    - "8189:8189"
-    - "8190:8190"
-    - "8191:8191"
-    - "8192:8192"
-    - "8193:8193"
-    - "8194:8194"
-    - "8195:8195"
+    - "3188:3188"
+    - "3189:3189"
+    - "3190:3190"
+    - "3191:3191"
+    - "3192:3192"
+    - "3193:3193"
+    - "3194:3194"
+    - "3195:3195"
   build:
     context: .
     dockerfile: Dockerfile
     platforms:
       - linux/amd64
-  environment:
-      - PATH=/usr/local/bin:$PATH  # Ensure /usr/local/bin is in the PATH
   restart: unless-stopped
   platform: linux/amd64
   # deploy:

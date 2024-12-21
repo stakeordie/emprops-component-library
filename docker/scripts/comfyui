@@ -10,175 +10,260 @@
 
 # Paths
 ROOT="${ROOT:-/workspace}"
-NUM_GPUS="${NUM_GPUS:-1}"
+NUM_GPUS="${NUM_GPUS:-0}"  # Default to CPU mode
 
-log() {
-    local GPU_ID=$1
-    shift
-    LOG_DIR="${ROOT}/comfyui_gpu${GPU_ID}/logs"
-    DEBUG_LOG="${LOG_DIR}/debug.log"
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$DEBUG_LOG"
+# Check if we're in test mode
+if [ -n "${TEST_GPUS:-}" ]; then
+    export MOCK_GPU=1
+    export COMFY_ARGS="--cpu"
+fi
+
+# Setup logging
+setup_logs() {
+    local MODE=$1
+    local WORK_DIR
+    
+    if [ "$MODE" = "cpu" ]; then
+        WORK_DIR="${ROOT}/comfyui_cpu"
+    else
+        WORK_DIR="${ROOT}/comfyui_gpu${MODE}"
+    fi
+    
+    # Create log directories
+    mkdir -p "${WORK_DIR}/logs"
+    chmod 755 "${WORK_DIR}/logs"
+    
+    # Create empty log file if it doesn't exist
+    touch "${WORK_DIR}/logs/output.log"
+    chmod 644 "${WORK_DIR}/logs/output.log"
 }
 
-prepare_logs() {
-    local GPU_ID=$1
-    LOG_DIR="${ROOT}/comfyui_gpu${GPU_ID}/logs"
-    mkdir -p "$LOG_DIR"
-    chmod 755 "$LOG_DIR"
+log() {
+    local MODE=$1
+    shift
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local msg="[ComfyUI ${MODE}] $*"
+    local log_line="[$timestamp] $msg"
+    
+    # Always write to start.log
+    if [ -w "${ROOT}/logs/start.log" ]; then
+        echo "$log_line" >> "${ROOT}/logs/start.log"
+    else
+        echo "WARNING: Cannot write to ${ROOT}/logs/start.log" >&2
+    fi
+    
+    # Write to service-specific logs
+    if [ "$MODE" = "cpu" ]; then
+        LOG_DIR="${ROOT}/comfyui_cpu/logs"
+    else
+        LOG_DIR="${ROOT}/comfyui_gpu${MODE}/logs"
+    fi
+    
+    if [ -d "$LOG_DIR" ]; then
+        echo "$log_line" >> "${LOG_DIR}/output.log"
+    fi
+    
+    # Always echo to stdout for Docker logs
+    echo "$msg"
 }
 
 start() {
-    local GPU_ID=$1
+    local MODE=$1
+    local WORK_DIR
+    local PORT
     
-    # Validate GPU ID
-    if ! [[ "$GPU_ID" =~ ^[0-9]+$ ]] || [ "$GPU_ID" -ge "$NUM_GPUS" ]; then
-        echo "Error: Invalid GPU ID $GPU_ID. Must be between 0 and $((NUM_GPUS-1))"
-        return 1
-    fi
-
-    # Set GPU-specific paths
-    local GPU_DIR="${ROOT}/comfyui_gpu${GPU_ID}"
-    local SCRIPT_PATH="${GPU_DIR}/main.py"
-    local PID_FILE="${GPU_DIR}/comfyui.pid"
-    local OUTPUT_LOG="${GPU_DIR}/logs/output.log"
-
-    # Prepare log directory
-    prepare_logs "$GPU_ID"
-
-    # Extensive logging
-    log "$GPU_ID" "=== ComfyUI Service Start Diagnostics ==="
-    log "$GPU_ID" "Current User: $(whoami)"
-    log "$GPU_ID" "GPU ID: $GPU_ID"
-    log "$GPU_ID" "Script Path: $SCRIPT_PATH"
-    log "$GPU_ID" "Working Directory: $GPU_DIR"
-    log "$GPU_ID" "Log Directory: ${GPU_DIR}/logs"
-
-    # Validate paths
-    if [ ! -d "$GPU_DIR" ]; then
-        log "$GPU_ID" "ERROR: Working directory does not exist: $GPU_DIR"
-        return 1
-    fi
-
-    if [ ! -f "$SCRIPT_PATH" ]; then
-        log "$GPU_ID" "ERROR: ComfyUI main script not found at $SCRIPT_PATH"
-        return 1
-    fi
-    
-    # Verify Python environment
-    ACTIVE_PYTHON=$(which python)
-    log "$GPU_ID" "Active Python Path: $ACTIVE_PYTHON"
-    python --version
-
-    # Set GPU-specific environment variables
-    export CUDA_VISIBLE_DEVICES=$GPU_ID
-    PORT="${PORT:-$((8188 + GPU_ID))}"
-
-    # Prepare run command
-    RUN_COMMAND=(python "$SCRIPT_PATH" --listen 0.0.0.0 --port "$PORT")
-    
-    # Log the exact command being run
-    log "$GPU_ID" "Executing ComfyUI start command: ${RUN_COMMAND[@]}"
-    log "$GPU_ID" "Using GPU: $GPU_ID (CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES)"
-    log "$GPU_ID" "Port: $PORT"
-
-    # Start ComfyUI
-    cd "$GPU_DIR"
-    PYTHONUNBUFFERED=1 \
-        "${RUN_COMMAND[@]}" >> "$OUTPUT_LOG" 2>&1 &
-    local pid=$!
-
-    # Wait a moment to ensure process started
-    sleep 2
-
-    # Check if process is running
-    if kill -0 "$pid" 2>/dev/null; then
-        echo "$pid" > "$PID_FILE"
-        log "$GPU_ID" "ComfyUI started with PID $pid. Full command: ${RUN_COMMAND[@]}"
-        return 0
+    if [ "$MODE" = "cpu" ]; then
+        WORK_DIR="${ROOT}/comfyui_cpu"
+        PORT=8188
     else
-        log "$GPU_ID" "Failed to start ComfyUI. Command used: ${RUN_COMMAND[@]}"
+        WORK_DIR="${ROOT}/comfyui_gpu${MODE}"
+        PORT=$((8188 + MODE))
+    fi
+    
+    # Setup logs first
+    setup_logs "$MODE"
+    
+    # Check if already running
+    if [ -f "${WORK_DIR}/comfyui.pid" ] && kill -0 "$(cat "${WORK_DIR}/comfyui.pid")" 2>/dev/null; then
+        if netstat -tuln | grep -q ":$PORT "; then
+            log "$MODE" "Service is already running"
+            return 0
+        fi
+    fi
+    
+    # Ensure directory exists and has main.py
+    cd "$WORK_DIR" || {
+        log "$MODE" "ERROR: Working directory $WORK_DIR does not exist"
+        return 1
+    }
+    
+    if [ ! -f "main.py" ]; then
+        log "$MODE" "ERROR: main.py not found in $WORK_DIR"
         return 1
     fi
+    
+    # Ensure port is free
+    if netstat -tuln | grep -q ":$PORT "; then
+        log "$MODE" "ERROR: Port $PORT is already in use"
+        return 1
+    fi
+    
+    # Check if we're in test mode
+    log "$MODE" "COMFYUI: MOCK_GPU value: ${MOCK_GPU:-0}"
+    if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        log "$MODE" "COMFYUI: Running in test mode (CPU only)"
+    else
+        log "$MODE" "COMFYUI: Not in test mode"
+    fi
+    
+    log "$MODE" "Starting ComfyUI service in $([ "$MODE" = "cpu" ] && echo "CPU" || echo "GPU $MODE") mode"
+    
+    # Build command with any additional args
+    local CMD="python main.py --listen 127.0.0.1 --port $PORT --extra-model-paths-config ${ROOT}/shared/comfy_dir_config.yaml"
+    
+    # Add mode-specific args
+    log "$MODE" "COMFYUI: Building command... MODE=$MODE MOCK_GPU=${MOCK_GPU:-0}"
+    if [ "$MODE" = "cpu" ]; then
+        log "$MODE" "COMFYUI: Adding --cpu flag (CPU mode)"
+        CMD="$CMD --cpu"
+    elif [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        log "$MODE" "COMFYUI: Adding --cpu flag (Mock GPU mode)"
+        CMD="$CMD --cpu"
+    else
+        log "$MODE" "COMFYUI: Adding CUDA_VISIBLE_DEVICES=$MODE"
+        CMD="CUDA_VISIBLE_DEVICES=$MODE $CMD"
+    fi
+    
+    # Add any additional args from COMFY_ARGS
+    if [ -n "${COMFY_ARGS:-}" ]; then
+        # Don't add --cpu if it's already there
+        if [[ "$CMD" != *"--cpu"* ]]; then
+            log "$MODE" "Adding additional args: $COMFY_ARGS"
+            CMD="$CMD $COMFY_ARGS"
+        else
+            log "$MODE" "Skipping COMFY_ARGS (--cpu already set)"
+        fi
+    fi
+    
+    log "$MODE" "Running command: $CMD"
+    PYTHONUNBUFFERED=1 eval "$CMD" >> "${WORK_DIR}/logs/output.log" 2>&1 &
+    
+    echo $! > "${WORK_DIR}/comfyui.pid"
+    
+    # Wait for service
+    for i in {1..30}; do
+        if [ -f "${WORK_DIR}/comfyui.pid" ] && kill -0 "$(cat "${WORK_DIR}/comfyui.pid")" 2>/dev/null; then
+            if netstat -tuln | grep -q ":$PORT "; then
+                log "$MODE" "Service is running on port $PORT"
+                return 0
+            fi
+        fi
+        sleep 1
+        if [ $i -eq 30 ]; then
+            log "$MODE" "ERROR: Service startup timeout"
+            stop "$MODE"  # Cleanup failed start
+            return 1
+        fi
+    done
 }
 
 stop() {
-    local GPU_ID=$1
-    local GPU_DIR="${ROOT}/comfyui_gpu${GPU_ID}"
-    local PID_FILE="${GPU_DIR}/comfyui.pid"
-
-    log "$GPU_ID" "Stopping ComfyUI service for GPU $GPU_ID..."
+    local MODE=$1
+    local WORK_DIR
+    local PORT
     
-    if [ -f "$PID_FILE" ]; then
-        PID=$(cat "$PID_FILE")
-        if kill -0 "$PID" 2>/dev/null; then
-            kill "$PID"
-            log "$GPU_ID" "Sent termination signal to ComfyUI (PID: $PID)"
-        else
-            log "$GPU_ID" "No running ComfyUI process found"
-        fi
-        rm -f "$PID_FILE"
+    if [ "$MODE" = "cpu" ]; then
+        WORK_DIR="${ROOT}/comfyui_cpu"
+        PORT=8188
     else
-        log "$GPU_ID" "No PID file found"
+        WORK_DIR="${ROOT}/comfyui_gpu${MODE}"
+        PORT=$((8188 + MODE))
+    fi
+    
+    if [ -f "${WORK_DIR}/comfyui.pid" ]; then
+        local PID
+        PID=$(cat "${WORK_DIR}/comfyui.pid")
+        if kill -0 "$PID" 2>/dev/null; then
+            log "$MODE" "Stopping service (PID: $PID)"
+            kill "$PID"
+            # Wait for process to actually stop
+            for i in {1..10}; do
+                if ! kill -0 "$PID" 2>/dev/null; then
+                    break
+                fi
+                sleep 1
+                if [ $i -eq 10 ]; then
+                    log "$MODE" "Process didn't stop gracefully, forcing..."
+                    kill -9 "$PID" 2>/dev/null
+                fi
+            done
+        else
+            log "$MODE" "Process not running but PID file exists"
+        fi
+        rm -f "${WORK_DIR}/comfyui.pid"
+        log "$MODE" "Service stopped"
+    else
+        log "$MODE" "No PID file found"
+        # Check if process is still listening on port
+        if netstat -tuln | grep -q ":$PORT "; then
+            log "$MODE" "WARNING: Port $PORT still in use"
+            return 1
+        fi
     fi
 }
 
 status() {
-    local GPU_ID=$1
-    local GPU_DIR="${ROOT}/comfyui_gpu${GPU_ID}"
-    local PID_FILE="${GPU_DIR}/comfyui.pid"
-
-    if [ -f "$PID_FILE" ]; then
-        PID=$(cat "$PID_FILE")
-        if kill -0 "$PID" 2>/dev/null; then
-            echo "ComfyUI is running on GPU $GPU_ID (PID: $PID)"
-            return 0
-        else
-            echo "ComfyUI is not running on GPU $GPU_ID (stale PID file)"
-            return 1
-        fi
+    local MODE=$1
+    local WORK_DIR
+    local PORT
+    
+    if [ "$MODE" = "cpu" ]; then
+        WORK_DIR="${ROOT}/comfyui_cpu"
+        PORT=8188
     else
-        echo "ComfyUI is not running on GPU $GPU_ID"
-        return 1
+        WORK_DIR="${ROOT}/comfyui_gpu${MODE}"
+        PORT=$((8188 + MODE))
     fi
+    
+    local STATUS="not running"
+    local DETAILS=()
+    
+    # Check PID file and process
+    if [ -f "${WORK_DIR}/comfyui.pid" ]; then
+        local PID
+        PID=$(cat "${WORK_DIR}/comfyui.pid")
+        if kill -0 "$PID" 2>/dev/null; then
+            STATUS="running"
+            DETAILS+=("PID: $PID")
+        else
+            DETAILS+=("stale PID file")
+        fi
+    fi
+    
+    # Check port
+    if netstat -tuln | grep -q ":$PORT "; then
+        DETAILS+=("listening on port $PORT")
+    else
+        DETAILS+=("port $PORT not listening")
+        STATUS="not running"
+    fi
+    
+    log "$MODE" "Service is $STATUS (${DETAILS[*]})"
+    [ "$STATUS" = "running" ]
 }
 
 case "$1" in
-    start)
-        if [ -z "$2" ]; then
-            echo "Error: GPU ID required"
-            echo "Usage: $0 start <GPU_ID>"
-            exit 1
+    start|stop|status)
+        # Set TEST_GPUS from third parameter if provided
+        if [ -n "$3" ]; then
+            export TEST_GPUS="$3"
+            export MOCK_GPU=1
+            export COMFY_ARGS="--cpu"
         fi
-        start "$2"
-        ;;
-    stop)
-        if [ -z "$2" ]; then
-            echo "Error: GPU ID required"
-            echo "Usage: $0 stop <GPU_ID>"
-            exit 1
-        fi
-        stop "$2"
-        ;;
-    status)
-        if [ -z "$2" ]; then
-            echo "Error: GPU ID required"
-            echo "Usage: $0 status <GPU_ID>"
-            exit 1
-        fi
-        status "$2"
-        ;;
-    restart)
-        if [ -z "$2" ]; then
-            echo "Error: GPU ID required"
-            echo "Usage: $0 restart <GPU_ID>"
-            exit 1
-        fi
-        stop "$2"
-        start "$2"
+        $1 "${2:-cpu}"
         ;;
     *)
-        echo "Usage: $0 {start|stop|status|restart} <GPU_ID>"
+        echo "Usage: $0 {start|stop|status} [cpu|gpu_id] [test_gpus]"
         exit 1
+        ;;
 esac
-
-exit $?

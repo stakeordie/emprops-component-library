@@ -1,20 +1,38 @@
-    # Setup and start services
 #!/bin/bash
-set -o pipefail  # Capture errors in pipe chains
+# Debug mode
+set -x
 
 ROOT="${ROOT:-/workspace}"
 CONFIG_DIR="${CONFIG_DIR:-${ROOT}/config}"
 COMFY_DIR="${COMFY_DIR:-${ROOT}/ComfyUI}"
 CONFIG_FILE="$CONFIG_DIR/config.json"
+LOG_DIR="${ROOT}/logs"
+START_LOG="${LOG_DIR}/start.log"
 
-# Setup logging for each GPU
-setup_logging() {
-    for gpu in $(seq 0 1); do  # Adjust range based on the number of GPUs
-        LOG_DIR="${ROOT}/comfyui_gpu${gpu}/logs"
-        mkdir -p "$LOG_DIR"
-        touch "$LOG_DIR/debug.log" "$LOG_DIR/output.log"
-    done
+PATH=/usr/local/bin:$PATH
+
+# Add at the top of the file with other env vars
+COMFY_AUTH=""
+
+# Ensure base directories exist
+mkdir -p "$LOG_DIR" "${ROOT}/shared"
+chmod 755 "$LOG_DIR" "${ROOT}/shared"
+touch "$START_LOG"
+chmod 644 "$START_LOG"
+
+log() {
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] $*" | tee -a "$START_LOG"
 }
+
+setup_env_vars() {
+    log "Setting up environment variables..."
+
+    check_env_vars
+    set_gpu_env
+}
+
 
 check_env_vars() {
     if [ -z "$HF_TOKEN" ]; then
@@ -22,11 +40,13 @@ check_env_vars() {
     else
         log "HF_TOKEN environment variable set"
     fi
+
     if [ -z "$OPENAI_API_KEY" ]; then
         log "WARNING: OPENAI_API_KEY environment variable not set"
     else
         log "OPENAI_API_KEY environment variable set"
     fi
+    
     if [ -z "$CUT_PK_1" ] || [ -z "$CUT_PK_2" ] || [ -z "$CUT_PK_3" ]; then
         log "WARNING: CUT_PK_1, CUT_PK_2, or CUT_PK_3 environment variables are not set"
     else
@@ -36,7 +56,99 @@ check_env_vars() {
     if [ ! -d "$COMFY_DIR" ]; then
         log "ERROR: Working directory does not exist: $COMFY_DIR"
         return 1
+    fi
+
+    if [ -z "$TEST_GPUS" ]; then
+        log "TEST_GPUS is not set"
+    else
+        log "TEST_GPUS is set"
     fi   
+}
+
+set_gpu_env() {
+    log "=== GPU Environment Debug ==="
+    
+    # Check for test mode
+    if [ -n "$TEST_GPUS" ] && [[ "$TEST_GPUS" =~ ^[0-9]+$ ]]; then
+        log "Test mode: Mocking $TEST_GPUS GPUs"
+        NUM_GPUS=$TEST_GPUS
+        export NUM_GPUS
+        export MOCK_GPU=1  # Flag to indicate we're in test mode
+        return 0
+    fi
+    
+    if command -v nvidia-smi &> /dev/null; then
+        log "nvidia-smi is available"
+        nvidia-smi 2>&1 | while read -r line; do log "  $line"; done
+        
+        # Get number of GPUs
+        NUM_GPUS=$(nvidia-smi --list-gpus | wc -l)
+        log "Found $NUM_GPUS GPUs"
+        export NUM_GPUS
+        export MOCK_GPU=0
+    else
+        log "nvidia-smi not found, assuming CPU mode"
+        NUM_GPUS=0
+        export NUM_GPUS
+        export MOCK_GPU=0
+    fi
+    
+    log "GPU Environment: NUM_GPUS=$NUM_GPUS MOCK_GPU=$MOCK_GPU"
+}
+
+setup_comfyui() {
+    log "Setting up ComfyUI..."
+    
+    if [ ! -d "$COMFY_DIR" ]; then
+        log "ERROR: ComfyUI source directory not found at $COMFY_DIR"
+        return 1
+    fi
+
+    log "number of gpus: $NUM_GPUS"
+    
+    if [ "$NUM_GPUS" -eq 0 ]; then
+        # CPU mode - single instance
+        log "Setting up CPU instance..."
+        local WORK_DIR="${ROOT}/comfyui_cpu"
+        
+        # Create and verify working directory
+        log "Creating working directory at $WORK_DIR"
+        mkdir -p "$WORK_DIR"
+        chmod 755 "$WORK_DIR"
+        
+        # Create logs directory
+        mkdir -p "${WORK_DIR}/logs"
+        chmod 755 "${WORK_DIR}/logs"
+        touch "${WORK_DIR}/logs/output.log"
+        chmod 644 "${WORK_DIR}/logs/output.log"
+
+        cp -r ${ROOT}/ComfyUI/* ${WORK_DIR}
+        
+        log "CPU instance setup complete"
+    else
+        # GPU mode - multiple instances
+        log "Setting up GPU instances..."
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            local WORK_DIR="${ROOT}/comfyui_gpu${gpu}"
+            
+            # Create and verify working directory
+            log "Creating working directory for GPU $gpu at $WORK_DIR"
+            mkdir -p "$WORK_DIR"
+            chmod 755 "$WORK_DIR"
+            
+            # Create logs directory
+            mkdir -p "${WORK_DIR}/logs"
+            chmod 755 "${WORK_DIR}/logs"
+            touch "${WORK_DIR}/logs/output.log"
+            chmod 644 "${WORK_DIR}/logs/output.log"
+            
+            log "GPU $gpu instance setup complete"
+
+            cp -r ${ROOT}/ComfyUI/* ${WORK_DIR}
+        done
+    fi
+    
+    log "ComfyUI setup complete"
 }
 
 setup_ssh_access() {
@@ -44,48 +156,164 @@ setup_ssh_access() {
     eval "$(ssh-agent -s)"
 
     log "Setting up SSH access..."
+    
+    # Verify SSH directory exists and has correct permissions
+    if [ ! -d "/root/.ssh" ]; then
+        log "Creating /root/.ssh directory"
+        mkdir -p /root/.ssh
+        chmod 700 /root/.ssh
+    fi
+    
+    # Verify directory permissions
+    if [ "$(stat -c %a /root/.ssh)" != "700" ]; then
+        log "Fixing /root/.ssh directory permissions"
+        chmod 700 /root/.ssh
+    fi
 
     # Check if all key parts are present
     if [ -n "$CUT_PK_1" ] && [ -n "$CUT_PK_2" ] && [ -n "$CUT_PK_3" ]; then
-    # Combine the key parts
+        # Combine the key parts
         full_base64_key="${CUT_PK_1}${CUT_PK_2}${CUT_PK_3}"
         
         # Decode the base64 key
-        full_key=$(echo "$full_base64_key" | base64 -d)
-        
-        # Reconstruct the full OpenSSH private key (ONLY ON
-        ssh_key=$full_key
-        
-        # Write the key to file
-        mkdir -p /root/.ssh
-        echo "$ssh_key" > /root/.ssh/id_ed25519
-        chmod 600 /root/.ssh/id_ed25519
-        ssh-add /root/.ssh/id_ed25519
-        
-        # Verbose key validation
-        if ! ssh-keygen -y -f /root/.ssh/id_ed25519; then
-            log "Detailed SSH Key Validation Failed"
+        if ! full_key=$(echo "$full_base64_key" | base64 -d); then
+            log "ERROR: Failed to decode base64 key"
             return 1
         fi
         
-        log "SSH key successfully set up"
+        # Write the key to file
+        if ! echo "$full_key" > /root/.ssh/id_ed25519; then
+            log "ERROR: Failed to write SSH key to file"
+            return 1
+        fi
+        
+        # Set correct permissions
+        chmod 400 /root/.ssh/id_ed25519
+        
+        # Verify key file exists and has correct permissions
+        if [ ! -f "/root/.ssh/id_ed25519" ]; then
+            log "ERROR: SSH key file not found after creation"
+            return 1
+        fi
+        
+        if [ "$(stat -c %a /root/.ssh/id_ed25519)" != "400" ]; then
+            log "ERROR: SSH key file has incorrect permissions"
+            chmod 400 /root/.ssh/id_ed25519
+        fi
+        
+        # Try to add the key
+        if ! ssh-add /root/.ssh/id_ed25519; then
+            log "ERROR: Failed to add SSH key to agent"
+            return 1
+        fi
+        
+        # Verbose key validation
+        log "Validating SSH key..."
+        if ! ssh-keygen -y -f /root/.ssh/id_ed25519; then
+            log "ERROR: SSH key validation failed"
+            return 1
+        fi
+        
+        # Test SSH connection to GitHub with retries
+        log "Testing GitHub SSH connection..."
+        local max_attempts=3
+        local attempt=1
+        local success=false
+        
+        while [ $attempt -le $max_attempts ]; do
+            log "SSH connection attempt $attempt of $max_attempts"
+            if ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | grep -q "successfully authenticated"; then
+                success=true
+                break
+            else
+                log "SSH attempt $attempt failed with exit code $?"
+            fi
+            attempt=$((attempt + 1))
+            if [ $attempt -le $max_attempts ]; then
+                log "Waiting 10 seconds before next attempt..."
+                sleep 10
+                log "Resuming after wait"
+            fi
+        done
+        
+        if [ "$success" != "true" ]; then
+            log "ERROR: Failed to connect to GitHub after $max_attempts attempts"
+            return 1
+        fi
+        
+        log "SSH key successfully set up and verified"
     else
         # Detailed logging if key parts are missing
         [ -z "$CUT_PK_1" ] && log "Missing CUT_PK_1"
         [ -z "$CUT_PK_2" ] && log "Missing CUT_PK_2"
         [ -z "$CUT_PK_3" ] && log "Missing CUT_PK_3"
 
-        log "Warning: SSH key parts are missing"
+        log "ERROR: SSH key parts are missing"
         return 1
     fi
 
     # Add GitHub to known hosts if not present
     touch /root/.ssh/known_hosts
-    ssh-keyscan github.com >> /root/.ssh/known_hosts 2>/dev/null
+    chmod 644 /root/.ssh/known_hosts
+    if ! grep -q "github.com" /root/.ssh/known_hosts; then
+        ssh-keyscan github.com >> /root/.ssh/known_hosts 2>/dev/null
+    fi
+    
+    # Final verification
+    log "Final SSH setup verification:"
+    log "- SSH directory: $(ls -ld /root/.ssh)"
+    log "- SSH key file: $(ls -l /root/.ssh/id_ed25519)"
+    log "- Known hosts: $(ls -l /root/.ssh/known_hosts)"
+}
+
+setup_nginx_auth() {
+    log "Setting up NGINX authentication..."
+    
+    # Create nginx directory if it doesn't exist
+    if [ ! -d "/etc/nginx" ]; then
+        log "Creating /etc/nginx directory"
+        mkdir -p /etc/nginx
+        chmod 755 /etc/nginx
+    fi
+    
+    # Check if auth credentials are available
+    if [ -n "$SERVER_CREDS" ]; then
+        # Write credentials to .sd file
+        if ! echo "$SERVER_CREDS" > /etc/nginx/.sd; then
+            log "ERROR: Failed to write auth credentials to file"
+            return 1
+        fi
+        
+        # Set correct permissions
+        chmod 600 /etc/nginx/.sd
+        
+        # Verify file exists and has correct permissions
+        if [ ! -f "/etc/nginx/.sd" ]; then
+            log "ERROR: Auth file not found after creation"
+            return 1
+        fi
+        
+        if [ "$(stat -c %a /etc/nginx/.sd)" != "600" ]; then
+            log "ERROR: Auth file has incorrect permissions"
+            chmod 600 /etc/nginx/.sd
+        fi
+        
+        log "NGINX authentication setup complete"
+    else
+        log "ERROR: SERVER_CREDS not set"
+        return 1
+    fi
 }
 
 setup_nginx() {
-
+    log "Setting up NGINX..."
+    
+    # Setup auth first
+    if ! setup_nginx_auth; then
+        log "ERROR: Failed to setup NGINX authentication"
+        return 1
+    fi
+    
     ssh-agent bash << 'EOF'
         eval "$(ssh-agent -s)"
         ssh-add /root/.ssh/id_ed25519
@@ -105,164 +333,120 @@ EOF
     log "Nginx configuration set up"
 }
 
-setup_comfyui() {
-    # Extract ComfyUI commit from config.json
-    log "Attempting to extract comfy_version"
-    COMFY_COMMIT=$(jq -r '.comfy_version // "main"' "$CONFIG_FILE")
-    
-    log "Extracted COMFY_COMMIT: $COMFY_COMMIT"
-    
-    # Fallback if extraction fails
-    if [ -z "$COMFY_COMMIT" ] || [ "$COMFY_COMMIT" = "null" ]; then
-        log "WARNING: No comfy_version found, defaulting to 'main'"
-        COMFY_COMMIT="main"
-    fi
-
-    # Update base ComfyUI to correct commit
-    cd "$COMFY_DIR"
-    git reset --hard "$COMFY_COMMIT"
-
-    # Get number of GPUs, allowing override with FORCE_NUM_GPUS
-    if [ -n "$FORCE_NUM_GPUS" ]; then
-        GPU_COUNT=$FORCE_NUM_GPUS
-        log "Using forced GPU count: $GPU_COUNT"
-    else
-        GPU_COUNT=$(python -c "import torch; print(torch.cuda.device_count())")
-        log "Detected $GPU_COUNT GPUs"
-    fi
-    
-    export NUM_GPUS=$GPU_COUNT
-
-    # Create shared directories
-    mkdir -p "${ROOT}/shared/models"
-    mkdir -p "${ROOT}/shared/custom_nodes"
-
-    if [ -d "/workspace/shared_custom_nodes" ]; then
-        log "Copying shared custom nodes to shared directory"
-        cp -rf /workspace/shared_custom_nodes/* "${ROOT}/shared/custom_nodes/"
-    fi
-
-    # Copy ComfyUI for each GPU
-    for gpu in $(seq 0 $((GPU_COUNT-1))); do
-        GPU_DIR="${ROOT}/comfyui_gpu${gpu}"
-        
-        log "Setting up ComfyUI for GPU $gpu..."
-        
-        # Copy ComfyUI if it doesn't exist
-        if [ ! -d "$GPU_DIR" ]; then
-            log "Copying ComfyUI for GPU $gpu..."
-            cp -r "$COMFY_DIR" "$GPU_DIR"
-            
-            # Remove default models and custom_nodes directories
-            rm -rf "$GPU_DIR/models"
-            rm -rf "$GPU_DIR/custom_nodes"
-        fi
-
-        # Create symlinks for shared resources
-        log "Creating symlinks for GPU $gpu..."
-        ln -sfn "${ROOT}/shared/models" "$GPU_DIR/models"
-        ln -sfn "${ROOT}/shared/custom_nodes" "$GPU_DIR/custom_nodes"
-    done
-
-    if [ "$GPU_COUNT" -eq 0 ]; then
-        log "No GPUs found - setting up CPU instance"
-        service_name="comfyui_cpu"
-        service_file="/etc/init.d/${service_name}"
-        
-        # Create CPU service
-        cp /etc/init.d/comfyui "$service_file"
-        sed -i "1a\\
-export PORT=8188" "$service_file"
-        
-        chmod +x "$service_file"
-        update-rc.d "$service_name" defaults
-    else
-        # Setup service for each available GPU
-        for gpu in $(seq 0 $((GPU_COUNT-1))); do
-            port=$((8188 + gpu))
-            service_name="comfyui_gpu${gpu}"
-            service_file="/etc/init.d/${service_name}"
-            
-            log "Setting up ComfyUI service for GPU $gpu"
-            
-            # Create service file
-            cp /etc/init.d/comfyui "$service_file"
-            
-            # Add environment variables to service file
-            sed -i "1a\\
-export CUDA_VISIBLE_DEVICES=${gpu}\\
-export PORT=${port}" "$service_file"
-            
-            # Update service name in init info
-            sed -i "s/# Provides:          comfyui/# Provides:          ${service_name}/" "$service_file"
-            sed -i "s/# Short-Description: Start ComfyUI/# Short-Description: Start ComfyUI on GPU ${gpu}/" "$service_file"
-            
-            chmod +x "$service_file"
-            update-rc.d "$service_name" defaults
-        done
-    fi
-}
-
 start_comfyui() {
     log "Starting ComfyUI services..."
     
-    # Start all GPU instances using mgpu
-    mgpu start-all
-    
-    if [ $? -ne 0 ]; then
-        log "Failed to start ComfyUI services"
-        return 1
+    if [ "$NUM_GPUS" -eq 0 ]; then
+        # CPU mode - start single instance
+        log "Starting ComfyUI in CPU mode"
+        if ! service comfyui start cpu; then
+            log "ERROR: Failed to start ComfyUI CPU service"
+            service comfyui status cpu 2>&1 | while read -r line; do log "  $line"; done
+            return 1
+        fi
+        
+        # Wait for service to be ready
+        local service_ready=false
+        for i in {1..30}; do
+            log "Waiting for ComfyUI service (attempt $i/30)..."
+            
+            # Check service status
+            if service comfyui status cpu | grep -q "running"; then
+                log "ComfyUI CPU service is running"
+                
+                # Check direct port
+                if netstat -tuln | grep -q ":8188 "; then
+                    log "ComfyUI CPU service is listening on direct port 8188"
+                    
+                    # Check proxy port
+                    if netstat -tuln | grep -q ":3188 "; then
+                        log "NGINX is listening on proxy port 3188"
+                        service_ready=true
+                        break
+                    else
+                        log "Proxy port 3188 not listening yet"
+                    fi
+                else
+                    log "Direct port 8188 not listening yet"
+                fi
+            else
+                log "Service not running yet"
+                service comfyui status cpu 2>&1 | while read -r line; do log "  $line"; done
+            fi
+            
+            sleep 1
+            if [ $i -eq 30 ]; then
+                log "ERROR: Timeout waiting for ComfyUI CPU service"
+                # Check logs
+                if [ -f "${ROOT}/comfyui_cpu/logs/output.log" ]; then
+                    log "=== Last 10 lines of output.log ==="
+                    tail -n 10 "${ROOT}/comfyui_cpu/logs/output.log" | while read -r line; do log "  $line"; done
+                else
+                    log "WARNING: Log file not found: output.log"
+                fi
+                
+                # Show all listening ports
+                log "=== Current listening ports ==="
+                netstat -tuln | while read -r line; do log "  $line"; done
+            fi
+        done
+        
+        if [ "$service_ready" != "true" ]; then
+            log "ERROR: ComfyUI service failed to start properly"
+            return 1
+        fi
+    else
+        # GPU mode - start all instances using mgpu
+        log "Starting ComfyUI in GPU mode with $NUM_GPUS GPUs"
+        
+        # Add --cpu flag in test mode
+        if [ "$MOCK_GPU" -eq 1 ]; then
+            log "Test mode: Adding --cpu flag to all instances"
+            export COMFY_ARGS="--cpu"
+        fi
+        
+        if ! mgpu start-all; then
+            log "ERROR: Failed to start ComfyUI GPU services"
+            mgpu status 2>&1 | while read -r line; do log "  $line"; done
+            return 1
+        fi
     fi
     
     log "All ComfyUI services started successfully"
 }
 
 download_model() {
-    local filename="$1"
-    local url="$2"
-    local paths="$3"  # This can be a string or JSON array
+    local url="$1"
+    local path="$2"
+    local filename="$3"
     
-    # Log the download attempt
     log "Downloading model: $filename"
     
-    # Determine the primary path
-    local primary_path
+    # Create full path in shared directory, remove any double slashes
+    local full_path="${ROOT}/shared/${path%/}"
     
-    # If paths looks like a JSON array, try to parse it
-    if [[ "$paths" == \[* ]]; then
-        primary_path=$(echo "$paths" | jq -r '.[0]')
-    else
-        # If it's a simple string, use it directly
-        primary_path="$paths"
+    # Create directory if it doesn't exist
+    mkdir -p "$full_path"
+    
+    # Update comfy_dir_config.yaml
+    update_comfy_config "$path"
+    
+    log "Saving to: $full_path/$filename"
+    
+    # Use wget with progress bar, suppress verbose output
+    if ! wget --quiet --show-progress --progress=bar:force:noscroll -O "$full_path/$filename" "$url" >> "$START_LOG" 2>&1; then
+        log "Failed to download $url"
+        return 1
+    fi
+
+    # Verify file was downloaded and has size
+    if [ ! -s "$full_path/$filename" ]; then
+        log "Download failed - file is empty"
+        return 1
     fi
     
-    # Fallback to default path if no path is specified
-    primary_path="${primary_path:-models/checkpoints/}"
-    
-    log "Using download path: $primary_path"
-    
-    local target_dir="$(normalize_path "${ROOT}/shared/$primary_path")"
-    local target_file="$(normalize_path "$target_dir/$filename")"
-    
-    mkdir -p "$target_dir"
-    
-    # Download using wget
-    log "Downloading from: $url"
-    log "Saving to: $target_file"
-    
-    wget \
-        --progress=bar:force:noscroll \
-        -O "$target_file" \
-        "$url" >> "$LOG_FILE" 2>&1
-    
-    # Check wget result
-    if [ $? -eq 0 ] && [ -s "$target_file" ]; then
-        log "Successfully downloaded $url"
-        return 0
-    fi
-    
-    log "Failed to download $url"
-    return 1
+    log "Successfully downloaded $filename"
+    return 0
 }
 
 download_models() {
@@ -289,12 +473,12 @@ download_models() {
         name=$(echo "$model" | jq -r '.name')
         path=$(echo "$model" | jq -r '.path // "models/checkpoints/"')
         
-        log "Processing model: $name"
-        log "  URL: $url"
-        log "  Path: $path"
+        # log "Processing model: $name"
+        # log "  URL: $url"
+        # log "  Path: $path"
         
         # Download the model
-        download_model "$name" "$url" "$path"
+        download_model "$url" "$path" "$name"
     done
 
     return 0
@@ -306,7 +490,7 @@ install_nodes() {
     if [ ! -f "$CONFIG_FILE" ]; then
         log "Config not found: $CONFIG_FILE"
         return
-    }
+    fi
 
     # Use shared custom_nodes directory
     cd "${ROOT}/shared/custom_nodes"
@@ -340,17 +524,27 @@ install_nodes() {
                 
                 if [ ! -z "$commit" ]; then
                     cd "$name"
-                    git checkout "$commit"
+                    git reset --hard "$commit"
                     cd ..
                 fi
-                
-                # Install requirements if specified as true
-                if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
-                    log "Installing requirements for $name"
-                    pip install -r "$name/requirements.txt"
-                fi
             else
-                log "Node already exists: $name"
+                log "Node directory exists: $name"
+                # Update existing repository
+                cd "$name"
+                git remote set-url origin "$url"
+                git fetch
+                if [ ! -z "$commit" ]; then
+                    git reset --hard "$commit"
+                else
+                    git pull
+                fi
+                cd ..
+            fi
+            
+            # Install requirements if specified as true
+            if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
+                log "Installing requirements for $name"
+                pip install -r "$name/requirements.txt"
             fi
         fi
     done < <(jq -c '.nodes[]' "$CONFIG_FILE")
@@ -372,48 +566,392 @@ setup_services() {
     fi
 }
 
-start_nginx() {
-    log "Starting system services..."
+setup_service_scripts() {
+    log "Setting up service scripts"
     
-    # Try to start nginx with sudo if needed
-    log "Attempting to start nginx with root"
-    service nginx start
+    # Verify mgpu script is available
+    if ! command -v mgpu >/dev/null 2>&1; then
+        log "ERROR: MGPU command not found in PATH"
+        return 1
+    fi
+    
+    # Update service defaults if needed
+    if ! update-rc.d comfyui defaults; then
+        log "WARNING: Failed to update ComfyUI service defaults"
+    fi
+    
+    log "Service scripts initialized"
+}
+
+start_nginx() {
+    log "Starting NGINX..."
+    
+    # Stop nginx if it's already running
+    if service nginx status >/dev/null 2>&1; then
+        log "NGINX is already running, stopping it first..."
+        service nginx stop
+    fi
+    
+    # Start nginx
+    log "Starting NGINX service..."
+    if ! service nginx start; then
+        log "ERROR: Failed to start NGINX"
+        return 1
+    fi
+    
+    # Verify it's running
+    sleep 2
+    if ! service nginx status >/dev/null 2>&1; then
+        log "ERROR: NGINX failed to start"
+        service nginx status | while read -r line; do log "  $line"; done
+        return 1
+    fi
+    
+    log "NGINX started successfully"
+}
+
+verify_services() {
+    # Setup auth first
+    setup_auth
+    
+    log "Phase 12: Verifying all services..."
+    all_services_ok=true
+    
+    # 1. Verify NGINX
+    log "=== Verifying NGINX ==="
+    if ! service nginx status >/dev/null 2>&1; then
+        log "ERROR: NGINX is not running"
+        all_services_ok=false
+    else
+        log "NGINX is running"
+        # Check nginx config
+        if ! nginx -t >/dev/null 2>&1; then
+            log "ERROR: NGINX configuration test failed"
+            nginx -t 2>&1 | while read -r line; do log "  $line"; done
+            all_services_ok=false
+        fi
+        
+        # Check proxy port
+        if ! netstat -tuln | grep -q ":3188 "; then
+            log "ERROR: NGINX proxy port 3188 is not listening"
+            log "Current listening ports:"
+            netstat -tuln | while read -r line; do log "  $line"; done
+            all_services_ok=false
+        else
+            log "NGINX proxy port 3188 is listening"
+        fi
+        
+        # Test NGINX auth separately from service
+        log "Testing NGINX auth on port 3188..."
+        if ! curl -I -s --fail -u "$COMFY_AUTH" "http://localhost:3188/"; then
+            log "ERROR: NGINX auth test failed"
+            log "Curl verbose output:"
+            curl -v -I -u "$COMFY_AUTH" "http://localhost:3188/" 2>&1 | while read -r line; do log "  $line"; done
+            all_services_ok=false
+        else
+            log "NGINX auth test passed"
+        fi
+    fi
+    
+    # 2. Verify ComfyUI Services
+    log "=== Verifying ComfyUI Services ==="
+    if [ "$NUM_GPUS" -eq 0 ]; then
+        # CPU mode
+        log "Checking CPU mode..."
+        if ! service comfyui status cpu | grep -q "running"; then
+            log "ERROR: ComfyUI CPU service is not running"
+            service comfyui status cpu 2>&1 | while read -r line; do log "  $line"; done
+            all_services_ok=false
+        else
+            log "ComfyUI CPU service is running"
+        fi
+        
+        # Check logs
+        if [ ! -f "${ROOT}/comfyui_cpu/logs/output.log" ]; then
+            log "ERROR: Missing log file: ${ROOT}/comfyui_cpu/logs/output.log"
+            all_services_ok=false
+        else
+            log "Log file exists"
+            # Show last few lines of log
+            log "=== Last 5 lines of output.log ==="
+            tail -n 5 "${ROOT}/comfyui_cpu/logs/output.log" | while read -r line; do log "  $line"; done
+        fi
+        
+        # Try a test request to ComfyUI service
+        log "Testing ComfyUI service on port 3188..."
+        if ! make_auth_request "http://localhost:3188/system_stats"; then
+            log "ERROR: ComfyUI service is not responding"
+            log "Curl verbose output:"
+            make_auth_request "http://localhost:3188/system_stats" "verbose" 2>&1 | while read -r line; do log "  $line"; done
+            all_services_ok=false
+        else
+            log "ComfyUI service test passed"
+        fi
+    else
+        # GPU mode
+        log "Checking GPU mode ($NUM_GPUS GPUs)..."
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            log "Checking GPU $gpu..."
+            
+            # Check service
+            if ! service comfyui status "$gpu" | grep -q "running"; then
+                log "ERROR: ComfyUI service for GPU $gpu is not running"
+                service comfyui status "$gpu" 2>&1 | while read -r line; do log "  $line"; done
+                all_services_ok=false
+                continue
+            fi
+            
+            # Check proxy port
+            local proxy_port=$((3188 + gpu))
+            if ! netstat -tuln | grep -q ":$proxy_port "; then
+                log "ERROR: NGINX proxy port $proxy_port is not listening"
+                log "Current listening ports:"
+                netstat -tuln | while read -r line; do log "  $line"; done
+                all_services_ok=false
+            fi
+            
+            # Check logs
+            if [ ! -f "${ROOT}/comfyui_gpu${gpu}/logs/output.log" ]; then
+                log "ERROR: Missing log file: ${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+                all_services_ok=false
+            fi
+            
+            # Try a test request
+            if ! make_auth_request "http://localhost:$proxy_port/system_stats"; then
+                log "ERROR: ComfyUI GPU $gpu is not responding to requests"
+                log "Curl verbose output:"
+                make_auth_request "http://localhost:$proxy_port/system_stats" "verbose" 2>&1 | while read -r line; do log "  $line"; done
+                all_services_ok=false
+            fi
+        done
+    fi
+    
+    # 3. Final Summary
+    log "=== Service Status Summary ==="
+    log "NGINX: $(service nginx status >/dev/null 2>&1 && echo "RUNNING" || echo "NOT RUNNING")"
+    
+    if [ "$NUM_GPUS" -eq 0 ]; then
+        # CPU mode summary
+        local service_status=$(service comfyui status cpu | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
+        local proxy_status=$(netstat -tuln | grep -q ":3188 " && echo "LISTENING" || echo "NOT LISTENING")
+        local api_status=$(make_auth_request "http://localhost:3188/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
+        log "ComfyUI CPU: Service: $service_status, Proxy: $proxy_status, API: $api_status"
+    else
+        # GPU mode summary
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            local proxy_port=$((3188 + gpu))
+            local service_status=$(service comfyui status "$gpu" | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
+            local proxy_status=$(netstat -tuln | grep -q ":$proxy_port " && echo "LISTENING" || echo "NOT LISTENING")
+            local api_status=$(make_auth_request "http://localhost:$proxy_port/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
+            log "ComfyUI GPU $gpu: Service: $service_status, Proxy: $proxy_status, API: $api_status"
+        done
+    fi
+    
+    if [ "$all_services_ok" = false ]; then
+        log "ERROR: Some services are not functioning correctly"
+        return 1
+    fi
+    
+    log "All services verified successfully"
+}
+
+setup_shared_dirs() {
+    log "Creating shared directories..."
+    mkdir -p "${ROOT}/shared/models"
+    mkdir -p "${ROOT}/shared/custom_nodes"
+    log "Shared directories created at ${ROOT}/shared/"
+}
+
+setup_preinstalled_nodes() {
+    log "Setting up pre-installed custom nodes..."
+    if [ -d "/workspace/shared_custom_nodes" ]; then
+        log "Found pre-installed nodes, moving to shared directory"
+        mv /workspace/shared_custom_nodes "${ROOT}/shared/custom_nodes"
+        log "Contents of shared custom_nodes directory:"
+        ls -la "${ROOT}/shared/custom_nodes" | while read -r line; do log "  $line"; done
+    else
+        log "No pre-installed nodes found at /workspace/shared_custom_nodes"
+    fi
+}
+
+setup_auth() {
+    if [ -n "$SERVER_CREDS" ]; then
+        # Just base64 encode, curl will add "Basic " prefix
+        COMFY_AUTH="$SERVER_CREDS"
+    else
+        log "WARNING: SERVER_CREDS not set, authentication may fail"
+    fi
+}
+
+make_auth_request() {
+    local url=$1
+    local auth_opts=""
+    
+    if [ -n "$COMFY_AUTH" ]; then
+        auth_opts="-u '$COMFY_AUTH'"
+    fi
+    
+    if [ "$2" = "verbose" ]; then
+        eval "curl -v $auth_opts '$url'"
+    else
+        eval "curl -s $auth_opts '$url'"
+    fi
+}
+
+log_phase() {
+    local phase_num=$1
+    local phase_name=$2
+    log ""
+    log "===================================="
+    log "Phase $phase_num: $phase_name"
+    log "===================================="
+}
+
+verify_and_report() {
+    log ""
+    log "===================================="
+    log "Starting Service Verification"
+    log "===================================="
+    
+    # Give services a moment to start if they just started
+    sleep 2
+    
+    # Run comprehensive verification
+    verify_services
+    
+    # Final user instructions
+    if [ "$all_services_ok" = true ]; then
+        log ""
+        log "===================================="
+        log "All services are running correctly"
+        log "Use 'mgpu logs-all' to monitor all services"
+        log "===================================="
+        return 0
+    else
+        log ""
+        log "===================================="
+        log "WARNING: Some services are not functioning correctly"
+        log "Check the logs above for specific errors"
+        log "Use 'mgpu logs-all' to monitor services for errors"
+        log "===================================="
+        return 1
+    fi
+}
+
+update_comfy_config() {
+    local path="$1"
+    local config_file="${ROOT}/shared/comfy_dir_config.yaml"
+    
+    # Create config file if it doesn't exist
+    if [ ! -f "$config_file" ]; then
+        log "Creating new comfy_dir_config.yaml"
+        cat > "$config_file" << EOL
+comfyui:
+    base_path: /workspace/shared
+    custom_nodes: custom_nodes/
+EOL
+    fi
+    
+    # Extract the directory type from path (e.g., "checkpoints" from "models/checkpoints/")
+    local dir_type=$(echo "$path" | sed -n 's|^models/\([^/]*\)/.*$|\1|p')
+    if [ -n "$dir_type" ]; then
+        # Check if this type already exists in config
+        if ! grep -q "^[[:space:]]*${dir_type}:" "$config_file"; then
+            log "Adding $dir_type path to comfy_dir_config.yaml"
+            # Create temp file for sed (macOS requires this)
+            local temp_file=$(mktemp)
+            sed "/^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*:/i\\    ${dir_type}: models/${dir_type}/" "$config_file" > "$temp_file"
+            mv "$temp_file" "$config_file"
+        fi
+    fi
 }
 
 main() {
-    log "Starting initialization..."
+    log ""
+    log "====================================="
+    log "      Starting ComfyUI Setup         "
+    log "====================================="
+    log ""
+    log "=============== Steps ================"
+    log "1. Check environment variables"
+    log "2. Setup SSH access"
+    log "3. Setup pre-installed nodes"
+    log "4. Install nodes from config"
+    log "5. Download models"
+    log "6. Setup NGINX"
+    log "7. Setup shared directories"
+    log "8. Setup ComfyUI instances"
+    log "9. Setup service scripts"
+    log "10. Start NGINX"
+    log "11. Start ComfyUI services"
+    log "12. Verify all services"
+    log "====================================="
+    log ""
     
-    # Setup logging
-    setup_logging
+    # Phase 1: Check environment variables
+    log_phase "1" "Checking environment variables"
+    if ! setup_env_vars; then
+        log "ERROR: Environment check failed"
+        return 1
+    fi
     
-    # Check environment variables
-    check_env_vars || exit 1
+    # Phase 2: Setup SSH access
+    log_phase "2" "Setting up SSH access"
+    if ! setup_ssh_access; then
+        log "ERROR: SSH setup failed"
+        return 1
+    fi
     
-    # Setup SSH access
-    setup_ssh_access || exit 1
+    # Phase 3: Setup pre-installed nodes
+    log_phase "3" "Setting up custom nodes"
+    setup_preinstalled_nodes
     
-    # Setup nginx
-    setup_nginx || exit 1
+    # Phase 4: Install custom nodes from config
+    log_phase "4" "Installing nodes from config"
+    install_nodes
+    log "Final contents of custom_nodes directory:"
+    ls -la "${COMFY_DIR}/custom_nodes" | while read -r line; do log "  $line"; done
     
-    # Setup ComfyUI instances
-    setup_comfyui || exit 1
+    # Phase 5: Download models if specified in config
+    log_phase "5" "Downloading models"
+    download_models
     
-    # Download models if specified in config
-    download_models || exit 1
+    # Phase 6: Setup NGINX
+    log_phase "6" "Setting up NGINX"
+    if ! setup_nginx; then
+        log "ERROR: NGINX setup failed"
+        return 1
+    fi
     
-    # Install custom nodes if specified in config
-    install_nodes || exit 1
+    # Phase 7: Setup shared directories
+    log_phase "7" "Setting up shared directories"
+    setup_shared_dirs
     
-    # Start ComfyUI services
-    start_comfyui || exit 1
+    # Phase 8: Setup ComfyUI instances
+    log_phase "8" "Setting up ComfyUI instances"
+    setup_comfyui
     
-    # Start nginx
-    start_nginx || exit 1
+    # Phase 9: Setup service scripts
+    log_phase "9" "Setting up service scripts"
+    setup_service_scripts
     
-    log "Initialization complete"
+    # Phase 10: Start NGINX
+    log_phase "10" "Starting NGINX"
+    start_nginx
     
-    # Keep container running
-    sleep infinity
+    # Phase 11: Start ComfyUI services
+    log_phase "11" "Starting ComfyUI services"
+    start_comfyui
+    
+    # Phase 12: Verify all services
+    log_phase "12" "Verifying all services"
+    if ! verify_and_report; then
+        log "ERROR: Service verification failed"
+        # Don't exit - keep container running for debugging
+    fi
 }
 
+all_services_ok=true
 main
+
+tail -f /dev/null
