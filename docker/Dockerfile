@@ -2,7 +2,7 @@
 FROM pytorch/pytorch:latest AS start
 
 RUN apt update && apt-get install -y \
-    git git-lfs rsync nginx wget curl nano net-tools lsof ffmpeg libsm6 libxext6 \
+    git git-lfs rsync nginx wget curl nano net-tools lsof nvtop ffmpeg libsm6 libxext6 \
     cron sudo ssh zstd jq build-essential cmake ninja-build \
     gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
@@ -43,8 +43,9 @@ RUN pip install --upgrade pip && \
 
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
     cd ${COMFY_DIR} && \
+    pip uninstall onnxruntime && \
     pip install --upgrade pip && \
-    pip install --upgrade onnxruntime-gpu mmengine opencv-python imgui-bundle && \
+    pip install --upgrade onnxruntime-gpu mmengine opencv-python imgui-bundle pyav && \
     pip install -r requirements.txt
 
 FROM middle AS shared

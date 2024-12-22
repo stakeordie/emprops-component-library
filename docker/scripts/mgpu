@@ -56,21 +56,34 @@ validate_gpu_id() {
     return 0
 }
 
-# Function to show logs for a specific GPU
 show_logs() {
     local gpu_id=$1
-    local lines=${2:-5}  # Default to last 5 lines
+    local follow=${2:-false}  # Default to not following
     
     if [ "$gpu_id" = "all" ]; then
-        show_all_logs "$lines"
+        show_all_logs "$follow"
         return
     fi
      
     local log_file="${ROOT}/comfyui_gpu${gpu_id}/logs/output.log"
     if [ -f "$log_file" ]; then
-        # Only show errors and last few lines
-        grep -i "error\|exception\|failed" "$log_file" | tail -n 3
-        tail -n 3 "$log_file"
+        if [ "$follow" = "true" ]; then
+            # Follow mode - continuously show new lines
+            log "Starting log follow mode for GPU $gpu_id (Press Ctrl+C to exit)"
+            # Start tail in background and save its PID
+            tail -f "$log_file" | sed "s/^/[GPU $gpu_id] /" &
+            local tail_pid=$!
+            # Wait for the tail process
+            wait $tail_pid
+        else
+            # Show recent errors and last few lines
+            {
+                echo "=== Recent Errors (GPU $gpu_id) ==="
+                grep -i "error\|exception\|failed" "$log_file" | tail -n 3
+                echo "=== Latest Output (GPU $gpu_id) ==="
+                tail -n 10 "$log_file"
+            } | sed "s/^/[GPU $gpu_id] /"
+        fi
     else
         log "ERROR: Log file not found: $log_file"
         return 1
@@ -79,11 +92,46 @@ show_logs() {
 
 # Function to show logs for all GPUs
 show_all_logs() {
-    local lines=${1:-5}  # Default to last 5 lines
-    for gpu in $(seq 0 $((NUM_GPUS-1))); do
-        log "GPU $gpu:"
-        show_logs "$gpu" "$lines"
-    done
+    local follow=${1:-false}  # Default to not following
+    
+    if [ "$follow" = "true" ]; then
+        # Create an array of log files
+        local log_files=()
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+            if [ -f "$log_file" ]; then
+                log_files+=("$log_file")
+            fi
+        done
+        
+        if [ ${#log_files[@]} -eq 0 ]; then
+            log "ERROR: No log files found"
+            return 1
+        fi
+        
+        # Use tail -f on all log files simultaneously
+        log "Starting consolidated log follow mode for all GPUs (Press Ctrl+C to exit)"
+        # Start tail in background and save its PID
+        tail -f "${log_files[@]}" | awk -v num_gpus="$NUM_GPUS" '
+        {
+            for(i=0; i<num_gpus; i++) {
+                if (FILENAME ~ "gpu" i "/") {
+                    printf "[GPU %d] %s\n", i, $0
+                    next
+                }
+            }
+            print
+        }' &
+        local tail_pid=$!
+        # Wait for the tail process
+        wait $tail_pid
+    else
+        # Show recent logs from each GPU
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            show_logs "$gpu" false
+            echo
+        done
+    fi
 }
 
 # Function to start a specific GPU service
@@ -272,22 +320,31 @@ setup_all_gpus() {
 
 # Show usage information
 show_usage() {
-    echo "Usage: $0 COMMAND [GPU_ID|all|cpu]"
-    echo
-    echo "Commands:"
-    echo "  start <gpu_id|all>    Start service for specific GPU or all GPUs"
-    echo "  stop <gpu_id|all>     Stop service for specific GPU or all GPUs"
-    echo "  restart <gpu_id|all>  Restart service for specific GPU or all GPUs"
-    echo "  status <gpu_id|all>   Show status for specific GPU or all GPUs"
-    echo "  logs <gpu_id|all>     Show logs for specific GPU or all GPUs"
-    echo "  setup <gpu_id|all|cpu> Setup ComfyUI for specific GPU, all GPUs, or CPU mode"
-    echo "  count                 Show number of configured GPUs and info"
-    echo
-    echo "Examples:"
-    echo "  $0 start 0            Start ComfyUI service for GPU 0"
-    echo "  $0 start all          Start ComfyUI services for all GPUs"
-    echo "  $0 setup cpu          Setup ComfyUI for CPU-only mode"
-    echo "  $0 count              Show GPU configuration"
+    cat << EOF
+Usage: $0 COMMAND [gpu_id] [options]
+
+Commands:
+    start   [gpu_id]       Start ComfyUI service for GPU
+    stop    [gpu_id]       Stop ComfyUI service for GPU
+    restart [gpu_id]       Restart ComfyUI service for GPU
+    status  [gpu_id]       Show status of ComfyUI service for GPU
+    logs    [gpu_id] [-n]  Show logs for GPU (default: follow mode, -n for no-follow)
+    setup   [gpu_id]       Setup ComfyUI for GPU
+    count                  Show number of available GPUs
+
+Arguments:
+    gpu_id                 GPU ID (0-N) or 'all' for all GPUs
+    
+Options:
+    -n, no-follow         For logs: show recent logs and exit (default: follow mode)
+
+Examples:
+    $0 start 0            Start ComfyUI on GPU 0
+    $0 start all          Start ComfyUI on all GPUs
+    $0 logs 0             Follow logs for GPU 0
+    $0 logs all           Follow logs for all GPUs
+    $0 logs 0 -n          Show recent logs for GPU 0 and exit
+EOF
 }
 
 # Function to show GPU count
@@ -306,27 +363,38 @@ show_count() {
 
 # Main command handling
 case "$1" in
-    start|stop|restart|status|logs|setup)
-        if [ -z "$2" ]; then
+    start|stop|restart|status|logs|setup|count)
+        if [ -z "$2" ] && [ "$1" != "count" ]; then
             show_usage
             exit 1
         fi
-        
-        if ! validate_gpu_id "$2"; then
-            exit 1
-        fi
-        
         case "$1" in
-            start)    start_service "$2" ;;
-            stop)     stop_service "$2" ;;
-            restart)  restart_service "$2" ;;
-            status)   check_status "$2" ;;
-            logs)     show_logs "$2" ;;
-            setup)    setup_gpu "$2" ;;
+            start)
+                start_service "$2"
+                ;;
+            stop)
+                stop_service "$2"
+                ;;
+            restart)
+                restart_service "$2"
+                ;;
+            status)
+                check_status "$2"
+                ;;
+            logs)
+                if [ "$3" = "no-follow" ] || [ "$3" = "-n" ]; then
+                    show_logs "$2" false
+                else
+                    show_logs "$2" true
+                fi
+                ;;
+            setup)
+                setup_gpu "$2"
+                ;;
+            count)
+                show_count
+                ;;
         esac
-        ;;
-    count)
-        show_count
         ;;
     *)
         show_usage
