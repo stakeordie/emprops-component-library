@@ -1,6 +1,8 @@
 #!/bin/bash
-# Debug mode
-set -x
+# Only enable debug mode if DEBUG is set
+if [ "${DEBUG:-}" = "true" ]; then
+    set -x
+fi
 
 ROOT="${ROOT:-/workspace}"
 CONFIG_DIR="${CONFIG_DIR:-${ROOT}/config}"
@@ -9,7 +11,12 @@ CONFIG_FILE="$CONFIG_DIR/config.json"
 LOG_DIR="${ROOT}/logs"
 START_LOG="${LOG_DIR}/start.log"
 
+
+echo "BEFORE PATH: $PATH"
+
 PATH=/usr/local/bin:$PATH
+
+echo "AFTER PATH: $PATH"
 
 # Add at the top of the file with other env vars
 COMFY_AUTH=""
@@ -23,7 +30,18 @@ chmod 644 "$START_LOG"
 log() {
     local timestamp
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] $*" | tee -a "$START_LOG"
+    # Only write to log file, don't duplicate to stdout unless DEBUG is set
+    if [ "${DEBUG:-}" = "true" ]; then
+        echo "[$timestamp] $*" | tee -a "$START_LOG"
+    else
+        echo "[$timestamp] $*" >> "$START_LOG"
+        # For non-debug mode, only show important messages on screen
+        case "$*" in
+            *ERROR*|*FAIL*|*SUCCESS*|*READY*)
+                echo "[$timestamp] $*"
+                ;;
+        esac
+    fi
 }
 
 setup_env_vars() {
@@ -31,8 +49,38 @@ setup_env_vars() {
 
     check_env_vars
     set_gpu_env
+    
+    # Clean up PATH to avoid duplicates
+    clean_path="/opt/conda/bin:/workspace/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    
+    # Persist environment variables for SSH sessions
+    log "Persisting environment variables..."
+    {
+        echo "ROOT=${ROOT}"
+        echo "NUM_GPUS=${NUM_GPUS}"
+        echo "MOCK_GPU=${MOCK_GPU}"
+        echo "TEST_GPUS=${TEST_GPUS:-}"
+        echo "SERVER_CREDS=${SERVER_CREDS}"
+        echo "COMFY_AUTH=${COMFY_AUTH}"
+        echo "PATH=${clean_path}"
+    } >> /etc/environment
+    
+    # Also add to profile for interactive sessions
+    {
+        echo "export ROOT=${ROOT}"
+        echo "export NUM_GPUS=${NUM_GPUS}"
+        echo "export MOCK_GPU=${MOCK_GPU}"
+        echo "export TEST_GPUS=${TEST_GPUS:-}"
+        echo "export SERVER_CREDS=${SERVER_CREDS}"
+        echo "export COMFY_AUTH=${COMFY_AUTH}"
+        echo "export PATH=${clean_path}"
+    } > /etc/profile.d/comfyui-env.sh
+    
+    # Set for current session
+    export PATH="${clean_path}"
+    
+    log "Environment variables persisted"
 }
-
 
 check_env_vars() {
     if [ -z "$HF_TOKEN" ]; then
@@ -99,56 +147,47 @@ set_gpu_env() {
 setup_comfyui() {
     log "Setting up ComfyUI..."
     
-    if [ ! -d "$COMFY_DIR" ]; then
-        log "ERROR: ComfyUI source directory not found at $COMFY_DIR"
-        return 1
-    fi
-
-    log "number of gpus: $NUM_GPUS"
-    
     if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode - single instance
-        log "Setting up CPU instance..."
-        local WORK_DIR="${ROOT}/comfyui_cpu"
-        
-        # Create and verify working directory
-        log "Creating working directory at $WORK_DIR"
-        mkdir -p "$WORK_DIR"
-        chmod 755 "$WORK_DIR"
-        
-        # Create logs directory
-        mkdir -p "${WORK_DIR}/logs"
-        chmod 755 "${WORK_DIR}/logs"
-        touch "${WORK_DIR}/logs/output.log"
-        chmod 644 "${WORK_DIR}/logs/output.log"
-
-        cp -r ${ROOT}/ComfyUI/* ${WORK_DIR}
-        
-        log "CPU instance setup complete"
+        # CPU mode
+        log "Setting up CPU mode..."
+        if ! mgpu setup cpu; then
+            log "ERROR: Failed to setup CPU instance"
+            return 1
+        fi
     else
-        # GPU mode - multiple instances
+        # GPU mode
+        log "Setting up GPU mode with $NUM_GPUS GPUs"
+        
+        # Add --cpu flag in test mode
+        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+            log "Test mode: Adding --cpu flag to all instances"
+            export COMFY_ARGS="--cpu"
+        fi
+        
+        # Setup GPU instances
         log "Setting up GPU instances..."
-        for gpu in $(seq 0 $((NUM_GPUS-1))); do
-            local WORK_DIR="${ROOT}/comfyui_gpu${gpu}"
-            
-            # Create and verify working directory
-            log "Creating working directory for GPU $gpu at $WORK_DIR"
-            mkdir -p "$WORK_DIR"
-            chmod 755 "$WORK_DIR"
-            
-            # Create logs directory
-            mkdir -p "${WORK_DIR}/logs"
-            chmod 755 "${WORK_DIR}/logs"
-            touch "${WORK_DIR}/logs/output.log"
-            chmod 644 "${WORK_DIR}/logs/output.log"
-            
-            log "GPU $gpu instance setup complete"
-
-            cp -r ${ROOT}/ComfyUI/* ${WORK_DIR}
-        done
+        if ! mgpu setup all; then
+            log "ERROR: Failed to set up GPU instances"
+            return 1
+        fi
+        
+        # Start services
+        log "Starting GPU services..."
+        if ! mgpu start all; then
+            log "ERROR: Failed to start GPU services"
+            return 1
+        fi
+        
+        # Quick status check
+        log "Verifying services..."
+        mgpu status all >/dev/null || {
+            log "ERROR: Service verification failed"
+            return 1
+        }
     fi
     
     log "ComfyUI setup complete"
+    return 0
 }
 
 setup_ssh_access() {
@@ -337,77 +376,50 @@ start_comfyui() {
     log "Starting ComfyUI services..."
     
     if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode - start single instance
+        # CPU mode - start single instance through mgpu
         log "Starting ComfyUI in CPU mode"
-        if ! service comfyui start cpu; then
+        if ! mgpu start 0; then
             log "ERROR: Failed to start ComfyUI CPU service"
-            service comfyui status cpu 2>&1 | while read -r line; do log "  $line"; done
+            mgpu status 2>&1 | tail -n 3 | while read -r line; do log "  $line"; done
             return 1
         fi
         
         # Wait for service to be ready
-        local service_ready=false
-        for i in {1..30}; do
-            log "Waiting for ComfyUI service (attempt $i/30)..."
+        log "Checking ComfyUI service..."
             
-            # Check service status
-            if service comfyui status cpu | grep -q "running"; then
-                log "ComfyUI CPU service is running"
-                
-                # Check direct port
-                if netstat -tuln | grep -q ":8188 "; then
-                    log "ComfyUI CPU service is listening on direct port 8188"
-                    
-                    # Check proxy port
-                    if netstat -tuln | grep -q ":3188 "; then
-                        log "NGINX is listening on proxy port 3188"
-                        service_ready=true
-                        break
-                    else
-                        log "Proxy port 3188 not listening yet"
-                    fi
-                else
-                    log "Direct port 8188 not listening yet"
-                fi
-            else
-                log "Service not running yet"
-                service comfyui status cpu 2>&1 | while read -r line; do log "  $line"; done
-            fi
-            
-            sleep 1
-            if [ $i -eq 30 ]; then
-                log "ERROR: Timeout waiting for ComfyUI CPU service"
-                # Check logs
-                if [ -f "${ROOT}/comfyui_cpu/logs/output.log" ]; then
-                    log "=== Last 10 lines of output.log ==="
-                    tail -n 10 "${ROOT}/comfyui_cpu/logs/output.log" | while read -r line; do log "  $line"; done
-                else
-                    log "WARNING: Log file not found: output.log"
-                fi
-                
-                # Show all listening ports
-                log "=== Current listening ports ==="
-                netstat -tuln | while read -r line; do log "  $line"; done
-            fi
-        done
-        
-        if [ "$service_ready" != "true" ]; then
-            log "ERROR: ComfyUI service failed to start properly"
+        # Check service status and ports
+        if ! mgpu status | grep -q "running"; then
+            log "ERROR: Service not running"
+            mgpu logs 2>&1
             return 1
         fi
+
+        if ! netstat -tuln | grep -q ":8188 "; then
+            log "ERROR: Direct port 8188 not listening"
+            netstat -tuln | grep -E ':3188|:8188'
+            return 1
+        fi
+
+        if ! netstat -tuln | grep -q ":3188 "; then
+            log "ERROR: Proxy port 3188 not listening"
+            netstat -tuln | grep -E ':3188|:8188'
+            return 1
+        fi
+
+        log "ComfyUI service ready"
     else
         # GPU mode - start all instances using mgpu
         log "Starting ComfyUI in GPU mode with $NUM_GPUS GPUs"
         
         # Add --cpu flag in test mode
-        if [ "$MOCK_GPU" -eq 1 ]; then
+        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
             log "Test mode: Adding --cpu flag to all instances"
             export COMFY_ARGS="--cpu"
         fi
         
-        if ! mgpu start-all; then
+        if ! mgpu start all; then
             log "ERROR: Failed to start ComfyUI GPU services"
-            mgpu status 2>&1 | while read -r line; do log "  $line"; done
+            mgpu status all 2>&1 | tail -n 5 | while read -r line; do log "  $line"; done
             return 1
         fi
     fi
@@ -659,9 +671,9 @@ verify_services() {
     if [ "$NUM_GPUS" -eq 0 ]; then
         # CPU mode
         log "Checking CPU mode..."
-        if ! service comfyui status cpu | grep -q "running"; then
+        if ! mgpu status | grep -q "running"; then
             log "ERROR: ComfyUI CPU service is not running"
-            service comfyui status cpu 2>&1 | while read -r line; do log "  $line"; done
+            mgpu status 2>&1 | while read -r line; do log "  $line"; done
             all_services_ok=false
         else
             log "ComfyUI CPU service is running"
@@ -695,9 +707,9 @@ verify_services() {
             log "Checking GPU $gpu..."
             
             # Check service
-            if ! service comfyui status "$gpu" | grep -q "running"; then
+            if ! mgpu status "$gpu" | grep -q "running"; then
                 log "ERROR: ComfyUI service for GPU $gpu is not running"
-                service comfyui status "$gpu" 2>&1 | while read -r line; do log "  $line"; done
+                mgpu status "$gpu" 2>&1 | while read -r line; do log "  $line"; done
                 all_services_ok=false
                 continue
             fi
@@ -733,7 +745,7 @@ verify_services() {
     
     if [ "$NUM_GPUS" -eq 0 ]; then
         # CPU mode summary
-        local service_status=$(service comfyui status cpu | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
+        local service_status=$(mgpu status | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
         local proxy_status=$(netstat -tuln | grep -q ":3188 " && echo "LISTENING" || echo "NOT LISTENING")
         local api_status=$(make_auth_request "http://localhost:3188/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
         log "ComfyUI CPU: Service: $service_status, Proxy: $proxy_status, API: $api_status"
@@ -741,7 +753,7 @@ verify_services() {
         # GPU mode summary
         for gpu in $(seq 0 $((NUM_GPUS-1))); do
             local proxy_port=$((3188 + gpu))
-            local service_status=$(service comfyui status "$gpu" | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
+            local service_status=$(mgpu status "$gpu" | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
             local proxy_status=$(netstat -tuln | grep -q ":$proxy_port " && echo "LISTENING" || echo "NOT LISTENING")
             local api_status=$(make_auth_request "http://localhost:$proxy_port/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
             log "ComfyUI GPU $gpu: Service: $service_status, Proxy: $proxy_status, API: $api_status"

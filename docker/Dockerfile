@@ -2,7 +2,7 @@
 FROM pytorch/pytorch:latest AS start
 
 RUN apt update && apt-get install -y \
-    git git-lfs rsync nginx wget curl nano net-tools ffmpeg libsm6 libxext6 \
+    git git-lfs rsync nginx wget curl nano net-tools lsof ffmpeg libsm6 libxext6 \
     cron sudo ssh zstd jq build-essential cmake ninja-build \
     gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
