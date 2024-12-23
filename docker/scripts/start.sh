@@ -44,6 +44,95 @@ log() {
     fi
 }
 
+main() {
+    log ""
+    log "====================================="
+    log "      Starting ComfyUI Setup         "
+    log "====================================="
+    log ""
+    log "=============== Steps ================"
+    log "1. Check environment variables"
+    log "2. Setup SSH access"
+    log "3. Setup pre-installed nodes"
+    log "4. Install nodes from config"
+    log "5. Download models"
+    log "6. Setup NGINX"
+    log "7. Setup shared directories"
+    log "8. Setup ComfyUI instances"
+    log "9. Setup service scripts"
+    log "10. Start NGINX"
+    log "11. Start ComfyUI services"
+    log "12. Verify all services"
+    log "====================================="
+    log ""
+    
+    # Phase 1: Check environment variables
+    log_phase "1" "Checking environment variables"
+    if ! setup_env_vars; then
+        log "ERROR: Environment check failed"
+        return 1
+    fi
+    
+    # Phase 2: Setup SSH access
+    log_phase "2" "Setting up SSH access"
+    if ! setup_ssh_access; then
+        log "ERROR: SSH setup failed"
+        return 1
+    fi
+    
+    # Phase 3: Setup pre-installed nodes
+    log_phase "3" "Setting up custom nodes"
+    setup_preinstalled_nodes
+
+    log_phase "4&5" "aws sync"
+    if ! s3_sync; then
+        log "ERROR: AWS sync failed"
+        return 1
+    fi
+    
+    # # Phase 4: Install custom nodes from config
+    # log_phase "4" "Installing nodes from config"
+    # install_nodes
+
+    # # Phase 5: Download models if specified in config
+    # log_phase "5" "Downloading models"
+    # download_models
+    
+    # Phase 6: Setup NGINX
+    log_phase "6" "Setting up NGINX"
+    if ! setup_nginx; then
+        log "ERROR: NGINX setup failed"
+        return 1
+    fi
+    
+    # # Phase 7: Setup shared directories
+    # log_phase "7" "Setting up shared directories"
+    # setup_shared_dirs
+    
+    # Phase 8: Setup ComfyUI instances
+    log_phase "8" "Setting up ComfyUI instances"
+    setup_comfyui
+    
+    # Phase 9: Setup service scripts
+    log_phase "9" "Setting up service scripts"
+    setup_service_scripts
+    
+    # Phase 10: Start NGINX
+    log_phase "10" "Starting NGINX"
+    start_nginx
+    
+    # Phase 11: Start ComfyUI services
+    log_phase "11" "Starting ComfyUI services"
+    start_comfyui
+    
+    # Phase 12: Verify all services
+    log_phase "12" "Verifying all services"
+    if ! verify_and_report; then
+        log "ERROR: Service verification failed"
+        # Don't exit - keep container running for debugging
+    fi
+}
+
 setup_env_vars() {
     log "Setting up environment variables..."
 
@@ -51,7 +140,9 @@ setup_env_vars() {
     set_gpu_env
     
     # Clean up PATH to avoid duplicates
-    clean_path="/opt/conda/bin:/workspace/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    clean_path="/opt/conda/bin:/workspace/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"   
+    AWS_SECRET_ACCESS_KEY=$(echo "${AWS_SECRET_ACCESS_KEY_ENCODED}" | sed 's/_SLASH_/\//g')
+    export AWS_SECRET_ACCESS_KEY
     
     # Persist environment variables for SSH sessions
     log "Persisting environment variables..."
@@ -63,6 +154,9 @@ setup_env_vars() {
         echo "SERVER_CREDS=${SERVER_CREDS}"
         echo "COMFY_AUTH=${COMFY_AUTH}"
         echo "PATH=${clean_path}"
+        echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+        echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+        echo "AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}"
     } >> /etc/environment
     
     # Also add to profile for interactive sessions
@@ -74,6 +168,9 @@ setup_env_vars() {
         echo "export SERVER_CREDS=${SERVER_CREDS}"
         echo "export COMFY_AUTH=${COMFY_AUTH}"
         echo "export PATH=${clean_path}"
+        echo "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+        echo "export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+        echo "export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}"
     } > /etc/profile.d/comfyui-env.sh
     
     # Set for current session
@@ -142,52 +239,6 @@ set_gpu_env() {
     fi
     
     log "GPU Environment: NUM_GPUS=$NUM_GPUS MOCK_GPU=$MOCK_GPU"
-}
-
-setup_comfyui() {
-    log "Setting up ComfyUI..."
-    
-    if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode
-        log "Setting up CPU mode..."
-        if ! mgpu setup cpu; then
-            log "ERROR: Failed to setup CPU instance"
-            return 1
-        fi
-    else
-        # GPU mode
-        log "Setting up GPU mode with $NUM_GPUS GPUs"
-        
-        # Add --cpu flag in test mode
-        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
-            log "Test mode: Adding --cpu flag to all instances"
-            export COMFY_ARGS="--cpu"
-        fi
-        
-        # Setup GPU instances
-        log "Setting up GPU instances..."
-        if ! mgpu setup all; then
-            log "ERROR: Failed to set up GPU instances"
-            return 1
-        fi
-        
-        # Start services
-        log "Starting GPU services..."
-        if ! mgpu start all; then
-            log "ERROR: Failed to start GPU services"
-            return 1
-        fi
-        
-        # Quick status check
-        log "Verifying services..."
-        mgpu status all >/dev/null || {
-            log "ERROR: Service verification failed"
-            return 1
-        }
-    fi
-    
-    log "ComfyUI setup complete"
-    return 0
 }
 
 setup_ssh_access() {
@@ -305,6 +356,282 @@ setup_ssh_access() {
     log "- Known hosts: $(ls -l /root/.ssh/known_hosts)"
 }
 
+setup_preinstalled_nodes() {
+    log "Setting up pre-installed custom nodes..."
+    if [ -d "/workspace/shared_custom_nodes" ]; then
+        log "Found pre-installed nodes, moving to shared directory"
+        mv /workspace/shared_custom_nodes "${ROOT}/shared/custom_nodes"
+        log "Contents of shared custom_nodes directory:"
+        ls -la "${ROOT}/shared/custom_nodes" | while read -r line; do log "  $line"; done
+    else
+        log "No pre-installed nodes found at /workspace/shared_custom_nodes"
+    fi
+}
+
+# install_nodes() {
+#     log "Processing custom nodes from config..."
+    
+#     if [ ! -f "$CONFIG_FILE" ]; then
+#         log "Config not found: $CONFIG_FILE"
+#         return
+#     fi
+
+#     # Use shared custom_nodes directory
+#     cd "${ROOT}/shared/custom_nodes"
+    
+    # while IFS= read -r node; do
+    #     name=$(echo "$node" | jq -r '.name')
+    #     url=$(echo "$node" | jq -r '.url')
+    #     commit=$(echo "$node" | jq -r '.commit // empty')
+    #     install_reqs=$(echo "$node" | jq -r '.requirements')
+        
+    #     if [ "$name" != "null" ] && [ "$url" != "null" ]; then
+    #         log "Processing node: $name"
+            
+    #         # Handle environment variables if present
+    #         env_vars=$(echo "$node" | jq -r '.env // empty')
+    #         if [ ! -z "$env_vars" ]; then
+    #             log "Setting environment variables for $name"
+    #             while IFS="=" read -r key value; do
+    #                 if [ ! -z "$key" ]; then
+    #                     # Expand any environment variables in the value
+    #                     expanded_value=$(eval echo "$value")
+    #                     export "$key"="$expanded_value"
+    #                     log "Set $key"
+    #                 fi
+    #             done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
+    #         fi
+            
+    #         if [ ! -d "$name" ]; then
+    #             log "Installing node: $name"
+    #             git clone "$url" "$name"
+                
+    #             if [ ! -z "$commit" ]; then
+    #                 cd "$name"
+    #                 git reset --hard "$commit"
+    #                 cd ..
+    #             fi
+    #         else
+    #             log "Node directory exists: $name"
+    #             # Update existing repository
+    #             cd "$name"
+    #             git remote set-url origin "$url"
+    #             git fetch
+    #             if [ ! -z "$commit" ]; then
+    #                 git reset --hard "$commit"
+    #             else
+    #                 git pull
+    #             fi
+    #             cd ..
+    #         fi
+            
+    #         # Install requirements if specified as true
+    #         if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
+    #             log "Installing requirements for $name"
+    #             pip install -r "$name/requirements.txt"
+    #         fi
+    #     fi
+    # done < <(jq -c '.nodes[]' "$CONFIG_FILE")
+# }
+
+# download_model() {
+#     local url="$1"
+#     local path="$2"
+#     local filename="$3"
+    
+#     log "Downloading model: $filename"
+    
+#     # Create full path in shared directory, remove any double slashes
+#     local full_path="${ROOT}/shared/${path%/}"
+    
+#     # Create directory if it doesn't exist
+#     mkdir -p "$full_path"
+    
+#     # Update comfy_dir_config.yaml
+#     update_comfy_config "$path"
+    
+#     log "Saving to: $full_path/$filename"
+    
+#     # Use wget with progress bar, suppress verbose output
+#     if ! wget --quiet --show-progress --progress=bar:force:noscroll -O "$full_path/$filename" "$url" >> "$START_LOG" 2>&1; then
+#         log "Failed to download $url"
+#         return 1
+#     fi
+
+#     # Verify file was downloaded and has size
+#     if [ ! -s "$full_path/$filename" ]; then
+#         log "Download failed - file is empty"
+#         return 1
+#     fi
+    
+#     log "Successfully downloaded $filename"
+#     return 0
+# }
+
+# update_comfy_config() {
+#     local path="$1"
+#     local config_file="${ROOT}/shared/comfy_dir_config.yaml"
+    
+#     # Create config file if it doesn't exist
+#     if [ ! -f "$config_file" ]; then
+#         log "Creating new comfy_dir_config.yaml"
+#         cat > "$config_file" << EOL
+# comfyui:
+#     base_path: /workspace/shared
+#     custom_nodes: custom_nodes/
+# EOL
+#     fi
+    
+#     # Extract the directory type from path (e.g., "checkpoints" from "models/checkpoints/")
+#     local dir_type=$(echo "$path" | sed -n 's|^models/\([^/]*\)/.*$|\1|p')
+#     if [ -n "$dir_type" ]; then
+#         # Check if this type already exists in config
+#         if ! grep -q "^[[:space:]]*${dir_type}:" "$config_file"; then
+#             log "Adding $dir_type path to comfy_dir_config.yaml"
+#             # Create temp file for sed (macOS requires this)
+#             local temp_file=$(mktemp)
+#             sed "/^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*:/i\\    ${dir_type}: models/${dir_type}/" "$config_file" > "$temp_file"
+#             mv "$temp_file" "$config_file"
+#         fi
+#     fi
+# }
+
+# download_models() {
+#     if [ ! -f "$CONFIG_FILE" ]; then
+#         log "No config file found at $CONFIG_FILE"
+#         return 0
+#     fi
+
+#     # Process each model in the configuration
+#     local models
+#     models=$(jq -c '.models[] | select(.url != null)' "$CONFIG_FILE")
+    
+#     # Check if models is empty
+#     if [ -z "$models" ]; then
+#         log "No models found in configuration to download"
+#         return 0
+#     fi
+
+#     # Process models using a while loop
+#     echo "$models" | while read -r model; do
+#         # Extract model details
+#         local url name path
+#         url=$(echo "$model" | jq -r '.url')
+#         name=$(echo "$model" | jq -r '.name')
+#         path=$(echo "$model" | jq -r '.path // "models/checkpoints/"')
+        
+#         # log "Processing model: $name"
+#         # log "  URL: $url"
+#         # log "  Path: $path"
+        
+#         # Download the model
+#         download_model "$url" "$path" "$name"
+#     done
+
+#     return 0
+# }
+
+
+s3_sync() {
+    # Sync models and configs from S3
+    log "Syncing from S3..."
+    echo "Syncing from S3..."
+    echo $AWS_ACCESS_KEY_ID
+    echo $AWS_SECRET_ACCESS_KEY
+    aws s3 sync s3://emprops-share /workspace/shared
+
+    # Install custom nodes from config
+    log "Installing custom nodes..."
+    if [ -f "/workspace/shared/custom_nodes/config_nodes.json" ]; then
+        cd /workspace/shared/custom_nodes
+        for node in $(jq -r '.custom_nodes[] | @base64' config_nodes.json); do
+            _jq() {
+                echo ${node} | base64 --decode | jq -r ${1}
+            }
+            
+            name=$(_jq '.name')
+            url=$(_jq '.url')
+            commit=$(_jq '.commit // empty')
+            install_reqs=$(_jq '.requirements')
+            
+            if [ "$name" != "null" ] && [ "$url" != "null" ]; then
+                log "Processing node: $name"
+                
+                # Handle environment variables if present
+                env_vars=$(echo "$node" | jq -r '.env // empty')
+                if [ ! -z "$env_vars" ]; then
+                    log "Setting environment variables for $name"
+                    while IFS="=" read -r key value; do
+                        if [ ! -z "$key" ]; then
+                            # Expand any environment variables in the value
+                            expanded_value=$(eval echo "$value")
+                            export "$key"="$expanded_value"
+                            log "Set $key"
+                        fi
+                    done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
+                fi
+                
+                if [ ! -d "$name" ]; then
+                    log "Installing node: $name"
+                    git clone "$url" "$name"
+                    
+                    if [ ! -z "$commit" ]; then
+                        cd "$name"
+                        git reset --hard "$commit"
+                        cd ..
+                    fi
+                else
+                    log "Node directory exists: $name"
+                    # Update existing repository
+                    cd "$name"
+                    git remote set-url origin "$url"
+                    git fetch
+                    if [ ! -z "$commit" ]; then
+                        git reset --hard "$commit"
+                    else
+                        git pull
+                    fi
+                    cd ..
+                fi
+                
+                # Install requirements if specified as true
+                if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
+                    log "Installing requirements for $name"
+                    pip install -r "$name/requirements.txt"
+                fi
+            fi
+        done
+    fi
+}
+
+setup_nginx() {
+    log "Setting up NGINX..."
+    
+    # Setup auth first
+    if ! setup_nginx_auth; then
+        log "ERROR: Failed to setup NGINX authentication"
+        return 1
+    fi
+    
+    ssh-agent bash << 'EOF'
+        eval "$(ssh-agent -s)"
+        ssh-add /root/.ssh/id_ed25519
+        
+        git clone git@github.com:stakeordie/emprops-nginx-conf.git /etc/nginx-repo
+EOF
+
+    if [ ! -d "/etc/nginx-repo" ]; then
+        log "Failed to clone nginx repo"
+        return 1
+    fi
+
+    rm -rf /etc/nginx
+
+    ln -s /etc/nginx-repo/node /etc/nginx
+
+    log "Nginx configuration set up"
+}
+
 setup_nginx_auth() {
     log "Setting up NGINX authentication..."
     
@@ -344,32 +671,117 @@ setup_nginx_auth() {
     fi
 }
 
-setup_nginx() {
-    log "Setting up NGINX..."
+# setup_shared_dirs() {
+#     log "Creating shared directories..."
+#     mkdir -p "${ROOT}/shared/models"
+#     mkdir -p "${ROOT}/shared/custom_nodes"
+#     log "Shared directories created at ${ROOT}/shared/"
+# }
+
+setup_comfyui() {
+    log "Setting up ComfyUI..."
     
-    # Setup auth first
-    if ! setup_nginx_auth; then
-        log "ERROR: Failed to setup NGINX authentication"
-        return 1
-    fi
-    
-    ssh-agent bash << 'EOF'
-        eval "$(ssh-agent -s)"
-        ssh-add /root/.ssh/id_ed25519
+    if [ "$NUM_GPUS" -eq 0 ]; then
+        # CPU mode
+        log "Setting up CPU mode..."
+        if ! mgpu setup cpu; then
+            log "ERROR: Failed to setup CPU instance"
+            return 1
+        fi
+    else
+        # GPU mode
+        log "Setting up GPU mode with $NUM_GPUS GPUs"
         
-        git clone git@github.com:stakeordie/emprops-nginx-conf.git /etc/nginx-repo
-EOF
+        # Add --cpu flag in test mode
+        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+            log "Test mode: Adding --cpu flag to all instances"
+            export COMFY_ARGS="--cpu"
+        fi
+        
+        # Setup GPU instances
+        log "Setting up GPU instances..."
+        if ! mgpu setup all; then
+            log "ERROR: Failed to set up GPU instances"
+            return 1
+        fi
+        
+        # Start services
+        log "Starting GPU services..."
+        if ! mgpu start all; then
+            log "ERROR: Failed to start GPU services"
+            return 1
+        fi
+        
+        # Quick status check
+        log "Verifying services..."
+        mgpu status all >/dev/null || {
+            log "ERROR: Service verification failed"
+            return 1
+        }
+    fi
+    
+    log "ComfyUI setup complete"
+    return 0
+}
 
-    if [ ! -d "/etc/nginx-repo" ]; then
-        log "Failed to clone nginx repo"
+setup_service_scripts() {
+    log "Setting up service scripts"
+    
+    # Verify mgpu script is available
+    if ! command -v mgpu >/dev/null 2>&1; then
+        log "ERROR: MGPU command not found in PATH"
         return 1
     fi
+    
+    # Update service defaults if needed
+    if ! update-rc.d comfyui defaults; then
+        log "WARNING: Failed to update ComfyUI service defaults"
+    fi
+    
+    log "Service scripts initialized"
+}
 
-    rm -rf /etc/nginx
+setup_services() {
+    log "Setting up cron..."
+    
+    # Setup and start cron if cleanup is needed
+    if [ -d "${COMFY_DIR}/output" ]; then
+        log "Setting up cleanup cron job..."
+        CRON_JOB="0 * * * * rm -f ${COMFY_DIR}/output/*"
+        (crontab -l 2>/dev/null | grep -v "$COMFY_DIR/output"; echo "$CRON_JOB") | crontab -
+        
+        log "Starting cron service..."
+        service cron start
+    else
+        log "Output directory not found, skipping cron setup"
+    fi
+}
 
-    ln -s /etc/nginx-repo/node /etc/nginx
-
-    log "Nginx configuration set up"
+start_nginx() {
+    log "Starting NGINX..."
+    
+    # Stop nginx if it's already running
+    if service nginx status >/dev/null 2>&1; then
+        log "NGINX is already running, stopping it first..."
+        service nginx stop
+    fi
+    
+    # Start nginx
+    log "Starting NGINX service..."
+    if ! service nginx start; then
+        log "ERROR: Failed to start NGINX"
+        return 1
+    fi
+    
+    # Verify it's running
+    sleep 2
+    if ! service nginx status >/dev/null 2>&1; then
+        log "ERROR: NGINX failed to start"
+        service nginx status | while read -r line; do log "  $line"; done
+        return 1
+    fi
+    
+    log "NGINX started successfully"
 }
 
 start_comfyui() {
@@ -427,199 +839,44 @@ start_comfyui() {
     log "All ComfyUI services started successfully"
 }
 
-download_model() {
-    local url="$1"
-    local path="$2"
-    local filename="$3"
-    
-    log "Downloading model: $filename"
-    
-    # Create full path in shared directory, remove any double slashes
-    local full_path="${ROOT}/shared/${path%/}"
-    
-    # Create directory if it doesn't exist
-    mkdir -p "$full_path"
-    
-    # Update comfy_dir_config.yaml
-    update_comfy_config "$path"
-    
-    log "Saving to: $full_path/$filename"
-    
-    # Use wget with progress bar, suppress verbose output
-    if ! wget --quiet --show-progress --progress=bar:force:noscroll -O "$full_path/$filename" "$url" >> "$START_LOG" 2>&1; then
-        log "Failed to download $url"
-        return 1
-    fi
-
-    # Verify file was downloaded and has size
-    if [ ! -s "$full_path/$filename" ]; then
-        log "Download failed - file is empty"
-        return 1
-    fi
-    
-    log "Successfully downloaded $filename"
-    return 0
+log_phase() {
+    local phase_num=$1
+    local phase_name=$2
+    log ""
+    log "===================================="
+    log "Phase $phase_num: $phase_name"
+    log "===================================="
 }
 
-download_models() {
-    if [ ! -f "$CONFIG_FILE" ]; then
-        log "No config file found at $CONFIG_FILE"
-        return 0
-    fi
-
-    # Process each model in the configuration
-    local models
-    models=$(jq -c '.models[] | select(.url != null)' "$CONFIG_FILE")
+verify_and_report() {
+    log ""
+    log "===================================="
+    log "Starting Service Verification"
+    log "===================================="
     
-    # Check if models is empty
-    if [ -z "$models" ]; then
-        log "No models found in configuration to download"
-        return 0
-    fi
-
-    # Process models using a while loop
-    echo "$models" | while read -r model; do
-        # Extract model details
-        local url name path
-        url=$(echo "$model" | jq -r '.url')
-        name=$(echo "$model" | jq -r '.name')
-        path=$(echo "$model" | jq -r '.path // "models/checkpoints/"')
-        
-        # log "Processing model: $name"
-        # log "  URL: $url"
-        # log "  Path: $path"
-        
-        # Download the model
-        download_model "$url" "$path" "$name"
-    done
-
-    return 0
-}
-
-install_nodes() {
-    log "Processing custom nodes from config..."
-    
-    if [ ! -f "$CONFIG_FILE" ]; then
-        log "Config not found: $CONFIG_FILE"
-        return
-    fi
-
-    # Use shared custom_nodes directory
-    cd "${ROOT}/shared/custom_nodes"
-    
-    while IFS= read -r node; do
-        name=$(echo "$node" | jq -r '.name')
-        url=$(echo "$node" | jq -r '.url')
-        commit=$(echo "$node" | jq -r '.commit // empty')
-        install_reqs=$(echo "$node" | jq -r '.requirements')
-        
-        if [ "$name" != "null" ] && [ "$url" != "null" ]; then
-            log "Processing node: $name"
-            
-            # Handle environment variables if present
-            env_vars=$(echo "$node" | jq -r '.env // empty')
-            if [ ! -z "$env_vars" ]; then
-                log "Setting environment variables for $name"
-                while IFS="=" read -r key value; do
-                    if [ ! -z "$key" ]; then
-                        # Expand any environment variables in the value
-                        expanded_value=$(eval echo "$value")
-                        export "$key"="$expanded_value"
-                        log "Set $key"
-                    fi
-                done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
-            fi
-            
-            if [ ! -d "$name" ]; then
-                log "Installing node: $name"
-                git clone "$url" "$name"
-                
-                if [ ! -z "$commit" ]; then
-                    cd "$name"
-                    git reset --hard "$commit"
-                    cd ..
-                fi
-            else
-                log "Node directory exists: $name"
-                # Update existing repository
-                cd "$name"
-                git remote set-url origin "$url"
-                git fetch
-                if [ ! -z "$commit" ]; then
-                    git reset --hard "$commit"
-                else
-                    git pull
-                fi
-                cd ..
-            fi
-            
-            # Install requirements if specified as true
-            if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
-                log "Installing requirements for $name"
-                pip install -r "$name/requirements.txt"
-            fi
-        fi
-    done < <(jq -c '.nodes[]' "$CONFIG_FILE")
-}
-
-setup_services() {
-    log "Setting up cron..."
-    
-    # Setup and start cron if cleanup is needed
-    if [ -d "${COMFY_DIR}/output" ]; then
-        log "Setting up cleanup cron job..."
-        CRON_JOB="0 * * * * rm -f ${COMFY_DIR}/output/*"
-        (crontab -l 2>/dev/null | grep -v "$COMFY_DIR/output"; echo "$CRON_JOB") | crontab -
-        
-        log "Starting cron service..."
-        service cron start
-    else
-        log "Output directory not found, skipping cron setup"
-    fi
-}
-
-setup_service_scripts() {
-    log "Setting up service scripts"
-    
-    # Verify mgpu script is available
-    if ! command -v mgpu >/dev/null 2>&1; then
-        log "ERROR: MGPU command not found in PATH"
-        return 1
-    fi
-    
-    # Update service defaults if needed
-    if ! update-rc.d comfyui defaults; then
-        log "WARNING: Failed to update ComfyUI service defaults"
-    fi
-    
-    log "Service scripts initialized"
-}
-
-start_nginx() {
-    log "Starting NGINX..."
-    
-    # Stop nginx if it's already running
-    if service nginx status >/dev/null 2>&1; then
-        log "NGINX is already running, stopping it first..."
-        service nginx stop
-    fi
-    
-    # Start nginx
-    log "Starting NGINX service..."
-    if ! service nginx start; then
-        log "ERROR: Failed to start NGINX"
-        return 1
-    fi
-    
-    # Verify it's running
+    # Give services a moment to start if they just started
     sleep 2
-    if ! service nginx status >/dev/null 2>&1; then
-        log "ERROR: NGINX failed to start"
-        service nginx status | while read -r line; do log "  $line"; done
+    
+    # Run comprehensive verification
+    verify_services
+    
+    # Final user instructions
+    if [ "$all_services_ok" = true ]; then
+        log ""
+        log "===================================="
+        log "All services are running correctly"
+        log "Use 'mgpu logs-all' to monitor all services"
+        log "===================================="
+        return 0
+    else
+        log ""
+        log "===================================="
+        log "WARNING: Some services are not functioning correctly"
+        log "Check the logs above for specific errors"
+        log "Use 'mgpu logs-all' to monitor services for errors"
+        log "===================================="
         return 1
     fi
-    
-    log "NGINX started successfully"
 }
 
 verify_services() {
@@ -768,25 +1025,6 @@ verify_services() {
     log "All services verified successfully"
 }
 
-setup_shared_dirs() {
-    log "Creating shared directories..."
-    mkdir -p "${ROOT}/shared/models"
-    mkdir -p "${ROOT}/shared/custom_nodes"
-    log "Shared directories created at ${ROOT}/shared/"
-}
-
-setup_preinstalled_nodes() {
-    log "Setting up pre-installed custom nodes..."
-    if [ -d "/workspace/shared_custom_nodes" ]; then
-        log "Found pre-installed nodes, moving to shared directory"
-        mv /workspace/shared_custom_nodes "${ROOT}/shared/custom_nodes"
-        log "Contents of shared custom_nodes directory:"
-        ls -la "${ROOT}/shared/custom_nodes" | while read -r line; do log "  $line"; done
-    else
-        log "No pre-installed nodes found at /workspace/shared_custom_nodes"
-    fi
-}
-
 setup_auth() {
     if [ -n "$SERVER_CREDS" ]; then
         # Add "sd:" prefix and base64 encode
@@ -810,159 +1048,6 @@ make_auth_request() {
         eval "curl -v $auth_opts '$url'"
     else
         eval "curl -s $auth_opts '$url'"
-    fi
-}
-
-log_phase() {
-    local phase_num=$1
-    local phase_name=$2
-    log ""
-    log "===================================="
-    log "Phase $phase_num: $phase_name"
-    log "===================================="
-}
-
-verify_and_report() {
-    log ""
-    log "===================================="
-    log "Starting Service Verification"
-    log "===================================="
-    
-    # Give services a moment to start if they just started
-    sleep 2
-    
-    # Run comprehensive verification
-    verify_services
-    
-    # Final user instructions
-    if [ "$all_services_ok" = true ]; then
-        log ""
-        log "===================================="
-        log "All services are running correctly"
-        log "Use 'mgpu logs-all' to monitor all services"
-        log "===================================="
-        return 0
-    else
-        log ""
-        log "===================================="
-        log "WARNING: Some services are not functioning correctly"
-        log "Check the logs above for specific errors"
-        log "Use 'mgpu logs-all' to monitor services for errors"
-        log "===================================="
-        return 1
-    fi
-}
-
-update_comfy_config() {
-    local path="$1"
-    local config_file="${ROOT}/shared/comfy_dir_config.yaml"
-    
-    # Create config file if it doesn't exist
-    if [ ! -f "$config_file" ]; then
-        log "Creating new comfy_dir_config.yaml"
-        cat > "$config_file" << EOL
-comfyui:
-    base_path: /workspace/shared
-    custom_nodes: custom_nodes/
-EOL
-    fi
-    
-    # Extract the directory type from path (e.g., "checkpoints" from "models/checkpoints/")
-    local dir_type=$(echo "$path" | sed -n 's|^models/\([^/]*\)/.*$|\1|p')
-    if [ -n "$dir_type" ]; then
-        # Check if this type already exists in config
-        if ! grep -q "^[[:space:]]*${dir_type}:" "$config_file"; then
-            log "Adding $dir_type path to comfy_dir_config.yaml"
-            # Create temp file for sed (macOS requires this)
-            local temp_file=$(mktemp)
-            sed "/^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*:/i\\    ${dir_type}: models/${dir_type}/" "$config_file" > "$temp_file"
-            mv "$temp_file" "$config_file"
-        fi
-    fi
-}
-
-main() {
-    log ""
-    log "====================================="
-    log "      Starting ComfyUI Setup         "
-    log "====================================="
-    log ""
-    log "=============== Steps ================"
-    log "1. Check environment variables"
-    log "2. Setup SSH access"
-    log "3. Setup pre-installed nodes"
-    log "4. Install nodes from config"
-    log "5. Download models"
-    log "6. Setup NGINX"
-    log "7. Setup shared directories"
-    log "8. Setup ComfyUI instances"
-    log "9. Setup service scripts"
-    log "10. Start NGINX"
-    log "11. Start ComfyUI services"
-    log "12. Verify all services"
-    log "====================================="
-    log ""
-    
-    # Phase 1: Check environment variables
-    log_phase "1" "Checking environment variables"
-    if ! setup_env_vars; then
-        log "ERROR: Environment check failed"
-        return 1
-    fi
-    
-    # Phase 2: Setup SSH access
-    log_phase "2" "Setting up SSH access"
-    if ! setup_ssh_access; then
-        log "ERROR: SSH setup failed"
-        return 1
-    fi
-    
-    # Phase 3: Setup pre-installed nodes
-    log_phase "3" "Setting up custom nodes"
-    setup_preinstalled_nodes
-    
-    # Phase 4: Install custom nodes from config
-    log_phase "4" "Installing nodes from config"
-    install_nodes
-    log "Final contents of custom_nodes directory:"
-    ls -la "${COMFY_DIR}/custom_nodes" | while read -r line; do log "  $line"; done
-    
-    # Phase 5: Download models if specified in config
-    log_phase "5" "Downloading models"
-    download_models
-    
-    # Phase 6: Setup NGINX
-    log_phase "6" "Setting up NGINX"
-    if ! setup_nginx; then
-        log "ERROR: NGINX setup failed"
-        return 1
-    fi
-    
-    # Phase 7: Setup shared directories
-    log_phase "7" "Setting up shared directories"
-    setup_shared_dirs
-    
-    # Phase 8: Setup ComfyUI instances
-    log_phase "8" "Setting up ComfyUI instances"
-    setup_comfyui
-    
-    # Phase 9: Setup service scripts
-    log_phase "9" "Setting up service scripts"
-    setup_service_scripts
-    
-    # Phase 10: Start NGINX
-    log_phase "10" "Starting NGINX"
-    start_nginx
-    
-    # Phase 11: Start ComfyUI services
-    log_phase "11" "Starting ComfyUI services"
-    start_comfyui
-    
-    # Phase 12: Verify all services
-    log_phase "12" "Verifying all services"
-    if ! verify_and_report; then
-        log "ERROR: Service verification failed"
-        # Don't exit - keep container running for debugging
     fi
 }
 

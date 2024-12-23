@@ -151,7 +151,7 @@ start() {
     [ -n "${COMFY_ARGS:-}" ] && echo "${COMFY_ARGS}" > "${WORK_DIR}/comfyui.args"
     
     # Wait for service
-    for i in {1..30}; do
+    for i in {1..60}; do
         if [ -f "${WORK_DIR}/comfyui.pid" ] && kill -0 "$(cat "${WORK_DIR}/comfyui.pid")" 2>/dev/null; then
             if netstat -tuln | grep -q ":$PORT "; then
                 log "$GPU_NUM" "Service is running on port $PORT"
@@ -159,7 +159,7 @@ start() {
             fi
         fi
         sleep 1
-        if [ $i -eq 30 ]; then
+        if [ $i -eq 60 ]; then
             log "$GPU_NUM" "ERROR: Service startup timeout"
             stop "$GPU_NUM"  # Cleanup failed start
             return 1
@@ -187,7 +187,7 @@ stop() {
             log "$GPU_NUM" "Stopping service (PID: $PID)"
             kill "$PID"
             # Wait for process to actually stop
-            for i in {1..10}; do
+            for i in {1..10 }; do
                 if ! kill -0 "$PID" 2>/dev/null; then
                     break
                 fi

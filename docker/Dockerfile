@@ -45,7 +45,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
     cd ${COMFY_DIR} && \
     pip uninstall onnxruntime && \
     pip install --upgrade pip && \
-    pip install --upgrade onnxruntime-gpu mmengine opencv-python imgui-bundle pyav && \
+    pip install --upgrade onnxruntime-gpu mmengine opencv-python imgui-bundle pyav boto3 awscli && \
     pip install -r requirements.txt
 
 FROM middle AS shared
