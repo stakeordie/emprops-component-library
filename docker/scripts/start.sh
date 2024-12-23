@@ -535,10 +535,7 @@ setup_preinstalled_nodes() {
 s3_sync() {
     # Sync models and configs from S3
     log "Syncing from S3..."
-    echo "Syncing from S3..."
-    echo $AWS_ACCESS_KEY_ID
-    echo $AWS_SECRET_ACCESS_KEY
-    aws s3 sync s3://emprops-share /workspace/shared
+    aws s3 sync s3://emprops-share /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
 
     # Install custom nodes from config
     log "Installing custom nodes..."
