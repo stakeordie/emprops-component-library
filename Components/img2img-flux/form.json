@@ -1,7 +1,8 @@
 {
   "config": {
     "groupOrder": ["main", "advanced"],
-    "maxNumberOfGenerations": 6
+    "maxNumberOfGenerations": 6,
+    "componentGroup": "image"
   },
   "fields": [
     {

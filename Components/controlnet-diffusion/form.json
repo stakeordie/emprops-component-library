@@ -2,8 +2,7 @@
   "config": {
     "groupOrder": ["main", "advanced"],
     "maxNumberOfGenerations": 1,
-    "type": "diffusion",
-    "category": "Image"
+    "componentGroup": "image"
   },
   "fields": [
     {
