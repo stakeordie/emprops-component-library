@@ -1,7 +1,8 @@
 {
   "config": {
     "groupOrder": ["main", "advanced"],
-    "maxNumberOfGenerations": 1
+    "maxNumberOfGenerations": 1,
+    "componentGroup": "video"
   },
   "fields": [
     {
