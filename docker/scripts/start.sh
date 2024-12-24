@@ -5,9 +5,6 @@ if [ "${DEBUG:-}" = "true" ]; then
 fi
 
 ROOT="${ROOT:-/workspace}"
-CONFIG_DIR="${CONFIG_DIR:-${ROOT}/config}"
-COMFY_DIR="${COMFY_DIR:-${ROOT}/ComfyUI}"
-CONFIG_FILE="$CONFIG_DIR/config.json"
 LOG_DIR="${ROOT}/logs"
 START_LOG="${LOG_DIR}/start.log"
 
@@ -38,7 +35,7 @@ log() {
         # For non-debug mode, only show important messages on screen
         case "$*" in
             *ERROR*|*FAIL*|*SUCCESS*|*READY*)
-                echo "[$timestamp] $*"
+                echo "[$timestamp] $*" 
                 ;;
         esac
     fi
@@ -89,14 +86,6 @@ main() {
         log "ERROR: AWS sync failed"
         return 1
     fi
-    
-    # # Phase 4: Install custom nodes from config
-    # log_phase "4" "Installing nodes from config"
-    # install_nodes
-
-    # # Phase 5: Download models if specified in config
-    # log_phase "5" "Downloading models"
-    # download_models
     
     # Phase 6: Setup NGINX
     log_phase "6" "Setting up NGINX"
@@ -232,10 +221,11 @@ set_gpu_env() {
         export NUM_GPUS
         export MOCK_GPU=0
     else
-        log "nvidia-smi not found, assuming CPU mode"
-        NUM_GPUS=0
+        # Treat CPU mode as mock mode with 1 GPU
+        log "nvidia-smi not found, running in CPU mode (mocking 1 GPU)"
+        NUM_GPUS=1
         export NUM_GPUS
-        export MOCK_GPU=0
+        export MOCK_GPU=1
     fi
     
     log "GPU Environment: NUM_GPUS=$NUM_GPUS MOCK_GPU=$MOCK_GPU"
@@ -368,180 +358,38 @@ setup_preinstalled_nodes() {
     fi
 }
 
-# install_nodes() {
-#     log "Processing custom nodes from config..."
-    
-#     if [ ! -f "$CONFIG_FILE" ]; then
-#         log "Config not found: $CONFIG_FILE"
-#         return
-#     fi
-
-#     # Use shared custom_nodes directory
-#     cd "${ROOT}/shared/custom_nodes"
-    
-    # while IFS= read -r node; do
-    #     name=$(echo "$node" | jq -r '.name')
-    #     url=$(echo "$node" | jq -r '.url')
-    #     commit=$(echo "$node" | jq -r '.commit // empty')
-    #     install_reqs=$(echo "$node" | jq -r '.requirements')
-        
-    #     if [ "$name" != "null" ] && [ "$url" != "null" ]; then
-    #         log "Processing node: $name"
-            
-    #         # Handle environment variables if present
-    #         env_vars=$(echo "$node" | jq -r '.env // empty')
-    #         if [ ! -z "$env_vars" ]; then
-    #             log "Setting environment variables for $name"
-    #             while IFS="=" read -r key value; do
-    #                 if [ ! -z "$key" ]; then
-    #                     # Expand any environment variables in the value
-    #                     expanded_value=$(eval echo "$value")
-    #                     export "$key"="$expanded_value"
-    #                     log "Set $key"
-    #                 fi
-    #             done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
-    #         fi
-            
-    #         if [ ! -d "$name" ]; then
-    #             log "Installing node: $name"
-    #             git clone "$url" "$name"
-                
-    #             if [ ! -z "$commit" ]; then
-    #                 cd "$name"
-    #                 git reset --hard "$commit"
-    #                 cd ..
-    #             fi
-    #         else
-    #             log "Node directory exists: $name"
-    #             # Update existing repository
-    #             cd "$name"
-    #             git remote set-url origin "$url"
-    #             git fetch
-    #             if [ ! -z "$commit" ]; then
-    #                 git reset --hard "$commit"
-    #             else
-    #                 git pull
-    #             fi
-    #             cd ..
-    #         fi
-            
-    #         # Install requirements if specified as true
-    #         if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
-    #             log "Installing requirements for $name"
-    #             pip install -r "$name/requirements.txt"
-    #         fi
-    #     fi
-    # done < <(jq -c '.nodes[]' "$CONFIG_FILE")
-# }
-
-# download_model() {
-#     local url="$1"
-#     local path="$2"
-#     local filename="$3"
-    
-#     log "Downloading model: $filename"
-    
-#     # Create full path in shared directory, remove any double slashes
-#     local full_path="${ROOT}/shared/${path%/}"
-    
-#     # Create directory if it doesn't exist
-#     mkdir -p "$full_path"
-    
-#     # Update comfy_dir_config.yaml
-#     update_comfy_config "$path"
-    
-#     log "Saving to: $full_path/$filename"
-    
-#     # Use wget with progress bar, suppress verbose output
-#     if ! wget --quiet --show-progress --progress=bar:force:noscroll -O "$full_path/$filename" "$url" >> "$START_LOG" 2>&1; then
-#         log "Failed to download $url"
-#         return 1
-#     fi
-
-#     # Verify file was downloaded and has size
-#     if [ ! -s "$full_path/$filename" ]; then
-#         log "Download failed - file is empty"
-#         return 1
-#     fi
-    
-#     log "Successfully downloaded $filename"
-#     return 0
-# }
-
-# update_comfy_config() {
-#     local path="$1"
-#     local config_file="${ROOT}/shared/comfy_dir_config.yaml"
-    
-#     # Create config file if it doesn't exist
-#     if [ ! -f "$config_file" ]; then
-#         log "Creating new comfy_dir_config.yaml"
-#         cat > "$config_file" << EOL
-# comfyui:
-#     base_path: /workspace/shared
-#     custom_nodes: custom_nodes/
-# EOL
-#     fi
-    
-#     # Extract the directory type from path (e.g., "checkpoints" from "models/checkpoints/")
-#     local dir_type=$(echo "$path" | sed -n 's|^models/\([^/]*\)/.*$|\1|p')
-#     if [ -n "$dir_type" ]; then
-#         # Check if this type already exists in config
-#         if ! grep -q "^[[:space:]]*${dir_type}:" "$config_file"; then
-#             log "Adding $dir_type path to comfy_dir_config.yaml"
-#             # Create temp file for sed (macOS requires this)
-#             local temp_file=$(mktemp)
-#             sed "/^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*:/i\\    ${dir_type}: models/${dir_type}/" "$config_file" > "$temp_file"
-#             mv "$temp_file" "$config_file"
-#         fi
-#     fi
-# }
-
-# download_models() {
-#     if [ ! -f "$CONFIG_FILE" ]; then
-#         log "No config file found at $CONFIG_FILE"
-#         return 0
-#     fi
-
-#     # Process each model in the configuration
-#     local models
-#     models=$(jq -c '.models[] | select(.url != null)' "$CONFIG_FILE")
-    
-#     # Check if models is empty
-#     if [ -z "$models" ]; then
-#         log "No models found in configuration to download"
-#         return 0
-#     fi
-
-#     # Process models using a while loop
-#     echo "$models" | while read -r model; do
-#         # Extract model details
-#         local url name path
-#         url=$(echo "$model" | jq -r '.url')
-#         name=$(echo "$model" | jq -r '.name')
-#         path=$(echo "$model" | jq -r '.path // "models/checkpoints/"')
-        
-#         # log "Processing model: $name"
-#         # log "  URL: $url"
-#         # log "  Path: $path"
-        
-#         # Download the model
-#         download_model "$url" "$path" "$name"
-#     done
-
-#     return 0
-# }
-
-
 s3_sync() {
     # Sync models and configs from S3
-    log "Syncing from S3..."
-    aws s3 sync s3://emprops-share /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
+
+    # Determine which bucket to use based on AWS_TEST_MODE
+    local bucket="emprops-share"
+    if [ "${AWS_TEST_MODE:-false}" = "true" ]; then
+        log "Using test bucket: emprops-share-test"
+        bucket="emprops-share-test"
+    else
+        log "Using production bucket: emprops-share"
+    fi
+
+    # Sync models and configs from S3
+
+    log "Syncing from s3://$bucket..."
+    aws s3 sync "s3://$bucket" /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
+    
 
     # Install custom nodes from config
     log "Installing custom nodes..."
-    if [ -f "/workspace/shared/custom_nodes/config_nodes.json" ]; then
+
+        # Determine which config file to use
+    local config_file="/workspace/shared/config_nodes.json"
+
+    if [ "${AWS_TEST_MODE:-false}" = "true" ]; then
+        log "Using test config: config_nodes_test.json"
+        config_file="/workspace/shared/config_nodes_test.json"
+    fi
+
+    if [ -f "$config_file" ]; then
         cd /workspace/shared/custom_nodes
-        for node in $(jq -r '.custom_nodes[] | @base64' config_nodes.json); do
+        for node in $(jq -r '.custom_nodes[] | @base64' "$config_file"); do
             _jq() {
                 echo ${node} | base64 --decode | jq -r ${1}
             }
@@ -668,54 +516,37 @@ setup_nginx_auth() {
     fi
 }
 
-# setup_shared_dirs() {
-#     log "Creating shared directories..."
-#     mkdir -p "${ROOT}/shared/models"
-#     mkdir -p "${ROOT}/shared/custom_nodes"
-#     log "Shared directories created at ${ROOT}/shared/"
-# }
-
 setup_comfyui() {
     log "Setting up ComfyUI..."
-    
-    if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode
-        log "Setting up CPU mode..."
-        if ! mgpu setup cpu; then
-            log "ERROR: Failed to setup CPU instance"
-            return 1
-        fi
+        
+    # Add --cpu flag in test mode
+    if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        log "Test mode: Adding --cpu flag to all instances"
+        export COMFY_ARGS="--cpu"
     else
-        # GPU mode
         log "Setting up GPU mode with $NUM_GPUS GPUs"
-        
-        # Add --cpu flag in test mode
-        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
-            log "Test mode: Adding --cpu flag to all instances"
-            export COMFY_ARGS="--cpu"
-        fi
-        
-        # Setup GPU instances
-        log "Setting up GPU instances..."
-        if ! mgpu setup all; then
-            log "ERROR: Failed to set up GPU instances"
-            return 1
-        fi
-        
-        # Start services
-        log "Starting GPU services..."
-        if ! mgpu start all; then
-            log "ERROR: Failed to start GPU services"
-            return 1
-        fi
-        
-        # Quick status check
-        log "Verifying services..."
-        mgpu status all >/dev/null || {
-            log "ERROR: Service verification failed"
-            return 1
-        }
     fi
+    
+    # Setup GPU instances
+    log "Setting up GPU instances..."
+    if ! mgpu setup all; then
+        log "ERROR: Failed to set up GPU instances"
+        return 1
+    fi
+    
+    # Start services
+    log "Starting GPU services..."
+    if ! mgpu start all; then
+        log "ERROR: Failed to start GPU services"
+        return 1
+    fi
+    
+    # Quick status check
+    log "Verifying services..."
+    mgpu status all >/dev/null || {
+        log "ERROR: Service verification failed"
+        return 1
+    }
     
     log "ComfyUI setup complete"
     return 0
@@ -784,56 +615,23 @@ start_nginx() {
 start_comfyui() {
     log "Starting ComfyUI services..."
     
-    if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode - start single instance through mgpu
-        log "Starting ComfyUI in CPU mode"
-        if ! mgpu start 0; then
-            log "ERROR: Failed to start ComfyUI CPU service"
-            mgpu status 2>&1 | tail -n 3 | while read -r line; do log "  $line"; done
-            return 1
-        fi
-        
-        # Wait for service to be ready
-        log "Checking ComfyUI service..."
-            
-        # Check service status and ports
-        if ! mgpu status | grep -q "running"; then
-            log "ERROR: Service not running"
-            mgpu logs 2>&1
-            return 1
-        fi
-
-        if ! netstat -tuln | grep -q ":8188 "; then
-            log "ERROR: Direct port 8188 not listening"
-            netstat -tuln | grep -E ':3188|:8188'
-            return 1
-        fi
-
-        if ! netstat -tuln | grep -q ":3188 "; then
-            log "ERROR: Proxy port 3188 not listening"
-            netstat -tuln | grep -E ':3188|:8188'
-            return 1
-        fi
-
-        log "ComfyUI service ready"
+    if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        log "Starting ComfyUI in mock mode with $NUM_GPUS instances"
+        export COMFY_ARGS="--cpu"
     else
-        # GPU mode - start all instances using mgpu
-        log "Starting ComfyUI in GPU mode with $NUM_GPUS GPUs"
-        
-        # Add --cpu flag in test mode
-        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
-            log "Test mode: Adding --cpu flag to all instances"
-            export COMFY_ARGS="--cpu"
-        fi
-        
-        if ! mgpu start all; then
-            log "ERROR: Failed to start ComfyUI GPU services"
-            mgpu status all 2>&1 | tail -n 5 | while read -r line; do log "  $line"; done
-            return 1
-        fi
+        log "Starting ComfyUI with $NUM_GPUS GPUs"
     fi
     
-    log "All ComfyUI services started successfully"
+    if ! mgpu start all; then
+        log "ERROR: Failed to start ComfyUI services"
+        mgpu status all 2>&1 | tail -n 5 | while read -r line; do log "  $line"; done
+        return 1
+    fi
+    
+    # Check services
+    if ! verify_services; then
+        return 1
+    fi
 }
 
 log_phase() {
@@ -877,149 +675,97 @@ verify_and_report() {
 }
 
 verify_services() {
-    # Setup auth first
-    setup_auth
+    local all_services_ok=true
     
-    log "Phase 12: Verifying all services..."
-    all_services_ok=true
-    
-    # 1. Verify NGINX
-    log "=== Verifying NGINX ==="
+    # 1. Check NGINX
+    log "Checking NGINX..."
     if ! service nginx status >/dev/null 2>&1; then
         log "ERROR: NGINX is not running"
+        service nginx status 2>&1 | while read -r line; do log "  $line"; done
         all_services_ok=false
     else
         log "NGINX is running"
-        # Check nginx config
-        if ! nginx -t >/dev/null 2>&1; then
-            log "ERROR: NGINX configuration test failed"
-            nginx -t 2>&1 | while read -r line; do log "  $line"; done
+    fi
+
+    # Setup auth for testing requests
+    setup_auth
+    
+    # 2. Check ComfyUI Services
+    if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        log "Checking ComfyUI services in mock mode ($NUM_GPUS instances)..."
+    else
+        log "Checking ComfyUI services in GPU mode ($NUM_GPUS GPUs)..."
+    fi
+
+    for instance in $(seq 0 $((NUM_GPUS-1))); do
+        log "Checking instance $instance..."
+        
+        # Check service
+        if ! mgpu status "$instance" | grep -q "running"; then
+            log "ERROR: ComfyUI service for instance $instance is not running"
+            mgpu status "$instance" 2>&1 | while read -r line; do log "  $line"; done
             all_services_ok=false
+            continue
         fi
         
         # Check proxy port
-        if ! netstat -tuln | grep -q ":3188 "; then
-            log "ERROR: NGINX proxy port 3188 is not listening"
+        local proxy_port=$((3188 + instance))
+        if ! netstat -tuln | grep -q ":$proxy_port "; then
+            log "ERROR: NGINX proxy port $proxy_port is not listening"
             log "Current listening ports:"
             netstat -tuln | while read -r line; do log "  $line"; done
             all_services_ok=false
-        else
-            log "NGINX proxy port 3188 is listening"
-        fi
-        
-        # Test NGINX auth separately from service
-        log "Testing NGINX auth on port 3188..."
-        if ! make_auth_request "http://localhost:3188/system_stats"; then
-            log "ERROR: NGINX auth test failed"
-            log "Curl verbose output:"
-            curl -v -I -u "$COMFY_AUTH" "http://localhost:3188/" 2>&1 | while read -r line; do log "  $line"; done
-            all_services_ok=false
-        else
-            log "NGINX auth test passed"
-        fi
-    fi
-    
-    # 2. Verify ComfyUI Services
-    log "=== Verifying ComfyUI Services ==="
-    log "How many GPUs: $NUM_GPUS"
-    if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode
-        log "Checking CPU mode..."
-        if ! mgpu status | grep -q "running"; then
-            log "ERROR: ComfyUI CPU service is not running"
-            mgpu status 2>&1 | while read -r line; do log "  $line"; done
-            all_services_ok=false
-        else
-            log "ComfyUI CPU service is running"
         fi
         
         # Check logs
-        if [ ! -f "${ROOT}/comfyui_cpu/logs/output.log" ]; then
-            log "ERROR: Missing log file: ${ROOT}/comfyui_cpu/logs/output.log"
-            all_services_ok=false
+        local log_dir
+        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+            log_dir="${ROOT}/comfyui_cpu${instance}/logs/output.log"
         else
-            log "Log file exists"
-            # Show last few lines of log
-            log "=== Last 5 lines of output.log ==="
-            tail -n 5 "${ROOT}/comfyui_cpu/logs/output.log" | while read -r line; do log "  $line"; done
+            log_dir="${ROOT}/comfyui_gpu${instance}/logs/output.log"
         fi
         
-        # Try a test request to ComfyUI service
-        log "Testing ComfyUI service on port 3188..."
-        if ! make_auth_request "http://localhost:3188/system_stats"; then
-            log "ERROR: ComfyUI service is not responding"
-            log "Curl verbose output:"
-            make_auth_request "http://localhost:3188/system_stats" "verbose" 2>&1 | while read -r line; do log "  $line"; done
+        if [ ! -f "$log_dir" ]; then
+            log "ERROR: Missing log file: $log_dir"
             all_services_ok=false
         else
-            log "ComfyUI service test passed"
+            log "=== Last 5 lines of $log_dir ==="
+            tail -n 5 "$log_dir" | while read -r line; do log "  $line"; done
         fi
-    else
-        # GPU mode
-        log "Checking GPU mode ($NUM_GPUS GPUs)..."
-        for gpu in $(seq 0 $((NUM_GPUS-1))); do
-            log "Checking GPU $gpu..."
-            
-            # Check service
-            if ! mgpu status "$gpu" | grep -q "running"; then
-                log "ERROR: ComfyUI service for GPU $gpu is not running"
-                mgpu status "$gpu" 2>&1 | while read -r line; do log "  $line"; done
-                all_services_ok=false
-                continue
-            fi
-            
-            # Check proxy port
-            local proxy_port=$((3188 + gpu))
-            if ! netstat -tuln | grep -q ":$proxy_port "; then
-                log "ERROR: NGINX proxy port $proxy_port is not listening"
-                log "Current listening ports:"
-                netstat -tuln | while read -r line; do log "  $line"; done
-                all_services_ok=false
-            fi
-            
-            # Check logs
-            if [ ! -f "${ROOT}/comfyui_gpu${gpu}/logs/output.log" ]; then
-                log "ERROR: Missing log file: ${ROOT}/comfyui_gpu${gpu}/logs/output.log"
-                all_services_ok=false
-            fi
-            
-            # Try a test request
-            if ! make_auth_request "http://localhost:$proxy_port/system_stats"; then
-                log "ERROR: ComfyUI GPU $gpu is not responding to requests"
-                log "Curl verbose output:"
-                make_auth_request "http://localhost:$proxy_port/system_stats" "verbose" 2>&1 | while read -r line; do log "  $line"; done
-                all_services_ok=false
-            fi
-        done
-    fi
+        
+        # Try a test request
+        if ! make_auth_request "http://localhost:$proxy_port/system_stats"; then
+            log "ERROR: ComfyUI instance $instance is not responding to requests"
+            log "Curl verbose output:"
+            make_auth_request "http://localhost:$proxy_port/system_stats" "verbose" 2>&1 | while read -r line; do log "  $line"; done
+            all_services_ok=false
+        fi
+    done
     
     # 3. Final Summary
     log "=== Service Status Summary ==="
     log "NGINX: $(service nginx status >/dev/null 2>&1 && echo "RUNNING" || echo "NOT RUNNING")"
     
-    if [ "$NUM_GPUS" -eq 0 ]; then
-        # CPU mode summary
-        local service_status=$(mgpu status | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
-        local proxy_status=$(netstat -tuln | grep -q ":3188 " && echo "LISTENING" || echo "NOT LISTENING")
-        local api_status=$(make_auth_request "http://localhost:3188/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
-        log "ComfyUI CPU: Service: $service_status, Proxy: $proxy_status, API: $api_status"
-    else
-        # GPU mode summary
-        for gpu in $(seq 0 $((NUM_GPUS-1))); do
-            local proxy_port=$((3188 + gpu))
-            local service_status=$(mgpu status "$gpu" | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
-            local proxy_status=$(netstat -tuln | grep -q ":$proxy_port " && echo "LISTENING" || echo "NOT LISTENING")
-            local api_status=$(make_auth_request "http://localhost:$proxy_port/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
-            log "ComfyUI GPU $gpu: Service: $service_status, Proxy: $proxy_status, API: $api_status"
-        done
-    fi
+    for instance in $(seq 0 $((NUM_GPUS-1))); do
+        local service_status=$(mgpu status "$instance" | grep -q "running" && echo "RUNNING" || echo "NOT RUNNING")
+        local proxy_port=$((3188 + instance))
+        local proxy_status=$(netstat -tuln | grep -q ":$proxy_port " && echo "LISTENING" || echo "NOT LISTENING")
+        local api_status=$(make_auth_request "http://localhost:$proxy_port/system_stats" && echo "RESPONDING" || echo "NOT RESPONDING")
+        
+        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+            log "ComfyUI Mock Instance $instance: Service: $service_status, Proxy: $proxy_status, API: $api_status"
+        else
+            log "ComfyUI GPU $instance: Service: $service_status, Proxy: $proxy_status, API: $api_status"
+        fi
+    done
     
-    if [ "$all_services_ok" = false ]; then
-        log "ERROR: Some services are not functioning correctly"
+    if [ "$all_services_ok" = true ]; then
+        log "All services are running correctly"
+        return 0
+    else
+        log "Some services have issues"
         return 1
     fi
-    
-    log "All services verified successfully"
 }
 
 setup_auth() {

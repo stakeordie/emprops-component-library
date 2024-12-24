@@ -50,25 +50,17 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
 
 FROM middle AS shared
 
+RUN cd ${ROOT} && rm -rf ${COMFY_DIR}
+
 COPY config/shared ${ROOT}/shared_custom_nodes
 
 RUN find ${ROOT}/shared_custom_nodes -name "requirements.txt" -execdir pip install -r {} \;
 
 FROM shared AS end
 
-COPY config/ ${CONFIG_DIR}/
-
-# Debug: List config files
-RUN find ${CONFIG_DIR} -name "config.json"
-
-# Set default config type
-ARG CONFIG_TYPE
-
-# Copy type-specific config files
-COPY config/${CONFIG_TYPE} ${CONFIG_DIR}/
-
 # Copy init.d script
 COPY scripts/comfyui /etc/init.d/comfyui
+
 RUN chmod +x /etc/init.d/comfyui && \
     update-rc.d comfyui defaults
 
@@ -79,7 +71,8 @@ RUN chmod +x /usr/local/bin/mgpu
 COPY scripts/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh
 
-COPY scripts/comfy_dir_config.yaml ${ROOT}/shared/comfy_dir_config.yaml
+RUN mkdir -p ${ROOT}/shared && \
+    git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared
 
 # RUN usermod -aG crontab ubuntu
 # Create cron pid directory with correct permissions

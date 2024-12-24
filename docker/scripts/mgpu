@@ -264,8 +264,6 @@ setup_gpu() {
     if [ "$gpu_id" = "all" ]; then
         setup_all_gpus
         return $?
-    elif [ "$gpu_id" = "cpu" ]; then
-        target_dir="${ROOT}/comfyui_cpu"
     else
         target_dir="${ROOT}/comfyui_gpu${gpu_id}"
     fi
@@ -276,21 +274,11 @@ setup_gpu() {
     mkdir -p "$target_dir"
     chmod 755 "$target_dir"
     
-    # Clone or update ComfyUI
-    if [ ! -d "${target_dir}/.git" ]; then
-        # Fresh clone if not a git repo
-        log "Cloning ComfyUI for ${gpu_id}..."
-        if ! git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git "$target_dir"; then
-            log "ERROR: Failed to clone ComfyUI"
-            return 1
-        fi
-    else
-        # Update existing repo
-        log "Updating existing ComfyUI repo for ${gpu_id}..."
-        (cd "$target_dir" && git pull) || {
-            log "ERROR: Failed to update ComfyUI"
-            return 1
-        }
+
+    log "Cloning ComfyUI for ${gpu_id}..."
+    if ! git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git "$target_dir"; then
+        log "ERROR: Failed to clone ComfyUI"
+        return 1
     fi
     
     # Create logs directory
