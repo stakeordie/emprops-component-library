@@ -26,38 +26,6 @@ x-base-service: &base-service
   #           capabilities: [gpu]
 
 services:
-  comfyui-video:
+  comfyui-image:
     <<: *base-service
-    image: emprops/comfy-video:v6
-    build:
-      args:
-        - CONFIG_TYPE=video
-    volumes:
-      - ./config/video:/workspace/config
-
-  comfyui-flux:
-    <<: *base-service
-    image: emprops/comfy-flux:latest
-    build:
-      args:
-        - CONFIG_TYPE=flux
-    volumes:
-      - ./config/flux:/workspace/config
-
-  comfyui-basic:
-    <<: *base-service
-    image: emprops/comfy-basic:v6
-    build:
-      args:
-        - CONFIG_TYPE=basic
-    volumes:
-      - ./config/basic:/workspace/config
-
-  comfyui-tester:
-    <<: *base-service
-    image: emprops/comfy-tester:v1
-    build:
-      args:
-        - CONFIG_TYPE=tester
-    volumes:
-      - ./config/tester:/workspace/config
+    image: emprops/comfy:latest

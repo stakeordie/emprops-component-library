@@ -21,13 +21,7 @@ fi
 # Setup logging
 setup_logs() {
     local GPU_NUM=$1
-    local WORK_DIR
-    
-    if [ "$GPU_NUM" = "cpu" ]; then
-        WORK_DIR="${ROOT}/comfyui_cpu"
-    else
-        WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
-    fi
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
     
     # Create log directories
     mkdir -p "${WORK_DIR}/logs"
@@ -42,7 +36,7 @@ log() {
     local GPU_NUM=$1
     shift
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local msg="[ComfyUI ${GPU_NUM}] $*"
+    local msg="[ComfyUI GPU${GPU_NUM}] $*"
     local log_line="[$timestamp] $msg"
     
     # Always write to start.log
@@ -53,11 +47,7 @@ log() {
     fi
     
     # Write to service-specific logs
-    if [ "$GPU_NUM" = "cpu" ]; then
-        LOG_DIR="${ROOT}/comfyui_cpu/logs"
-    else
-        LOG_DIR="${ROOT}/comfyui_gpu${GPU_NUM}/logs"
-    fi
+    local LOG_DIR="${ROOT}/comfyui_gpu${GPU_NUM}/logs"
     
     if [ -d "$LOG_DIR" ]; then
         echo "$log_line" >> "${LOG_DIR}/output.log"
@@ -69,16 +59,8 @@ log() {
 
 start() {
     local GPU_NUM=$1
-    local WORK_DIR
-    local PORT
-    
-    if [ "$GPU_NUM" = "cpu" ]; then
-        WORK_DIR="${ROOT}/comfyui_cpu"
-        PORT=8188
-    else
-        WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
-        PORT=$((8188 + GPU_NUM))
-    fi
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    local PORT=$((8188 + GPU_NUM))
     
     # Setup logs first
     setup_logs "$GPU_NUM"
@@ -108,23 +90,23 @@ start() {
         return 1
     fi
     
-    # Check if we're in test mode
+    # Check if we're in mock mode
     log "$GPU_NUM" "COMFYUI: MOCK_GPU value: ${MOCK_GPU:-0}"
     if [ "${MOCK_GPU:-0}" = "1" ]; then
-        log "$GPU_NUM" "COMFYUI: Running in test mode (CPU only)"
+        log "$GPU_NUM" "COMFYUI: Running in mock mode"
     else
-        log "$GPU_NUM" "COMFYUI: Not in test mode"
+        log "$GPU_NUM" "COMFYUI: Running with real GPU"
     fi
     
-    log "$GPU_NUM" "Starting ComfyUI service in $([ "$GPU_NUM" = "cpu" ] && echo "CPU" || echo "GPU $GPU_NUM") mode"
+    log "$GPU_NUM" "Starting ComfyUI service for GPU $GPU_NUM"
     
     # Build command with any additional args
     local CMD="python main.py --listen 127.0.0.1 --port $PORT --extra-model-paths-config ${ROOT}/shared/comfy_dir_config.yaml"
     
     # Add mode-specific args
     log "$GPU_NUM" "COMFYUI: Building command... GPU_NUM=$GPU_NUM MOCK_GPU=${MOCK_GPU:-0}"
-    if [ "$GPU_NUM" = "cpu" ] || [ "${MOCK_GPU:-0}" = "1" ]; then
-        log "$GPU_NUM" "COMFYUI: Adding --cpu flag ($([ "$GPU_NUM" = "cpu" ] && echo "CPU" || echo "Mock GPU") mode)"
+    if [ "${MOCK_GPU:-0}" = "1" ]; then
+        log "$GPU_NUM" "COMFYUI: Adding --cpu flag (Mock GPU mode)"
         CMD="$CMD --cpu"
     else
         log "$GPU_NUM" "COMFYUI: Adding CUDA_VISIBLE_DEVICES=$GPU_NUM"
@@ -169,16 +151,8 @@ start() {
 
 stop() {
     local GPU_NUM=$1
-    local WORK_DIR
-    local PORT
-    
-    if [ "$GPU_NUM" = "cpu" ]; then
-        WORK_DIR="${ROOT}/comfyui_cpu"
-        PORT=8188
-    else
-        WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
-        PORT=$((8188 + GPU_NUM))
-    fi
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    local PORT=$((8188 + GPU_NUM))
     
     if [ -f "${WORK_DIR}/comfyui.pid" ]; then
         local PID
@@ -210,16 +184,8 @@ stop() {
 
 restart() {
     local GPU_NUM=$1
-    local PORT
-    local WORK_DIR
-    
-    if [ "$GPU_NUM" = "cpu" ]; then
-        WORK_DIR="${ROOT}/comfyui_cpu"
-        PORT=8188
-    else
-        WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
-        PORT=$((8188 + GPU_NUM))
-    fi
+    local PORT=$((8188 + GPU_NUM))
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
     
     # Load saved mock state if it exists
     if [ -f "${WORK_DIR}/comfyui.mock" ]; then
@@ -275,17 +241,9 @@ restart() {
 
 status() {
     local GPU_NUM=$1
-    local WORK_DIR
-    local PORT
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    local PORT=$((8188 + GPU_NUM))
     local RETRIES=3  # Number of retries for port check
-    
-    if [ "$GPU_NUM" = "cpu" ]; then
-        WORK_DIR="${ROOT}/comfyui_cpu"
-        PORT=8188
-    else
-        WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
-        PORT=$((8188 + GPU_NUM))
-    fi
     
     local STATUS="not running"
     local DETAILS=()
@@ -330,10 +288,10 @@ case "$1" in
         fi
         
         # Call the appropriate function
-        $1 "${2:-cpu}"
+        $1 "${2:-0}"
         ;;
     *)
-        echo "Usage: $0 {start|stop|status|restart} [cpu|gpu_id] [test_gpus]"
+        echo "Usage: $0 {start|stop|status|restart} [gpu_id] [test_gpus]"
         exit 1
         ;;
 esac
