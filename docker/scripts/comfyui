@@ -12,9 +12,8 @@
 ROOT="${ROOT:-/workspace}"
 NUM_GPUS="${NUM_GPUS:-0}"  # Default to CPU mode
 
-# Check if we're in test mode
-if [ -n "${TEST_GPUS:-}" ]; then
-    export MOCK_GPU=1
+# Use MOCK_GPU and COMFY_ARGS as provided by environment
+if [ "${MOCK_GPU:-0}" = "1" ]; then
     export COMFY_ARGS="--cpu"
 fi
 
@@ -90,14 +89,6 @@ start() {
         return 1
     fi
     
-    # Check if we're in mock mode
-    log "$GPU_NUM" "COMFYUI: MOCK_GPU value: ${MOCK_GPU:-0}"
-    if [ "${MOCK_GPU:-0}" = "1" ]; then
-        log "$GPU_NUM" "COMFYUI: Running in mock mode"
-    else
-        log "$GPU_NUM" "COMFYUI: Running with real GPU"
-    fi
-    
     log "$GPU_NUM" "Starting ComfyUI service for GPU $GPU_NUM"
     
     # Build command with any additional args
@@ -115,13 +106,8 @@ start() {
     
     # Add any additional args from COMFY_ARGS
     if [ -n "${COMFY_ARGS:-}" ]; then
-        # Don't add --cpu if it's already there
-        if [[ "$CMD" != *"--cpu"* ]]; then
-            log "$GPU_NUM" "Adding additional args: $COMFY_ARGS"
-            CMD="$CMD $COMFY_ARGS"
-        else
-            log "$GPU_NUM" "Skipping COMFY_ARGS (--cpu already set)"
-        fi
+        log "$GPU_NUM" "Adding additional args: $COMFY_ARGS"
+        CMD="$CMD $COMFY_ARGS"
     fi
     
     log "$GPU_NUM" "Running command: $CMD"
@@ -280,9 +266,8 @@ status() {
 
 case "$1" in
     start|stop|status|restart)
-        # Set TEST_GPUS from third parameter if provided
-        if [ -n "$3" ]; then
-            export TEST_GPUS="$3"
+        # Set mock mode only if test_gpus is provided and not 0
+        if [ -n "$3" ] && [ "$3" != "0" ]; then
             export MOCK_GPU=1
             export COMFY_ARGS="--cpu"
         fi

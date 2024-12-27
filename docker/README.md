@@ -22,9 +22,11 @@ This guide explains how to set up and run the ComfyUI environment both locally a
 2. Configure your environment variables in `.env.local`:
    - `HF_TOKEN`: Your HuggingFace token
    - `OPENAI_API_KEY`: Your OpenAI API key (if needed)
-   - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY_ENCODED`: AWS credentials
+   - `AWS_ACCESS_KEY_ID`: Your AWS access key
+   - `AWS_SECRET_ACCESS_KEY_ENCODED`: encoded with _SLASH_ replacing `/`: hd/d/df -> hd_SLASH_d_SLASH_df
+   - `AWS_DEFAULT_REGION`: "us-east-1"
+   - `SERVER_CREDS`: HTTP Basic Auth for NGINX. Provide only the password.
    - `TEST_GPUS`: Number of GPUs to mock in test mode
-   - `SERVER_CREDS`: Nginx site credentials
    - `AWS_TEST_MODE`: Set to `true` for test mode
 
 3. Set up SSH key parts (for repository access):
@@ -40,9 +42,9 @@ This guide explains how to set up and run the ComfyUI environment both locally a
 
 #### 2.1. Build Types
 
-You can build with two different options setup in the .env.local file:
-- `AWS_TEST_MODE`: Set to `true` for test mode
-- `TEST_GPUS`: Number of GPUs to mock in test mode
+Test and Mock GPU setups are defined in the .env.local file:
+- `AWS_TEST_MODE`: Set to `true` for test mode, `false` or unset for production
+- `TEST_GPUS`: Number of GPUs to mock in test mode (0 or unset for discovery)
 
 #### AWS_TEST_MODE
 
@@ -63,4 +65,7 @@ Run `docker compose build` to build the Docker images.
 Run `docker compose up` to start the container.
 Run `docker compose down` to stop and remove the container.
 Run `docker push emprops/docker:latest` to push the latest image to Docker Hub.
+
+
+Log into the docker image locally using `docker compose exec comfyui-image bash`
 

@@ -203,7 +203,7 @@ set_gpu_env() {
     log "=== GPU Environment Debug ==="
     
     # Check for test mode
-    if [ -n "$TEST_GPUS" ] && [[ "$TEST_GPUS" =~ ^[0-9]+$ ]]; then
+    if [ -n "$TEST_GPUS" ] && [[ "$TEST_GPUS" =~ ^[1-9]+$ ]]; then
         log "Test mode: Mocking $TEST_GPUS GPUs"
         NUM_GPUS=$TEST_GPUS
         export NUM_GPUS
