@@ -28,17 +28,13 @@ log() {
     local timestamp
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     # Only write to log file, don't duplicate to stdout unless DEBUG is set
-    if [ "${DEBUG:-}" = "true" ]; then
-        echo "[$timestamp] $*" | tee -a "$START_LOG"
-    else
-        echo "[$timestamp] $*" >> "$START_LOG"
-        # For non-debug mode, only show important messages on screen
-        case "$*" in
-            *ERROR*|*FAIL*|*SUCCESS*|*READY*)
-                echo "[$timestamp] $*" 
-                ;;
-        esac
-    fi
+    echo "[$timestamp] $*" | tee -a "$START_LOG"
+    # For non-debug mode, only show important messages on screen
+    case "$*" in
+        *ERROR*|*FAIL*|*SUCCESS*|*READY*)
+            echo "[$timestamp] $*" 
+            ;;
+    esac
 }
 
 main() {
@@ -371,7 +367,7 @@ s3_sync() {
     fi
 
     # Sync models and configs from S3
-
+    echo "Syncing from s3://$bucket..."
     log "Syncing from s3://$bucket..."
     aws s3 sync "s3://$bucket" /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
     

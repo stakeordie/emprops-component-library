@@ -26,6 +26,7 @@ x-base-service: &base-service
   #           capabilities: [gpu]
 
 services:
-  comfyui-image:
+  comfyui:
     <<: *base-service
+    container_name: comfy
     image: emprops/comfy:latest

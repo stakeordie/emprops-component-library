@@ -56,82 +56,67 @@ validate_gpu_id() {
     return 0
 }
 
+# Function to show logs
 show_logs() {
-    local gpu_id=$1
-    local follow=${2:-false}  # Default to not following
-    
-    if [ "$gpu_id" = "all" ]; then
-        show_all_logs "$follow"
-        return
-    fi
-     
-    local log_file="${ROOT}/comfyui_gpu${gpu_id}/logs/output.log"
-    if [ -f "$log_file" ]; then
-        if [ "$follow" = "true" ]; then
-            # Follow mode - continuously show new lines
-            log "Starting log follow mode for GPU $gpu_id (Press Ctrl+C to exit)"
-            # Start tail in background and save its PID
-            tail -f "$log_file" | sed "s/^/[GPU $gpu_id] /" &
-            local tail_pid=$!
-            # Wait for the tail process
-            wait $tail_pid
-        else
-            # Show recent errors and last few lines
-            {
-                echo "=== Recent Errors (GPU $gpu_id) ==="
-                grep -i "error\|exception\|failed" "$log_file" | tail -n 3
-                echo "=== Latest Output (GPU $gpu_id) ==="
-                tail -n 10 "$log_file"
-            } | sed "s/^/[GPU $gpu_id] /"
-        fi
-    else
-        log "ERROR: Log file not found: $log_file"
+    # Check if multitail is available
+    if ! command -v multitail >/dev/null 2>&1; then
+        log "ERROR: multitail is not installed. Please install it first."
         return 1
     fi
-}
 
-# Function to show logs for all GPUs
-show_all_logs() {
-    local follow=${1:-false}  # Default to not following
+    # Define colors for each GPU
+    local colors=("green" "yellow" "blue" "magenta" "cyan" "red" "white" "purple")
     
-    if [ "$follow" = "true" ]; then
-        # Create an array of log files
-        local log_files=()
+    # Build the multitail command
+    local cmd="multitail --mergeall -m 5000"  # 5000 lines of scroll buffer
+    
+    if [ "$1" = "all" ]; then
+        # Show all available GPUs
         for gpu in $(seq 0 $((NUM_GPUS-1))); do
             local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
             if [ -f "$log_file" ]; then
-                log_files+=("$log_file")
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU$gpu: \" $log_file"
+            fi
+        done
+    else
+        # Handle specific GPU numbers
+        local found_valid=false
+        for gpu in "$@"; do
+            # Validate GPU number
+            if ! [[ "$gpu" =~ ^[0-9]+$ ]]; then
+                log "Warning: Invalid GPU ID '$gpu'. Skipping..."
+                continue
+            fi
+            if [ "$gpu" -ge "${NUM_GPUS:-0}" ]; then
+                log "Warning: GPU ID '$gpu' is out of range. Skipping..."
+                continue
+            fi
+            
+            local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+            if [ -f "$log_file" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU$gpu: \" $log_file"
+                found_valid=true
+            else
+                log "Warning: Log file not found for GPU $gpu"
             fi
         done
         
-        if [ ${#log_files[@]} -eq 0 ]; then
-            log "ERROR: No log files found"
+        if [ "$found_valid" = "false" ]; then
+            log "ERROR: No valid GPU logs found"
             return 1
         fi
-        
-        # Use tail -f on all log files simultaneously
-        log "Starting consolidated log follow mode for all GPUs (Press Ctrl+C to exit)"
-        # Start tail in background and save its PID
-        tail -f "${log_files[@]}" | awk -v num_gpus="$NUM_GPUS" '
-        {
-            for(i=0; i<num_gpus; i++) {
-                if (FILENAME ~ "gpu" i "/") {
-                    printf "[GPU %d] %s\n", i, $0
-                    next
-                }
-            }
-            print
-        }' &
-        local tail_pid=$!
-        # Wait for the tail process
-        wait $tail_pid
-    else
-        # Show recent logs from each GPU
-        for gpu in $(seq 0 $((NUM_GPUS-1))); do
-            show_logs "$gpu" false
-            echo
-        done
     fi
+    
+    if [ "$cmd" = "multitail --mergeall -m 5000" ]; then
+        log "ERROR: No log files found"
+        return 1
+    fi
+    
+    # Execute the multitail command
+    log "Starting log view (Press 'b' to scroll, 'q' to exit scroll mode, Ctrl+C to exit)"
+    eval "$cmd"
 }
 
 # Function to start a specific GPU service
@@ -370,10 +355,11 @@ case "$1" in
                 check_status "$2"
                 ;;
             logs)
-                if [ "$3" = "no-follow" ] || [ "$3" = "-n" ]; then
-                    show_logs "$2" false
+                if [ -z "$2" ]; then
+                    show_logs "all"
                 else
-                    show_logs "$2" true
+                    shift  # Remove 'logs' from arguments
+                    show_logs "$@"  # Pass all remaining arguments to show_logs
                 fi
                 ;;
             setup)

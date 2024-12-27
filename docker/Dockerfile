@@ -92,6 +92,9 @@ RUN chmod +x /usr/local/bin/cleanup_outputs.sh && \
     touch /var/run/cron/crond.pid && \
     chmod 644 /var/run/cron/crond.pid && \
     sed -i 's/touch $PIDFILE/# touch $PIDFILE/g' /etc/init.d/cron
+
+RUN mkdir -p /tmp && chmod 1777 /tmp && \
+    apt-get update && apt-get install -y multitail
     
 # Start services and application
 CMD ["/scripts/start.sh"]

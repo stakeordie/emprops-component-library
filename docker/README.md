@@ -44,7 +44,7 @@ This guide explains how to set up and run the ComfyUI environment both locally a
 
 Test and Mock GPU setups are defined in the .env.local file:
 - `AWS_TEST_MODE`: Set to `true` for test mode, `false` or unset for production
-- `TEST_GPUS`: Number of GPUs to mock in test mode (0 or unset for discovery)
+- `TEST_GPUS`: Number of GPUs to mock in test mode (0 or unset for script to determine GPUs 
 
 #### AWS_TEST_MODE
 
@@ -61,11 +61,37 @@ If you don't set TEST_GPUS the system will still check for GPU support and if it
 
 
 Run `cd docker` to enter the Docker Directory.
-Run `docker compose build` to build the Docker images.
-Run `docker compose up` to start the container.
+
+Run `docker compose build comfyui` to build the Docker images.
+Run `docker compose up comfyui` to start the container.
+or
+Run `docker compose up --build comfyui` to build and start the container.
+
 Run `docker compose down` to stop and remove the container.
+
+Run `docker exec -it comfy /bin/bash` to enter the container.
+
 Run `docker push emprops/docker:latest` to push the latest image to Docker Hub.
 
 
 Log into the docker image locally using `docker compose exec comfyui-image bash`
 
+
+### mgpu CLI usage
+
+Commands:
+   - start   [gpu_id]       Start ComfyUI service for GPU
+   - stop    [gpu_id]       Stop ComfyUI service for GPU
+   - restart [gpu_id]       Restart ComfyUI service for GPU
+   - status  [gpu_id]       Show status of ComfyUI service for GPU
+   - logs    [gpu_id]       Show logs for GPU
+   - setup   [gpu_id]       Setup ComfyUI for GPU
+   - count                  Show number of available GPUs
+
+#### Logs
+mgpu uses multitail for consolidated logging.
+   - "b" to scroll | up down pageup pagedown
+   - "/" to search
+   - "q" to quite
+
+logs accepts multiple gpu_ids. so mgpu `logs 1 3 4` will work.
