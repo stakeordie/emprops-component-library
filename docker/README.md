@@ -91,4 +91,4 @@ mgpu uses multitail for consolidated logging.
    - "/" to search
    - "q" to quite
 
-logs accepts multiple gpu_ids. so mgpu `logs 1 3 4` will work.
+logs accepts multiple gpu_ids. so mgpu `logs 1 3 4` will work.\5
