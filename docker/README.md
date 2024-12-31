@@ -74,9 +74,6 @@ Run `docker exec -it comfy /bin/bash` to enter the container.
 Run `docker push emprops/docker:latest` to push the latest image to Docker Hub.
 
 
-Log into the docker image locally using `docker compose exec comfyui-image bash`
-
-
 ### mgpu CLI usage
 
 Commands:

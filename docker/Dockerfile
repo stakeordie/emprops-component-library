@@ -2,7 +2,7 @@
 FROM pytorch/pytorch:latest AS start
 
 RUN apt update && apt-get install -y \
-    git git-lfs rsync nginx wget curl nano net-tools lsof nvtop ffmpeg libsm6 libxext6 \
+    git git-lfs rsync nginx wget curl nano net-tools lsof nvtop multitailffmpeg libsm6 libxext6 \
     cron sudo ssh zstd jq build-essential cmake ninja-build \
     gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
@@ -23,8 +23,7 @@ RUN cd /tmp && \
     cd /usr/lib/x86_64-linux-gnu && \
     ln -sf libstdc++.so.6.0.30 libstdc++.so.6 && \
     cd /opt/conda/lib && \
-    ln -sf libstdc++.so.6.0.30 libstdc++.so.6 && \
-    rm -rf /tmp/*
+    ln -sf libstdc++.so.6.0.30 libstdc++.so.6
 
 FROM start AS middle
 
@@ -92,9 +91,6 @@ RUN chmod +x /usr/local/bin/cleanup_outputs.sh && \
     touch /var/run/cron/crond.pid && \
     chmod 644 /var/run/cron/crond.pid && \
     sed -i 's/touch $PIDFILE/# touch $PIDFILE/g' /etc/init.d/cron
-
-RUN mkdir -p /tmp && chmod 1777 /tmp && \
-    apt-get update && apt-get install -y multitail
     
 # Start services and application
 CMD ["/scripts/start.sh"]

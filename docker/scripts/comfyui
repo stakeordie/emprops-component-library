@@ -106,11 +106,15 @@ start() {
     
     # Add any additional args from COMFY_ARGS
     if [ -n "${COMFY_ARGS:-}" ]; then
-        log "$GPU_NUM" "Adding additional args: $COMFY_ARGS"
-        CMD="$CMD $COMFY_ARGS"
+        if [[ "$CMD" != *"--cpu"* ]]; then
+            log "$GPU_NUM" "COMFYUI: Adding additional args: $COMFY_ARGS"
+            CMD="$CMD $COMFY_ARGS"
+        else
+            log "$GPU_NUM" "COMFYUI: Skipping COMFY_ARGS (--cpu already set)"
+        fi
     fi
     
-    log "$GPU_NUM" "Running command: $CMD"
+    log "$GPU_NUM" "COMFYUI: Running command: $CMD"
     PYTHONUNBUFFERED=1 eval "$CMD" >> "${WORK_DIR}/logs/output.log" 2>&1 &
     
     echo $! > "${WORK_DIR}/comfyui.pid"
