@@ -714,12 +714,7 @@ verify_services() {
         fi
         
         # Check logs
-        local log_dir
-        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
-            log_dir="${ROOT}/comfyui_cpu${instance}/logs/output.log"
-        else
-            log_dir="${ROOT}/comfyui_gpu${instance}/logs/output.log"
-        fi
+        local log_dir="${ROOT}/comfyui_gpu${instance}/logs/output.log"
         
         if [ ! -f "$log_dir" ]; then
             log "ERROR: Missing log file: $log_dir"
