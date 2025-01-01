@@ -70,8 +70,11 @@ RUN chmod +x /usr/local/bin/mgpu
 COPY scripts/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh
 
-RUN mkdir -p ${ROOT}/shared && \
-    git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared
+# Add build argument for cache busting
+ARG CACHEBUST=1
+
+RUN --mount=type=cache,target=/root/.cache/pip mkdir -p ${ROOT}/shared && \
+    CACHEBUST=${CACHEBUST} git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared
 
 # RUN usermod -aG crontab ubuntu
 # Create cron pid directory with correct permissions
