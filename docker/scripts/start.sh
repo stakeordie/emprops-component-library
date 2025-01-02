@@ -399,18 +399,7 @@ s3_sync() {
                 log "Processing node: $name"
                 
                 # Handle environment variables if present
-                env_vars=$(echo "$node" | jq -r '.env // empty')
-                if [ ! -z "$env_vars" ]; then
-                    log "Setting environment variables for $name"
-                    while IFS="=" read -r key value; do
-                        if [ ! -z "$key" ]; then
-                            # Expand any environment variables in the value
-                            expanded_value=$(eval echo "$value")
-                            export "$key"="$expanded_value"
-                            log "Set $key"
-                        fi
-                    done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
-                fi
+                env_vars=$(_jq '.env')
                 
                 if [ ! -d "$name" ]; then
                     log "Installing node: $name"
@@ -433,6 +422,23 @@ s3_sync() {
                         git pull
                     fi
                     cd ..
+                fi
+
+                # After repository is cloned/updated, handle .env file
+                if [ "$env_vars" != "null" ] && [ ! -z "$env_vars" ]; then
+                    log "Setting up .env file for $name"
+                    # Create or truncate .env file
+                    : > "$name/.env"
+                    
+                    # Process each environment variable
+                    while IFS="=" read -r key value; do
+                        if [ ! -z "$key" ]; then
+                            # Expand any environment variables in the value
+                            expanded_value=$(eval echo "$value")
+                            echo "$key=$expanded_value" >> "$name/.env"
+                            log "Added $key to $name/.env"
+                        fi
+                    done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
                 fi
                 
                 # Install requirements if specified as true
