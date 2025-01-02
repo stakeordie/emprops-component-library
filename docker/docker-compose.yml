@@ -15,8 +15,10 @@ x-base-service: &base-service
     dockerfile: Dockerfile
     platforms:
       - linux/amd64
+    args:
+      CACHEBUST: ${CACHEBUST:-1}  # Add this line
   restart: unless-stopped
-  platform: linux/amd64
+  platform: linux/amd64 
   # deploy:
   #   resources:
   #     reservations:
