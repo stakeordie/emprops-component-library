@@ -116,6 +116,9 @@ main() {
         log "ERROR: Service verification failed"
         # Don't exit - keep container running for debugging
     fi
+
+    # Start Langflow
+    setup_langflow
 }
 
 setup_env_vars() {
@@ -789,6 +792,19 @@ make_auth_request() {
     else
         eval "curl -s $auth_opts '$url'"
     fi
+}
+
+setup_langflow() {
+    log "Setting up Langflow..."
+    
+    # Start Langflow service
+    if ! service langflow start; then
+        log "ERROR: Failed to start Langflow"
+        return 1
+    fi
+    
+    log "Langflow setup complete"
+    return 0
 }
 
 all_services_ok=true

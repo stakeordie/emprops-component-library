@@ -16,7 +16,7 @@ x-base-service: &base-service
     platforms:
       - linux/amd64
     args:
-      CACHEBUST: ${CACHEBUST:-1}  # Add this line
+      CACHEBUST: ${CACHEBUST:-$(date +%s)}  
   restart: unless-stopped
   platform: linux/amd64 
   # deploy:
