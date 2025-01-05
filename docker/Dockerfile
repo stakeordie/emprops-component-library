@@ -54,8 +54,13 @@ FROM middle AS shared
 
 RUN cd ${ROOT} && rm -rf ${COMFY_DIR}
 
-# Install Langflow
-RUN pip install langflow
+FROM shared AS langflow
+
+# Install uv through pip
+RUN pip install uv
+
+# Install Langflow with uv
+RUN uv pip install --system langflow
 
 # Add Langflow startup to init.d
 COPY scripts/langflow /etc/init.d/langflow
@@ -66,7 +71,7 @@ COPY config/shared ${ROOT}/shared_custom_nodes
 
 RUN find ${ROOT}/shared_custom_nodes -name "requirements.txt" -execdir pip install -r {} \;
 
-FROM shared AS end
+FROM langflow AS end
 
 # Copy init.d script
 COPY scripts/comfyui /etc/init.d/comfyui
