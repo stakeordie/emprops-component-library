@@ -406,6 +406,7 @@ s3_sync() {
             name=$(_jq '.name')
             url=$(_jq '.url')
             commit=$(_jq '.commit // empty')
+            branch=$(_jq '.branch // empty')
             install_reqs=$(_jq '.requirements')
             
             if [ "$name" != "null" ] && [ "$url" != "null" ]; then
@@ -416,7 +417,12 @@ s3_sync() {
                 
                 if [ ! -d "$name" ]; then
                     log "Installing node: $name"
-                    git clone "$url" "$name"
+                    if [ ! -z "$branch" ]; then
+                        log "Cloning branch: $branch"
+                        git clone -b "$branch" "$url" "$name"
+                    else
+                        git clone "$url" "$name"
+                    fi
                     
                     if [ ! -z "$commit" ]; then
                         cd "$name"
@@ -429,7 +435,11 @@ s3_sync() {
                     cd "$name"
                     git remote set-url origin "$url"
                     git fetch
-                    if [ ! -z "$commit" ]; then
+                    if [ ! -z "$branch" ]; then
+                        log "Checking out branch: $branch"
+                        git checkout "$branch"
+                        git pull origin "$branch"
+                    elif [ ! -z "$commit" ]; then
                         git reset --hard "$commit"
                     else
                         git pull
