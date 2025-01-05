@@ -632,7 +632,7 @@ start_comfyui() {
 
     pip uninstall -y onnxruntime-gpu
 
-    pip install -y onnxruntime-gpu
+    pip install onnxruntime-gpu
     
     if [ "${MOCK_GPU:-0}" -eq 1 ]; then
         log "Starting ComfyUI in mock mode with $NUM_GPUS instances"
