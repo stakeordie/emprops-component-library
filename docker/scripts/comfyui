@@ -144,32 +144,53 @@ stop() {
     local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
     local PORT=$((8188 + GPU_NUM))
     
+    log "$GPU_NUM" "Stopping service..."
+    
+    # First check if there's a process using our port
+    local port_pid
+    port_pid=$(lsof -ti :$PORT 2>/dev/null)
+    if [ -n "$port_pid" ]; then
+        log "$GPU_NUM" "Found process $port_pid using port $PORT"
+        kill "$port_pid" 2>/dev/null
+        sleep 2
+        # If still alive, force kill
+        if kill -0 "$port_pid" 2>/dev/null; then
+            log "$GPU_NUM" "Process still alive, force killing..."
+            kill -9 "$port_pid" 2>/dev/null
+            sleep 1
+        fi
+    fi
+    
+    # Check PID file
     if [ -f "${WORK_DIR}/comfyui.pid" ]; then
         local PID
         PID=$(cat "${WORK_DIR}/comfyui.pid")
         if kill -0 "$PID" 2>/dev/null; then
             log "$GPU_NUM" "Stopping service (PID: $PID)"
             kill "$PID"
-            # Wait for process to actually stop
-            for i in {1..10 }; do
-                if ! kill -0 "$PID" 2>/dev/null; then
-                    break
-                fi
-                sleep 1
-                if [ $i -eq 10 ]; then
-                    log "$GPU_NUM" "Process didn't stop gracefully, forcing..."
-                    kill -9 "$PID" 2>/dev/null
-                fi
-            done
+            sleep 2
         else
             log "$GPU_NUM" "Process not running but PID file exists"
         fi
         rm -f "${WORK_DIR}/comfyui.pid"
-        # Keep mock state file for restart
-        log "$GPU_NUM" "Service stopped"
-    else
-        log "$GPU_NUM" "Service not running"
     fi
+    
+    # Final check if port is still in use
+    port_pid=$(lsof -ti :$PORT 2>/dev/null)
+    if [ -n "$port_pid" ]; then
+        log "$GPU_NUM" "Found another process $port_pid using port $PORT, force killing..."
+        kill -9 "$port_pid" 2>/dev/null
+        sleep 2
+    fi
+    
+    # Verify port is free
+    if netstat -tuln | grep -q ":$PORT "; then
+        log "$GPU_NUM" "WARNING: Port $PORT is still in use after stop"
+        return 1
+    fi
+    
+    log "$GPU_NUM" "Service stopped successfully"
+    return 0
 }
 
 restart() {
@@ -189,33 +210,10 @@ restart() {
     
     log "$GPU_NUM" "Restarting service..."
     
-    # First check if there's a process using our port
-    local port_pid
-    port_pid=$(lsof -ti :$PORT 2>/dev/null)
-    if [ -n "$port_pid" ]; then
-        log "$GPU_NUM" "Found process $port_pid using port $PORT"
-        kill "$port_pid" 2>/dev/null
-        sleep 2
-        # If still alive, force kill
-        if kill -0 "$port_pid" 2>/dev/null; then
-            log "$GPU_NUM" "Process still alive, force killing..."
-            kill -9 "$port_pid" 2>/dev/null
-            sleep 1
-        fi
-    fi
-    
-    # Now stop the service normally
-    stop "$GPU_NUM"
-    
-    # Wait a bit and check port status again
-    sleep 2
-    
-    # Try one more time to kill any process using the port
-    port_pid=$(lsof -ti :$PORT 2>/dev/null)
-    if [ -n "$port_pid" ]; then
-        log "$GPU_NUM" "Found another process $port_pid using port $PORT, force killing..."
-        kill -9 "$port_pid" 2>/dev/null
-        sleep 2
+    # Stop the service
+    if ! stop "$GPU_NUM"; then
+        log "$GPU_NUM" "Failed to stop service"
+        return 1
     fi
     
     # Final check if port is free

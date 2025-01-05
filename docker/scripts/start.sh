@@ -119,7 +119,13 @@ main() {
 
 setup_env_vars() {
     log "Setting up environment variables..."
-
+    
+    # Install uv if not already installed
+    if ! command -v uv >/dev/null 2>&1; then
+        log "Installing uv package installer..."
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    fi
+    
     check_env_vars
     set_gpu_env
     
@@ -368,8 +374,6 @@ setup_preinstalled_nodes() {
 }
 
 s3_sync() {
-    # Sync models and configs from S3
-
     # Determine which bucket to use based on AWS_TEST_MODE
     local bucket="emprops-share"
     if [ "${AWS_TEST_MODE:-false}" = "true" ]; then
@@ -382,13 +386,16 @@ s3_sync() {
     # Sync models and configs from S3
     echo "Syncing from s3://$bucket..."
     log "Syncing from s3://$bucket..."
-    aws s3 sync "s3://$bucket" /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
-    
+    if [ "${SKIP_AWS_SYNC:-false}" = "true" ]; then
+        log "Skipping AWS S3 sync (SKIP_AWS_SYNC=true)"
+    else
+        aws s3 sync "s3://$bucket" /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
+    fi
 
     # Install custom nodes from config
     log "Installing custom nodes..."
 
-        # Determine which config file to use
+    # Determine which config file to use
     local config_file="/workspace/shared/config_nodes.json"
 
     if [ "${AWS_TEST_MODE:-false}" = "true" ]; then
@@ -400,53 +407,43 @@ s3_sync() {
         cd /workspace/shared/custom_nodes
         for node in $(jq -r '.custom_nodes[] | @base64' "$config_file"); do
             _jq() {
-                echo ${node} | base64 --decode | jq -r ${1}
+                echo "${node}" | base64 --decode | jq -r "${1}"
             }
             
             name=$(_jq '.name')
             url=$(_jq '.url')
+            branch=$(_jq '.branch')
             commit=$(_jq '.commit // empty')
-            branch=$(_jq '.branch // empty')
             install_reqs=$(_jq '.requirements')
+            env_vars=$(_jq '.env')
             
             if [ "$name" != "null" ] && [ "$url" != "null" ]; then
                 log "Processing node: $name"
+                log "Debug - Branch value: '$branch'"
+                log "Debug - URL value: '$url'"
                 
-                # Handle environment variables if present
-                env_vars=$(_jq '.env')
-                
+                # Clone if directory doesn't exist
                 if [ ! -d "$name" ]; then
-                    log "Installing node: $name"
-                    if [ ! -z "$branch" ]; then
+                    log "Cloning node: $name"
+                    if [ "$branch" != "null" ] && [ ! -z "$branch" ]; then
                         log "Cloning branch: $branch"
-                        git clone -b "$branch" "$url" "$name"
+                        git clone -b "$branch" "$url" "$name" || {
+                            log "ERROR: Failed to clone branch $branch"
+                            return 1
+                        }
                     else
+                        log "No branch specified, cloning default branch"
                         git clone "$url" "$name"
                     fi
-                    
-                    if [ ! -z "$commit" ]; then
-                        cd "$name"
-                        git reset --hard "$commit"
-                        cd ..
-                    fi
-                else
-                    log "Node directory exists: $name"
-                    # Update existing repository
+                fi
+                
+                # If specific commit is requested, reset to it
+                if [ ! -z "$commit" ]; then
                     cd "$name"
-                    git remote set-url origin "$url"
-                    git fetch
-                    if [ ! -z "$branch" ]; then
-                        log "Checking out branch: $branch"
-                        git checkout "$branch"
-                        git pull origin "$branch"
-                    elif [ ! -z "$commit" ]; then
-                        git reset --hard "$commit"
-                    else
-                        git pull
-                    fi
+                    git reset --hard "$commit"
                     cd ..
                 fi
-
+                
                 # After repository is cloned/updated, handle .env file
                 if [ "$env_vars" != "null" ] && [ ! -z "$env_vars" ]; then
                     log "Setting up .env file for $name"
@@ -464,10 +461,19 @@ s3_sync() {
                     done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
                 fi
                 
-                # Install requirements if specified as true
-                if [ "$install_reqs" = "true" ] && [ -f "$name/requirements.txt" ]; then
-                    log "Installing requirements for $name"
-                    pip install -r "$name/requirements.txt"
+                # Install requirements if specified
+                if [ "$install_reqs" = "true" ]; then
+                    cd "$name"
+                    if [ -f "requirements.txt" ]; then
+                        log "Installing requirements for $name using uv..."
+                        uv pip install --system -r requirements.txt || {
+                            log "WARNING: Failed to install requirements with uv for $name, falling back to pip..."
+                            pip install -r requirements.txt
+                        }
+                    else
+                        log "No requirements.txt found for $name"
+                    fi
+                    cd ..
                 fi
             fi
         done
@@ -648,7 +654,7 @@ start_comfyui() {
         log "Starting ComfyUI in mock mode with $NUM_GPUS instances"
         export COMFY_ARGS="--cpu"
     else
-        log "Starting ComfyUI with $NUM_GPUS GPUs"
+        log "Setting up GPU mode with $NUM_GPUS GPUs"
     fi
     
     if ! mgpu start all; then
