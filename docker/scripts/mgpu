@@ -191,19 +191,28 @@ stop_service() {
         return
     fi
     
+    # Validate GPU ID first (only once)
+    validate_gpu_id "$gpu_id" >/dev/null || return 1
+    
     log "Stopping service for GPU $gpu_id..."
+    service comfyui stop "$gpu_id"
+}
+
+# Internal function to stop a service
+stop_service_internal() {
+    local gpu_id=$1
     service comfyui stop "$gpu_id"
 }
 
 # Function to stop all GPU services
 stop_all_services() {
-    local success=true
+    local failed=0
     for gpu in $(seq 0 $((NUM_GPUS-1))); do
         if ! stop_service "$gpu"; then
-            success=false
+            failed=1
         fi
     done
-    return $success
+    return $failed
 }
 
 ## Function to restart a specific GPU service
@@ -291,10 +300,18 @@ setup_gpu() {
     
 
     log "Cloning ComfyUI for ${gpu_id}..."
-    if ! git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git "$target_dir"; then
+    if ! git clone https://github.com/comfyanonymous/ComfyUI.git "$target_dir"; then
         log "ERROR: Failed to clone ComfyUI"
         return 1
     fi
+    
+    # Checkout specific commit
+    cd "$target_dir" || return 1
+    if ! git reset --hard 0c04a6ae780b5eefb1a701467439ae1235607a4f; then
+        log "ERROR: Failed to checkout specific commit"
+        return 1
+    fi
+    cd - > /dev/null || return 1
     
     # Create logs directory
     mkdir -p "${target_dir}/logs"
