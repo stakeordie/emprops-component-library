@@ -90,10 +90,6 @@ main() {
         return 1
     fi
     
-    # # Phase 7: Setup shared directories
-    # log_phase "7" "Setting up shared directories"
-    # setup_shared_dirs
-    
     # Phase 8: Setup ComfyUI instances
     log_phase "8" "Setting up ComfyUI instances"
     setup_comfyui
@@ -633,6 +629,10 @@ start_nginx() {
 
 start_comfyui() {
     log "Starting ComfyUI services..."
+
+    pip uninstall -y onnxruntime-gpu
+
+    pip install -y onnxruntime-gpu
     
     if [ "${MOCK_GPU:-0}" -eq 1 ]; then
         log "Starting ComfyUI in mock mode with $NUM_GPUS instances"
