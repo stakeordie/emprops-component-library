@@ -208,16 +208,6 @@
       "title": "IPAdapter Unified Loader"
     }
   },
-  "41": {
-    "inputs": {
-      "image": "remix_of_backdrop_generator-c1aba622-a89e-4b8f-b5e6-0551e96a2fc5-c1aba622-a89e-4b8f-b5e6-0551e96a2fc5.png",
-      "upload": "image"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
-    }
-  },
   "44": {
     "inputs": {
       "samples": ["12", 0],
