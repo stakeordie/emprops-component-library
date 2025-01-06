@@ -19,13 +19,6 @@ x-base-service: &base-service
     - "3195:3195"
   restart: unless-stopped
   platform: linux/amd64 
-  # deploy:
-  #   resources:
-  #     reservations:
-  #       devices:
-  #         - driver: nvidia
-  #           count: 1
-  #           capabilities: [gpu]
 
 services:
   comfyui:
