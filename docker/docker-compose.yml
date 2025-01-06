@@ -1,6 +1,13 @@
 x-base-service: &base-service
   env_file:
     - .env.local
+  build:
+    context: .
+    dockerfile: Dockerfile
+    platforms:
+      - linux/amd64
+    args:
+      FORCE_FRESH_CLONE: ${FORCE_FRESH_CLONE:-false}
   ports:
     - "3188:3188"
     - "3189:3189"
@@ -10,13 +17,6 @@ x-base-service: &base-service
     - "3193:3193"
     - "3194:3194"
     - "3195:3195"
-  build:
-    context: .
-    dockerfile: Dockerfile
-    platforms:
-      - linux/amd64
-    args:
-      CACHEBUST: ${CACHEBUST:-$(date +%s)}  
   restart: unless-stopped
   platform: linux/amd64 
   # deploy:

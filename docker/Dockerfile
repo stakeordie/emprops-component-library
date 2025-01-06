@@ -44,7 +44,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
     cd ${COMFY_DIR} && \
     pip uninstall onnxruntime && \
     pip install --upgrade pip && \
-    pip install --upgrade mmengine opencv-python imgui-bundle pyav boto3 awscli && \
+    pip install --upgrade mmengine opencv-python imgui-bundle pyav boto3 awscli librosa && \
     pip install -r requirements.txt && \
     pip uninstall -y onnxruntime-gpu && \
     pip install onnxruntime-gpu==1.20.1
@@ -86,11 +86,23 @@ RUN chmod +x /usr/local/bin/mgpu
 COPY scripts/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh
 
-# Add build argument to force fresh clone
-ARG CACHEBUST=1
+# Add build argument for fresh clone
+ARG FORCE_FRESH_CLONE=false
 
-RUN mkdir -p ${ROOT}/shared && \
-    CACHEBUST=${CACHEBUST} git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared
+# Cache buster for fresh clone
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/random
+
+RUN echo "Debug: FORCE_FRESH_CLONE value is '${FORCE_FRESH_CLONE}'" && \
+    if [ "${FORCE_FRESH_CLONE}" = "true" ]; then \
+        echo "Forcing fresh clone..." && \
+        rm -rf "${ROOT}/shared" && \
+        mkdir -p ${ROOT}/shared && \
+        git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared; \
+    else \
+        echo "Using cached clone if available..." && \
+        mkdir -p ${ROOT}/shared && \
+        git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared || true; \
+    fi
 
 # RUN usermod -aG crontab ubuntu
 # Create cron pid directory with correct permissions

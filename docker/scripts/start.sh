@@ -415,6 +415,7 @@ s3_sync() {
             branch=$(_jq '.branch')
             commit=$(_jq '.commit // empty')
             install_reqs=$(_jq '.requirements')
+            recursive=$(_jq '.recursive')
             env_vars=$(_jq '.env')
             
             if [ "$name" != "null" ] && [ "$url" != "null" ]; then
@@ -425,15 +426,23 @@ s3_sync() {
                 # Clone if directory doesn't exist
                 if [ ! -d "$name" ]; then
                     log "Cloning node: $name"
+                    
+                    # Build git clone command
+                    clone_cmd="git clone"
+                    if [ "$recursive" = "true" ]; then
+                        log "Using recursive clone for $name"
+                        clone_cmd="$clone_cmd --recursive"
+                    fi
+                    
                     if [ "$branch" != "null" ] && [ ! -z "$branch" ]; then
                         log "Cloning branch: $branch"
-                        git clone -b "$branch" "$url" "$name" || {
+                        $clone_cmd -b "$branch" "$url" "$name" || {
                             log "ERROR: Failed to clone branch $branch"
                             return 1
                         }
                     else
                         log "No branch specified, cloning default branch"
-                        git clone "$url" "$name"
+                        $clone_cmd "$url" "$name"
                     fi
                 fi
                 
