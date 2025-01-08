@@ -53,5 +53,19 @@
       "is_required": false,
       "default": 1
     }
+  },
+  "31": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
   }
 }
