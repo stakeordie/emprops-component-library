@@ -23,8 +23,14 @@
       "lora_name": "more_details.safetensors",
       "strength_model": 0.25,
       "strength_clip": 0.25,
-      "model": ["2", 0],
-      "clip": ["2", 1]
+      "model": [
+        "2",
+        0
+      ],
+      "clip": [
+        "2",
+        1
+      ]
     },
     "class_type": "LoraLoader",
     "_meta": {
@@ -36,8 +42,14 @@
       "lora_name": "SDXLrender_v2.0.safetensors",
       "strength_model": 0.1,
       "strength_clip": 0.1,
-      "model": ["3", 0],
-      "clip": ["3", 1]
+      "model": [
+        "3",
+        0
+      ],
+      "clip": [
+        "3",
+        1
+      ]
     },
     "class_type": "LoraLoader",
     "_meta": {
@@ -47,7 +59,10 @@
   "5": {
     "inputs": {
       "text": "masterpiece, best quality, highres, small little mischievious elves making toys",
-      "clip": ["4", 1]
+      "clip": [
+        "4",
+        1
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -57,7 +72,10 @@
   "6": {
     "inputs": {
       "text": "(worst quality, low quality, normal quality:1.5)",
-      "clip": ["4", 1]
+      "clip": [
+        "4",
+        1
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -75,8 +93,14 @@
   },
   "8": {
     "inputs": {
-      "upscale_model": ["7", 0],
-      "image": ["46", 0]
+      "upscale_model": [
+        "7",
+        0
+      ],
+      "image": [
+        "46",
+        0
+      ]
     },
     "class_type": "ImageUpscaleWithModel",
     "_meta": {
@@ -89,7 +113,10 @@
       "b2": 1.08,
       "s1": 0.9500000000000001,
       "s2": 0.8,
-      "model": ["4", 0]
+      "model": [
+        "4",
+        0
+      ]
     },
     "class_type": "FreeU_V2",
     "_meta": {
@@ -99,7 +126,10 @@
   "14": {
     "inputs": {
       "scale": 1,
-      "model": ["13", 0]
+      "model": [
+        "13",
+        0
+      ]
     },
     "class_type": "PerturbedAttentionGuidance",
     "_meta": {
@@ -110,7 +140,10 @@
     "inputs": {
       "hard_mode": true,
       "boost": true,
-      "model": ["14", 0]
+      "model": [
+        "14",
+        0
+      ]
     },
     "class_type": "Automatic CFG",
     "_meta": {
@@ -120,11 +153,20 @@
   "16": {
     "inputs": {
       "method": "MultiDiffusion",
-      "tile_width": ["104", 1],
-      "tile_height": ["104", 2],
+      "tile_width": [
+        "104",
+        1
+      ],
+      "tile_height": [
+        "104",
+        2
+      ],
       "tile_overlap": 128,
       "tile_batch_size": 4,
-      "model": ["15", 0]
+      "model": [
+        "15",
+        0
+      ]
     },
     "class_type": "TiledDiffusion",
     "_meta": {
@@ -145,10 +187,22 @@
       "strength": 0.75,
       "start_percent": 0,
       "end_percent": 1,
-      "positive": ["5", 0],
-      "negative": ["6", 0],
-      "control_net": ["17", 0],
-      "image": ["46", 0]
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "6",
+        0
+      ],
+      "control_net": [
+        "17",
+        0
+      ],
+      "image": [
+        "46",
+        0
+      ]
     },
     "class_type": "ControlNetApplyAdvanced",
     "_meta": {
@@ -180,12 +234,30 @@
       "add_noise": true,
       "noise_seed": 539,
       "cfg": 8,
-      "model": ["96", 0],
-      "positive": ["18", 0],
-      "negative": ["18", 1],
-      "sampler": ["20", 0],
-      "sigmas": ["21", 0],
-      "latent_image": ["102", 0]
+      "model": [
+        "96",
+        0
+      ],
+      "positive": [
+        "18",
+        0
+      ],
+      "negative": [
+        "18",
+        1
+      ],
+      "sampler": [
+        "20",
+        0
+      ],
+      "sigmas": [
+        "21",
+        0
+      ],
+      "latent_image": [
+        "102",
+        0
+      ]
     },
     "class_type": "SamplerCustom",
     "_meta": {
@@ -194,40 +266,46 @@
   },
   "46": {
     "inputs": {
-      "width": ["86", 0],
-      "height": ["86", 0],
+      "width": [
+        "86",
+        0
+      ],
+      "height": [
+        "86",
+        0
+      ],
       "interpolation": "nearest",
       "method": "keep proportion",
       "condition": "downscale if bigger",
       "multiple_of": 0,
-      "image": ["1", 0]
+      "image": [
+        "1",
+        0
+      ]
     },
     "class_type": "ImageResize+",
     "_meta": {
       "title": "🔧 Image Resize_clamp maximum"
     }
   },
-  "63": {
-    "inputs": {
-      "filename_prefix": "upscaled",
-      "add_timestamp": true,
-      "save_metadata_json": false,
-      "images": ["101", 0]
-    },
-    "class_type": "SaveImageAdvanced",
-    "_meta": {
-      "title": "SaveImageAdvanced"
-    }
-  },
   "85": {
     "inputs": {
-      "width": ["86", 0],
-      "height": ["86", 0],
+      "width": [
+        "86",
+        0
+      ],
+      "height": [
+        "86",
+        0
+      ],
       "interpolation": "lanczos",
       "method": "keep proportion",
       "condition": "always",
       "multiple_of": 8,
-      "image": ["8", 0]
+      "image": [
+        "8",
+        0
+      ]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -246,7 +324,10 @@
   "89": {
     "inputs": {
       "preset": "PLUS (high strength)",
-      "model": ["16", 0]
+      "model": [
+        "16",
+        0
+      ]
     },
     "class_type": "IPAdapterUnifiedLoader",
     "_meta": {
@@ -258,7 +339,10 @@
       "interpolation": "LANCZOS",
       "crop_position": "center",
       "sharpening": 0.05,
-      "image": ["111", 0]
+      "image": [
+        "111",
+        0
+      ]
     },
     "class_type": "PrepImageForClipVision",
     "_meta": {
@@ -267,7 +351,10 @@
   },
   "92": {
     "inputs": {
-      "weight": ["95", 0],
+      "weight": [
+        "95",
+        0
+      ],
       "weight_type": "composition precise",
       "combine_embeds": "concat",
       "start_at": 0,
@@ -275,9 +362,18 @@
       "embeds_scaling": "V only",
       "enhance_tiles": 2,
       "enhance_ratio": 1,
-      "model": ["89", 0],
-      "ipadapter": ["89", 1],
-      "image": ["90", 0]
+      "model": [
+        "89",
+        0
+      ],
+      "ipadapter": [
+        "89",
+        1
+      ],
+      "image": [
+        "90",
+        0
+      ]
     },
     "class_type": "IPAdapterClipVisionEnhancer",
     "_meta": {
@@ -295,9 +391,18 @@
   },
   "96": {
     "inputs": {
-      "switch": ["97", 0],
-      "on_false": ["16", 0],
-      "on_true": ["92", 0]
+      "switch": [
+        "97",
+        0
+      ],
+      "on_false": [
+        "16",
+        0
+      ],
+      "on_true": [
+        "92",
+        0
+      ]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -326,8 +431,14 @@
     "inputs": {
       "tile_size": 400,
       "fast": false,
-      "samples": ["25", 0],
-      "vae": ["2", 2]
+      "samples": [
+        "25",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ]
     },
     "class_type": "VAEDecodeTiled_TiledDiffusion",
     "_meta": {
@@ -338,9 +449,18 @@
     "inputs": {
       "tile_size": 400,
       "fast": false,
-      "color_fix": ["99", 0],
-      "pixels": ["111", 0],
-      "vae": ["2", 2]
+      "color_fix": [
+        "99",
+        0
+      ],
+      "pixels": [
+        "111",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ]
     },
     "class_type": "VAEEncodeTiled_TiledDiffusion",
     "_meta": {
@@ -355,7 +475,10 @@
       "method": "keep proportion",
       "condition": "always",
       "multiple_of": 8,
-      "image": ["1", 0]
+      "image": [
+        "1",
+        0
+      ]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -373,13 +496,37 @@
   },
   "111": {
     "inputs": {
-      "boolean": ["110", 0],
-      "on_true": ["85", 0],
-      "on_false": ["46", 0]
+      "boolean": [
+        "110",
+        0
+      ],
+      "on_true": [
+        "85",
+        0
+      ],
+      "on_false": [
+        "46",
+        0
+      ]
     },
     "class_type": "easy ifElse",
     "_meta": {
       "title": "If else"
+    }
+  },
+  "112": {
+    "inputs": {
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": [
+        "101",
+        0
+      ]
+    },
+    "class_type": "EmProps_S3_Saver",
+    "_meta": {
+      "title": "Save to S3 (EmProps)"
     }
   }
 }

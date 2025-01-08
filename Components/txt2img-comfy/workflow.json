@@ -1,16 +1,28 @@
 {
   "3": {
     "inputs": {
-      "seed": 809936035823762,
+      "seed": 870888277577344,
       "steps": 20,
       "cfg": 1,
       "sampler_name": "dpmpp_2m",
       "scheduler": "karras",
       "denoise": 1,
-      "model": ["4", 0],
-      "positive": ["6", 0],
-      "negative": ["7", 0],
-      "latent_image": ["5", 0]
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
     },
     "class_type": "KSampler",
     "_meta": {
@@ -40,7 +52,10 @@
   "6": {
     "inputs": {
       "text": "A dog in a car",
-      "clip": ["4", 1]
+      "clip": [
+        "4",
+        1
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -50,7 +65,10 @@
   "7": {
     "inputs": {
       "text": "real",
-      "clip": ["4", 1]
+      "clip": [
+        "4",
+        1
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -59,22 +77,33 @@
   },
   "8": {
     "inputs": {
-      "samples": ["3", 0],
-      "vae": ["4", 2]
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
     },
     "class_type": "VAEDecode",
     "_meta": {
       "title": "VAE Decode"
     }
   },
-  "9": {
+  "10": {
     "inputs": {
-      "filename_prefix": "ComfyUI",
-      "images": ["8", 0]
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": [
+        "8",
+        0
+      ]
     },
-    "class_type": "SaveImage",
+    "class_type": "EmProps_S3_Saver",
     "_meta": {
-      "title": "Save Image"
+      "title": "Save to S3 (EmProps)"
     }
   }
 }

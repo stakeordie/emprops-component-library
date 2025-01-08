@@ -8,5 +8,8 @@
   "width": 1024,
   "height": 1024,
   "prompt": "a dog in a car",
-  "negative_prompt": ""
+  "negative_prompt": "",
+  "prefix": "test",
+  "filename": "image.png",
+  "bucket": "emprops-share"
 }
