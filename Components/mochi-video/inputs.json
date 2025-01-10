@@ -66,6 +66,18 @@
       "value": "frame_rate",
       "is_required": false,
       "default": "24"
+    },
+    "s3_prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "s3_bucket": {
+      "value": "bucket",
+      "is_required": true
+    },
+    "filename_prefix": {
+      "value": "filename",
+      "is_required": false
     }
   }
 }

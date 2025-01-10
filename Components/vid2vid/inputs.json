@@ -26,5 +26,19 @@
       "type": "asset",
       "is_required": true
     }
+  },
+  "378": {
+    "s3_prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "s3_bucket": {
+      "value": "bucket",
+      "is_required": true
+    },
+    "filename_prefix": {
+      "value": "filename",
+      "is_required": false
+    }
   }
 }

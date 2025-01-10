@@ -1008,7 +1008,7 @@
       "save_output": true,
       "s3_prefix": "uploads",
       "s3_bucket": "emprops-share",
-      "use_s3_upload": false,
+      "use_s3_upload": true,
       "images": [
         "351",
         0
