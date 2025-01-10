@@ -333,15 +333,6 @@
       "title": "Load Advanced ControlNet Model "
     }
   },
-  "56": {
-    "inputs": {
-      "control_net_name": "control_v11p_sd15_lineart.pth"
-    },
-    "class_type": "ControlNetLoaderAdvanced",
-    "_meta": {
-      "title": "Load Advanced ControlNet Model "
-    }
-  },
   "59": {
     "inputs": {
       "positive": [
@@ -498,21 +489,9 @@
       "title": " Image Resize"
     }
   },
-  "208": {
-    "inputs": {
-      "images": [
-        "180",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
   "252": {
     "inputs": {
-      "image": "Screenshot 2025-01-09 at 20.22.59.png",
+      "image": "import_drcrmo-1faf9803-2773-4f3a-a7bd-84185384df9e-1faf9803-2773-4f3a-a7bd-84185384df9e.png",
       "upload": "image"
     },
     "class_type": "LoadImage",
@@ -575,18 +554,6 @@
       "title": "Convert Image to Mask"
     }
   },
-  "280": {
-    "inputs": {
-      "mask": [
-        "278",
-        0
-      ]
-    },
-    "class_type": "MaskToImage",
-    "_meta": {
-      "title": "Convert Mask to Image"
-    }
-  },
   "287": {
     "inputs": {
       "channel": "red",
@@ -598,30 +565,6 @@
     "class_type": "ImageToMask",
     "_meta": {
       "title": "Convert Image to Mask"
-    }
-  },
-  "289": {
-    "inputs": {
-      "mask": [
-        "363",
-        0
-      ]
-    },
-    "class_type": "MaskToImage",
-    "_meta": {
-      "title": "Convert Mask to Image"
-    }
-  },
-  "290": {
-    "inputs": {
-      "mask": [
-        "298",
-        0
-      ]
-    },
-    "class_type": "MaskToImage",
-    "_meta": {
-      "title": "Convert Mask to Image"
     }
   },
   "296": {
@@ -789,18 +732,6 @@
     "class_type": "RemapMaskRange",
     "_meta": {
       "title": "Remap Mask Range"
-    }
-  },
-  "336": {
-    "inputs": {
-      "mask": [
-        "335",
-        0
-      ]
-    },
-    "class_type": "MaskToImage",
-    "_meta": {
-      "title": "Convert Mask to Image"
     }
   },
   "339": {
