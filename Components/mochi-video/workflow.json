@@ -99,7 +99,9 @@
       "save_metadata": true,
       "pingpong": true,
       "save_output": true,
-      "images": ["8", 0]
+      "images": ["8", 0],
+      "s3_prefix": "uploads",
+      "s3_bucket": "emprops-share"
     },
     "class_type": "VHS_VideoCombine",
     "_meta": {
