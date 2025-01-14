@@ -36,12 +36,6 @@
       "is_required": true
     }
   },
-  "26": {
-    "image": {
-      "value": "image",
-      "is_required": true
-    }
-  },
   "29": {
     "upscale_method": {
       "value": "upscale_method",
@@ -66,6 +60,12 @@
     "bucket": {
       "value": "bucket",
       "is_required": true
+    }
+  },
+  "32": {
+    "url": {
+      "value": "url"
+      , "is_required": true
     }
   }
 }

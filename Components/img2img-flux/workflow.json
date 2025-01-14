@@ -99,7 +99,7 @@
     "inputs": {
       "scheduler": "simple",
       "steps": 5,
-      "denoise": 1,
+      "denoise": 0.72,
       "model": [
         "12",
         0
@@ -128,21 +128,11 @@
   },
   "25": {
     "inputs": {
-      "noise_seed": 252393580447665
+      "noise_seed": 149739139606614
     },
     "class_type": "RandomNoise",
     "_meta": {
       "title": "RandomNoise"
-    }
-  },
-  "26": {
-    "inputs": {
-      "image": "stada 1.png",
-      "upload": "image"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
     }
   },
   "29": {
@@ -150,7 +140,7 @@
       "upscale_method": "lanczos",
       "megapixels": 1,
       "image": [
-        "26",
+        "32",
         0
       ]
     },
@@ -187,7 +177,20 @@
     },
     "class_type": "EmProps_S3_Saver",
     "_meta": {
-      "title": "Save to S3 (EmProps)"
+      "title": "EmProps S3 Saver"
+    }
+  },
+  "32": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "002baf4b-2847-43dc-a040-f9e626e17a60.jpeg",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
     }
   }
 }
