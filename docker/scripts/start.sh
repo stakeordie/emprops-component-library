@@ -154,6 +154,7 @@ setup_env_vars() {
         echo "LANGFLOW_SECRET_KEY=${LANGFLOW_SECRET_KEY}"
         echo "LANGFLOW_NEW_USER_IS_ACTIVE=${LANGFLOW_NEW_USER_IS_ACTIVE}"
         echo "LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=${LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT}"
+        echo "COMFY_REPO_URL=${COMFY_REPO_URL}"
     } >> /etc/environment
     
     # Also add to profile for interactive sessions
@@ -175,6 +176,7 @@ setup_env_vars() {
         echo "LANGFLOW_SECRET_KEY=${LANGFLOW_SECRET_KEY}"
         echo "LANGFLOW_NEW_USER_IS_ACTIVE=${LANGFLOW_NEW_USER_IS_ACTIVE}"
         echo "LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=${LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT}"
+        echo "COMFY_REPO_URL=${COMFY_REPO_URL}"
     } > /etc/profile.d/comfyui-env.sh
     
     # Set for current session

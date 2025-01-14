@@ -73,6 +73,9 @@ RUN find ${ROOT}/shared_custom_nodes -name "requirements.txt" -execdir pip insta
 
 FROM langflow AS end
 
+ARG COMFY_REPO_URL=https://github.com/comfyanonymous/ComfyUI.git
+ENV COMFY_REPO_URL=${COMFY_REPO_URL}
+
 # Copy init.d script
 COPY scripts/comfyui /etc/init.d/comfyui
 
@@ -88,7 +91,6 @@ RUN chmod +x /scripts/start.sh
 
 # Add build argument for fresh clone
 ARG FORCE_FRESH_CLONE=false
-
 # Cache buster for fresh clone
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/random
 
@@ -103,6 +105,7 @@ RUN echo "Debug: FORCE_FRESH_CLONE value is '${FORCE_FRESH_CLONE}'" && \
         mkdir -p ${ROOT}/shared && \
         git clone https://github.com/stakeordie/emprops_shared.git ${ROOT}/shared || true; \
     fi
+
 
 # RUN usermod -aG crontab ubuntu
 # Create cron pid directory with correct permissions

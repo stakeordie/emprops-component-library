@@ -25,3 +25,18 @@ services:
     <<: *base-service
     container_name: comfy
     image: emprops/comfy:latest
+    environment:
+      - COMFY_REPO_URL=https://github.com/comfyanonymous/ComfyUI.git
+    build:
+      args:
+        COMFY_REPO_URL: https://github.com/comfyanonymous/ComfyUI.git
+
+  comfyui-fork:
+    <<: *base-service
+    container_name: comfy-fork
+    image: emprops/comfy-fork:latest
+    environment:
+      - COMFY_REPO_URL=https://github.com/stakeordie/ComfyUI.git
+    build:
+      args:
+        COMFY_REPO_URL: https://github.com/stakeordie/ComfyUI.git

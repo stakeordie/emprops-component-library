@@ -2,6 +2,14 @@
 
 # Base directory for your ComfyUI instances
 ROOT="${ROOT:-/workspace}"
+LOG_DIR="${ROOT}/logs"
+START_LOG="${LOG_DIR}/start.log"
+
+# Ensure log directory exists
+mkdir -p "$LOG_DIR"
+chmod 755 "$LOG_DIR"
+touch "$START_LOG"
+chmod 644 "$START_LOG"
 
 # Source environment variables
 if [ -f /etc/environment ]; then
@@ -16,8 +24,31 @@ if [ -f /etc/environment ]; then
 fi
 
 log() {
-    echo "[MGPU] $*" >&2
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local msg="[MGPU] $*"
+    
+    # Ensure log directory exists
+    if [ ! -d "$LOG_DIR" ]; then
+        mkdir -p "$LOG_DIR"
+        chmod 755 "$LOG_DIR"
+    fi
+    
+    # Ensure log file exists and is writable
+    if [ ! -f "$START_LOG" ]; then
+        touch "$START_LOG"
+        chmod 644 "$START_LOG"
+    fi
+    
+    if [ -w "$START_LOG" ]; then
+        echo "[$timestamp] $msg" | tee -a "$START_LOG" >&2
+    else
+        echo "[$timestamp] $msg (Warning: Could not write to $START_LOG)" >&2
+    fi
 }
+
+# Test logging at startup
+log "MGPU script starting, log file: $START_LOG"
 
 # Add debug logging at start (only once)
 if [ "${DEBUG:-}" = "true" ]; then
@@ -298,18 +329,31 @@ setup_gpu() {
     mkdir -p "$target_dir"
     chmod 755 "$target_dir"
     
-
-    log "Cloning ComfyUI for ${gpu_id}..."
-    if ! git clone https://github.com/comfyanonymous/ComfyUI.git "$target_dir"; then
+    # Use COMFY_REPO_URL environment variable with fallback
+    local repo_url="${COMFY_REPO_URL:-https://github.com/comfyanonymous/ComfyUI.git}"
+    local base_commit="0c04a6ae780b5eefb1a701467439ae1235607a4f"
+    
+    log "Cloning ComfyUI from ${repo_url} for ${gpu_id}..."
+    if ! git clone "$repo_url" "$target_dir"; then
         log "ERROR: Failed to clone ComfyUI"
         return 1
     fi
     
-    # Checkout specific commit
     cd "$target_dir" || return 1
-    if ! git reset --hard 0c04a6ae780b5eefb1a701467439ae1235607a4f; then
-        log "ERROR: Failed to checkout specific commit"
-        return 1
+    
+    # Handle different branches based on whether it's a fork
+    if [ "$repo_url" = "https://github.com/stakeordie/ComfyUI.git" ]; then
+        log "Fork detected, checking out websocket_version branch..."
+        if ! git checkout websocket_version; then
+            log "ERROR: Failed to checkout websocket_version branch"
+            return 1
+        fi
+    else
+        log "Base repo detected, resetting to specific commit ${base_commit}..."
+        if ! git reset --hard "$base_commit"; then
+            log "ERROR: Failed to reset to specific commit"
+            return 1
+        fi
     fi
     cd - > /dev/null || return 1
     
