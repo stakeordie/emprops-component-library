@@ -6,8 +6,8 @@
       "is_required": false
     }
   },
-  "100": {
-    "image": {
+  "106": {
+    "url": {
       "value": "image",
       "is_required": true
     }

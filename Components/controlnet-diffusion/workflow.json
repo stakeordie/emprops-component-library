@@ -1,10 +1,7 @@
 {
   "2": {
     "inputs": {
-      "image": [
-        "16",
-        0
-      ]
+      "image": ["421", 0]
     },
     "class_type": "Get resolution [Crystools]",
     "_meta": {
@@ -34,18 +31,9 @@
   },
   "10": {
     "inputs": {
-      "boolean": [
-        "217",
-        0
-      ],
-      "on_true": [
-        "2",
-        0
-      ],
-      "on_false": [
-        "7",
-        0
-      ]
+      "boolean": ["217", 0],
+      "on_true": ["2", 0],
+      "on_false": ["7", 0]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -54,18 +42,9 @@
   },
   "11": {
     "inputs": {
-      "boolean": [
-        "217",
-        0
-      ],
-      "on_true": [
-        "2",
-        1
-      ],
-      "on_false": [
-        "7",
-        1
-      ]
+      "boolean": ["217", 0],
+      "on_true": ["2", 1],
+      "on_false": ["7", 1]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -75,14 +54,8 @@
   "13": {
     "inputs": {
       "comparison": "a != b",
-      "a": [
-        "16",
-        3
-      ],
-      "b": [
-        "418",
-        0
-      ]
+      "a": ["421", 3],
+      "b": ["418", 0]
     },
     "class_type": "easy compare",
     "_meta": {
@@ -92,33 +65,17 @@
   "14": {
     "inputs": {
       "output": "",
-      "source": [
-        "13",
-        0
-      ]
+      "source": ["13", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
       "title": "Is the Metadata the Same answer"
     }
   },
-  "16": {
-    "inputs": {
-      "image": "import_drcrmo-1faf9803-2773-4f3a-a7bd-84185384df9e-1faf9803-2773-4f3a-a7bd-84185384df9e.png",
-      "upload": "image"
-    },
-    "class_type": "Load image with metadata [Crystools]",
-    "_meta": {
-      "title": "Control Image (What Controlnet will use)"
-    }
-  },
   "20": {
     "inputs": {
       "output": "",
-      "source": [
-        "10",
-        0
-      ]
+      "source": ["10", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -128,10 +85,7 @@
   "21": {
     "inputs": {
       "output": "",
-      "source": [
-        "11",
-        0
-      ]
+      "source": ["11", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -140,7 +94,7 @@
   },
   "27": {
     "inputs": {
-      "seed": 952640199062836
+      "seed": 1040321152263040
     },
     "class_type": "Seed",
     "_meta": {
@@ -149,14 +103,8 @@
   },
   "32": {
     "inputs": {
-      "text": [
-        "33",
-        0
-      ],
-      "clip": [
-        "162",
-        1
-      ]
+      "text": ["33", 0],
+      "clip": ["162", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -192,46 +140,16 @@
   },
   "38": {
     "inputs": {
-      "seed": [
-        "27",
-        3
-      ],
-      "steps": [
-        "171",
-        0
-      ],
-      "cfg": [
-        "171",
-        2
-      ],
-      "sampler_name": [
-        "171",
-        3
-      ],
-      "scheduler": [
-        "171",
-        4
-      ],
-      "denoise": [
-        "227",
-        0
-      ],
-      "model": [
-        "64",
-        0
-      ],
-      "positive": [
-        "288",
-        0
-      ],
-      "negative": [
-        "345",
-        0
-      ],
-      "latent_image": [
-        "363",
-        0
-      ]
+      "seed": ["27", 3],
+      "steps": ["171", 0],
+      "cfg": ["171", 2],
+      "sampler_name": ["171", 3],
+      "scheduler": ["171", 4],
+      "denoise": ["227", 0],
+      "model": ["64", 0],
+      "positive": ["288", 0],
+      "negative": ["345", 0],
+      "latent_image": ["363", 0]
     },
     "class_type": "KSampler",
     "_meta": {
@@ -262,14 +180,8 @@
   "61": {
     "inputs": {
       "mode": false,
-      "a": [
-        "10",
-        0
-      ],
-      "b": [
-        "60",
-        0
-      ]
+      "a": ["10", 0],
+      "b": ["60", 0]
     },
     "class_type": "ImpactMinMax",
     "_meta": {
@@ -279,14 +191,8 @@
   "62": {
     "inputs": {
       "mode": false,
-      "a": [
-        "11",
-        0
-      ],
-      "b": [
-        "60",
-        1
-      ]
+      "a": ["11", 0],
+      "b": ["60", 1]
     },
     "class_type": "ImpactMinMax",
     "_meta": {
@@ -295,18 +201,9 @@
   },
   "64": {
     "inputs": {
-      "switch": [
-        "35",
-        0
-      ],
-      "on_false": [
-        "162",
-        0
-      ],
-      "on_true": [
-        "141",
-        0
-      ]
+      "switch": ["35", 0],
+      "on_false": ["162", 0],
+      "on_true": ["141", 0]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -317,10 +214,7 @@
     "inputs": {
       "batch_index": 0,
       "length": 1,
-      "image": [
-        "145",
-        0
-      ]
+      "image": ["420", 0]
     },
     "class_type": "ImageFromBatch",
     "_meta": {
@@ -329,14 +223,8 @@
   },
   "90": {
     "inputs": {
-      "pixels": [
-        "328",
-        0
-      ],
-      "vae": [
-        "410",
-        2
-      ]
+      "pixels": ["328", 0],
+      "vae": ["410", 2]
     },
     "class_type": "VAEEncode",
     "_meta": {
@@ -345,14 +233,8 @@
   },
   "91": {
     "inputs": {
-      "samples": [
-        "38",
-        0
-      ],
-      "vae": [
-        "410",
-        2
-      ]
+      "samples": ["38", 0],
+      "vae": ["410", 2]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -361,14 +243,8 @@
   },
   "94": {
     "inputs": {
-      "width": [
-        "328",
-        1
-      ],
-      "height": [
-        "328",
-        2
-      ],
+      "width": ["328", 1],
+      "height": ["328", 2],
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -385,27 +261,12 @@
       "title": "Lora Strength + Prompt Merge Strenght"
     }
   },
-  "125": {
-    "inputs": {
-      "images": [
-        "91",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
   "129": {
     "inputs": {
       "interpolation": "LANCZOS",
       "crop_position": "center",
       "sharpening": 0.05,
-      "image": [
-        "80",
-        0
-      ]
+      "image": ["80", 0]
     },
     "class_type": "PrepImageForClipVision",
     "_meta": {
@@ -415,10 +276,7 @@
   "140": {
     "inputs": {
       "preset": "PLUS (high strength)",
-      "model": [
-        "162",
-        0
-      ]
+      "model": ["162", 0]
     },
     "class_type": "IPAdapterUnifiedLoader",
     "_meta": {
@@ -427,10 +285,7 @@
   },
   "141": {
     "inputs": {
-      "weight": [
-        "59",
-        0
-      ],
+      "weight": ["59", 0],
       "weight_type": "ease in-out",
       "combine_embeds": "concat",
       "start_at": 0,
@@ -438,53 +293,22 @@
       "embeds_scaling": "V only",
       "enhance_tiles": 2,
       "enhance_ratio": 1,
-      "model": [
-        "140",
-        0
-      ],
-      "ipadapter": [
-        "140",
-        1
-      ],
-      "image": [
-        "129",
-        0
-      ]
+      "model": ["140", 0],
+      "ipadapter": ["140", 1],
+      "image": ["129", 0]
     },
     "class_type": "IPAdapterClipVisionEnhancer",
     "_meta": {
       "title": "IPAdapter ClipVision Enhancer"
     }
   },
-  "145": {
-    "inputs": {
-      "image": "j1k6se3vjdrga0ck3wdvybknnr.jpg",
-      "upload": "image"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Style Image"
-    }
-  },
   "162": {
     "inputs": {
       "lora_name": "SDXL_lora_xander.safetensors",
-      "strength_model": [
-        "205",
-        0
-      ],
-      "strength_clip": [
-        "205",
-        0
-      ],
-      "model": [
-        "410",
-        0
-      ],
-      "clip": [
-        "410",
-        1
-      ]
+      "strength_model": ["205", 0],
+      "strength_clip": ["205", 0],
+      "model": ["410", 0],
+      "clip": ["410", 1]
     },
     "class_type": "SDLoraLoader",
     "_meta": {
@@ -533,18 +357,9 @@
   },
   "205": {
     "inputs": {
-      "boolean": [
-        "193",
-        0
-      ],
-      "on_true": [
-        "96",
-        0
-      ],
-      "on_false": [
-        "204",
-        0
-      ]
+      "boolean": ["193", 0],
+      "on_true": ["96", 0],
+      "on_false": ["204", 0]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -554,10 +369,7 @@
   "210": {
     "inputs": {
       "text": "",
-      "image": [
-        "91",
-        0
-      ]
+      "image": ["91", 0]
     },
     "class_type": "ControlNetAuxSimpleAddText",
     "_meta": {
@@ -567,10 +379,7 @@
   "212": {
     "inputs": {
       "output": "",
-      "source": [
-        "61",
-        0
-      ]
+      "source": ["61", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -580,10 +389,7 @@
   "213": {
     "inputs": {
       "output": "",
-      "source": [
-        "62",
-        0
-      ]
+      "source": ["62", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -592,22 +398,13 @@
   },
   "214": {
     "inputs": {
-      "width": [
-        "60",
-        0
-      ],
-      "height": [
-        "60",
-        1
-      ],
+      "width": ["60", 0],
+      "height": ["60", 1],
       "interpolation": "lanczos",
       "method": "keep proportion",
       "condition": "downscale if bigger",
       "multiple_of": 1,
-      "image": [
-        "16",
-        0
-      ]
+      "image": ["421", 0]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -617,10 +414,7 @@
   "215": {
     "inputs": {
       "output": "",
-      "source": [
-        "205",
-        0
-      ]
+      "source": ["205", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -629,14 +423,8 @@
   },
   "217": {
     "inputs": {
-      "a": [
-        "218",
-        0
-      ],
-      "b": [
-        "13",
-        0
-      ],
+      "a": ["218", 0],
+      "b": ["13", 0],
       "op": "a AND b"
     },
     "class_type": "BoolOperationNode",
@@ -646,14 +434,8 @@
   },
   "218": {
     "inputs": {
-      "a": [
-        "198",
-        0
-      ],
-      "b": [
-        "8",
-        0
-      ],
+      "a": ["198", 0],
+      "b": ["8", 0],
       "op": "a AND b"
     },
     "class_type": "BoolOperationNode",
@@ -663,10 +445,7 @@
   },
   "219": {
     "inputs": {
-      "value": [
-        "417",
-        0
-      ]
+      "value": ["417", 0]
     },
     "class_type": "Eden_Float",
     "_meta": {
@@ -675,10 +454,7 @@
   },
   "220": {
     "inputs": {
-      "value": [
-        "417",
-        0
-      ]
+      "value": ["417", 0]
     },
     "class_type": "Eden_Float",
     "_meta": {
@@ -687,18 +463,9 @@
   },
   "221": {
     "inputs": {
-      "boolean": [
-        "222",
-        0
-      ],
-      "on_true": [
-        "220",
-        0
-      ],
-      "on_false": [
-        "219",
-        0
-      ]
+      "boolean": ["222", 0],
+      "on_true": ["220", 0],
+      "on_false": ["219", 0]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -707,14 +474,8 @@
   },
   "222": {
     "inputs": {
-      "a": [
-        "198",
-        0
-      ],
-      "b": [
-        "13",
-        0
-      ],
+      "a": ["198", 0],
+      "b": ["13", 0],
       "op": "a AND b"
     },
     "class_type": "BoolOperationNode",
@@ -724,10 +485,7 @@
   },
   "227": {
     "inputs": {
-      "any_type_input": [
-        "221",
-        0
-      ]
+      "any_type_input": ["221", 0]
     },
     "class_type": "SDAnyConverter",
     "_meta": {
@@ -737,14 +495,8 @@
   "233": {
     "inputs": {
       "mode": false,
-      "a": [
-        "328",
-        1
-      ],
-      "b": [
-        "328",
-        2
-      ]
+      "a": ["328", 1],
+      "b": ["328", 2]
     },
     "class_type": "ImpactMinMax",
     "_meta": {
@@ -753,14 +505,8 @@
   },
   "238": {
     "inputs": {
-      "text": [
-        "241",
-        0
-      ],
-      "clip": [
-        "162",
-        1
-      ]
+      "text": ["241", 0],
+      "clip": ["162", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -769,14 +515,8 @@
   },
   "239": {
     "inputs": {
-      "text": [
-        "243",
-        0
-      ],
-      "clip": [
-        "162",
-        1
-      ]
+      "text": ["243", 0],
+      "clip": ["162", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -785,18 +525,9 @@
   },
   "240": {
     "inputs": {
-      "conditioning_to_strength": [
-        "407",
-        0
-      ],
-      "conditioning_to": [
-        "238",
-        0
-      ],
-      "conditioning_from": [
-        "239",
-        0
-      ]
+      "conditioning_to_strength": ["407", 0],
+      "conditioning_to": ["238", 0],
+      "conditioning_from": ["239", 0]
     },
     "class_type": "ConditioningAverage",
     "_meta": {
@@ -805,10 +536,7 @@
   },
   "241": {
     "inputs": {
-      "value": [
-        "370",
-        0
-      ]
+      "value": ["370", 0]
     },
     "class_type": "Eden_String",
     "_meta": {
@@ -826,10 +554,8 @@
   },
   "281": {
     "inputs": {
-      "text": [
-        "311",
-        0
-      ]
+      "text": ["311", 0],
+      "text2": "preprocessor_canny"
     },
     "class_type": "ShowText|pysssss",
     "_meta": {
@@ -839,10 +565,7 @@
   "282": {
     "inputs": {
       "output": "",
-      "source": [
-        "283",
-        1
-      ]
+      "source": ["283", 1]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -862,18 +585,9 @@
   },
   "284": {
     "inputs": {
-      "preprocessor": [
-        "286",
-        0
-      ],
-      "resolution": [
-        "233",
-        0
-      ],
-      "image": [
-        "328",
-        0
-      ]
+      "preprocessor": ["286", 0],
+      "resolution": ["233", 0],
+      "image": ["328", 0]
     },
     "class_type": "AIO_Preprocessor",
     "_meta": {
@@ -885,10 +599,7 @@
       "menu": "none,CannyEdgePreprocessor,CannyEdgePreprocessor,DepthAnythingV2Preprocessor,ScribblePreprocessor,OpenposePreprocessor,LineartStandardPreprocessor",
       "delimiter": ",",
       "select_item": "pose",
-      "int_select": [
-        "283",
-        1
-      ]
+      "int_select": ["283", 1]
     },
     "class_type": "DRMBT_String_Item_Menu",
     "_meta": {
@@ -897,10 +608,7 @@
   },
   "286": {
     "inputs": {
-      "string": [
-        "285",
-        0
-      ],
+      "string": ["285", 0],
       "separator": "$",
       "index": 0
     },
@@ -912,10 +620,7 @@
   "287": {
     "inputs": {
       "output": "",
-      "source": [
-        "286",
-        0
-      ]
+      "source": ["286", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -924,18 +629,9 @@
   },
   "288": {
     "inputs": {
-      "switch": [
-        "388",
-        0
-      ],
-      "on_false": [
-        "240",
-        0
-      ],
-      "on_true": [
-        "351",
-        0
-      ]
+      "switch": ["388", 0],
+      "on_false": ["240", 0],
+      "on_true": ["351", 0]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -944,10 +640,7 @@
   },
   "289": {
     "inputs": {
-      "control_net_name": [
-        "293",
-        0
-      ]
+      "control_net_name": ["293", 0]
     },
     "class_type": "ControlNetLoader",
     "_meta": {
@@ -959,10 +652,7 @@
       "menu": "controlnet-canny-sdxl-1.0/diffusion_pytorch_model_V2.safetensors,diffusers_xl_canny_full.safetensors,controlnet-canny-sdxl-1.0/diffusion_pytorch_model_V2.safetensors,controlnet-depth-sdxl-1.0/diffusion_pytorch_model.safetensors,controlnet-scribble-sdxl-1.0/diffusion_pytorch_model.safetensors,controlnet-openpose-sdxl-1.0/diffusion_pytorch_model.safetensors,t2i-adapter-lineart-sdxl-1.0/diffusion_pytorch_model.safetensors",
       "delimiter": ",",
       "select_item": "",
-      "int_select": [
-        "285",
-        1
-      ]
+      "int_select": ["285", 1]
     },
     "class_type": "DRMBT_String_Item_Menu",
     "_meta": {
@@ -980,10 +670,7 @@
   },
   "293": {
     "inputs": {
-      "string": [
-        "290",
-        0
-      ],
+      "string": ["290", 0],
       "separator": "$",
       "index": 0
     },
@@ -995,10 +682,7 @@
   "294": {
     "inputs": {
       "output": "",
-      "source": [
-        "293",
-        0
-      ]
+      "source": ["293", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -1007,10 +691,7 @@
   },
   "297": {
     "inputs": {
-      "image": [
-        "299",
-        0
-      ]
+      "image": ["299", 0]
     },
     "class_type": "Get resolution [Crystools]",
     "_meta": {
@@ -1019,18 +700,9 @@
   },
   "299": {
     "inputs": {
-      "switch": [
-        "388",
-        0
-      ],
-      "on_false": [
-        "328",
-        0
-      ],
-      "on_true": [
-        "284",
-        0
-      ]
+      "switch": ["388", 0],
+      "on_false": ["328", 0],
+      "on_true": ["284", 0]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -1039,10 +711,8 @@
   },
   "309": {
     "inputs": {
-      "text": [
-        "370",
-        0
-      ]
+      "text": ["370", 0],
+      "text2": "needlefelted texture"
     },
     "class_type": "ShowText|pysssss",
     "_meta": {
@@ -1053,10 +723,7 @@
     "inputs": {
       "body": "preprocessor_",
       "delimiter": "",
-      "append": [
-        "283",
-        0
-      ]
+      "append": ["283", 0]
     },
     "class_type": "TextPlusPlus",
     "_meta": {
@@ -1066,10 +733,7 @@
   "318": {
     "inputs": {
       "output": "",
-      "source": [
-        "388",
-        0
-      ]
+      "source": ["388", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -1078,15 +742,9 @@
   },
   "323": {
     "inputs": {
-      "filename_prefix": [
-        "281",
-        0
-      ],
+      "filename_prefix": ["281", 0],
       "only_preview": false,
-      "images": [
-        "299",
-        0
-      ]
+      "images": ["299", 0]
     },
     "class_type": "easy imageSave",
     "_meta": {
@@ -1095,10 +753,7 @@
   },
   "324": {
     "inputs": {
-      "input1": [
-        "388",
-        0
-      ]
+      "input1": ["388", 0]
     },
     "class_type": "LogicGateInvertBasic",
     "_meta": {
@@ -1107,22 +762,13 @@
   },
   "328": {
     "inputs": {
-      "width": [
-        "335",
-        0
-      ],
-      "height": [
-        "336",
-        0
-      ],
+      "width": ["335", 0],
+      "height": ["336", 0],
       "interpolation": "lanczos",
       "method": "fill / crop",
       "condition": "always",
       "multiple_of": 1,
-      "image": [
-        "214",
-        0
-      ]
+      "image": ["214", 0]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -1131,10 +777,7 @@
   },
   "333": {
     "inputs": {
-      "image": [
-        "214",
-        0
-      ]
+      "image": ["214", 0]
     },
     "class_type": "CM_NearestSDXLResolution",
     "_meta": {
@@ -1143,18 +786,9 @@
   },
   "335": {
     "inputs": {
-      "boolean": [
-        "337",
-        0
-      ],
-      "on_true": [
-        "333",
-        0
-      ],
-      "on_false": [
-        "61",
-        0
-      ]
+      "boolean": ["337", 0],
+      "on_true": ["333", 0],
+      "on_false": ["61", 0]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -1163,18 +797,9 @@
   },
   "336": {
     "inputs": {
-      "boolean": [
-        "337",
-        0
-      ],
-      "on_true": [
-        "333",
-        1
-      ],
-      "on_false": [
-        "62",
-        0
-      ]
+      "boolean": ["337", 0],
+      "on_true": ["333", 1],
+      "on_false": ["62", 0]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -1192,18 +817,9 @@
   },
   "345": {
     "inputs": {
-      "switch": [
-        "388",
-        0
-      ],
-      "on_false": [
-        "32",
-        0
-      ],
-      "on_true": [
-        "351",
-        1
-      ]
+      "switch": ["388", 0],
+      "on_false": ["32", 0],
+      "on_true": ["351", 1]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -1212,28 +828,13 @@
   },
   "351": {
     "inputs": {
-      "strength": [
-        "36",
-        0
-      ],
+      "strength": ["36", 0],
       "start_percent": 0,
       "end_percent": 1,
-      "positive": [
-        "240",
-        0
-      ],
-      "negative": [
-        "32",
-        0
-      ],
-      "control_net": [
-        "289",
-        0
-      ],
-      "image": [
-        "284",
-        0
-      ]
+      "positive": ["240", 0],
+      "negative": ["32", 0],
+      "control_net": ["289", 0],
+      "image": ["284", 0]
     },
     "class_type": "ControlNetApplyAdvanced",
     "_meta": {
@@ -1242,35 +843,17 @@
   },
   "358": {
     "inputs": {
-      "input1": [
-        "220",
-        0
-      ]
+      "input1": ["220", 0]
     },
     "class_type": "FloorNode",
     "_meta": {
       "title": "Floor"
     }
   },
-  "361": {
-    "inputs": {
-      "image": [
-        "91",
-        0
-      ]
-    },
-    "class_type": "Get resolution [Crystools]",
-    "_meta": {
-      "title": "🪛 Get resolution"
-    }
-  },
   "362": {
     "inputs": {
       "output": "",
-      "source": [
-        "205",
-        0
-      ]
+      "source": ["205", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -1279,18 +862,9 @@
   },
   "363": {
     "inputs": {
-      "switch": [
-        "405",
-        2
-      ],
-      "on_false": [
-        "90",
-        0
-      ],
-      "on_true": [
-        "94",
-        0
-      ]
+      "switch": ["405", 2],
+      "on_false": ["90", 0],
+      "on_true": ["94", 0]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -1300,10 +874,7 @@
   "364": {
     "inputs": {
       "output": "",
-      "source": [
-        "333",
-        0
-      ]
+      "source": ["333", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -1313,10 +884,7 @@
   "365": {
     "inputs": {
       "output": "",
-      "source": [
-        "333",
-        1
-      ]
+      "source": ["333", 1]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -1325,10 +893,7 @@
   },
   "366": {
     "inputs": {
-      "image": [
-        "284",
-        0
-      ]
+      "image": ["284", 0]
     },
     "class_type": "Get resolution [Crystools]",
     "_meta": {
@@ -1348,10 +913,7 @@
   "382": {
     "inputs": {
       "output": "",
-      "source": [
-        "396",
-        0
-      ]
+      "source": ["396", 0]
     },
     "class_type": "Display Any (rgthree)",
     "_meta": {
@@ -1361,14 +923,8 @@
   "388": {
     "inputs": {
       "comparison": "a > b",
-      "a": [
-        "396",
-        0
-      ],
-      "b": [
-        "292",
-        0
-      ]
+      "a": ["396", 0],
+      "b": ["292", 0]
     },
     "class_type": "Eden_Compare",
     "_meta": {
@@ -1378,14 +934,8 @@
   "391": {
     "inputs": {
       "comparison": "a > b",
-      "a": [
-        "283",
-        1
-      ],
-      "b": [
-        "292",
-        0
-      ]
+      "a": ["283", 1],
+      "b": ["292", 0]
     },
     "class_type": "Eden_Compare",
     "_meta": {
@@ -1394,14 +944,8 @@
   },
   "396": {
     "inputs": {
-      "input1": [
-        "400",
-        0
-      ],
-      "input2": [
-        "36",
-        0
-      ]
+      "input1": ["400", 0],
+      "input2": ["36", 0]
     },
     "class_type": "MultiplyNode",
     "_meta": {
@@ -1421,14 +965,8 @@
     "inputs": {
       "number": 0,
       "integer": "round",
-      "override_number": [
-        "391",
-        0
-      ],
-      "multiplier": [
-        "408",
-        2
-      ]
+      "override_number": ["391", 0],
+      "multiplier": ["408", 2]
     },
     "class_type": "NumberPlusPlus",
     "_meta": {
@@ -1439,14 +977,8 @@
     "inputs": {
       "number": 0,
       "integer": "round",
-      "override_number": [
-        "358",
-        0
-      ],
-      "multiplier": [
-        "198",
-        0
-      ]
+      "override_number": ["358", 0],
+      "multiplier": ["198", 0]
     },
     "class_type": "NumberPlusPlus",
     "_meta": {
@@ -1460,10 +992,7 @@
       "from_range_max": 1,
       "to_range_min": 0.5,
       "to_range_max": 1,
-      "override_number": [
-        "96",
-        0
-      ]
+      "override_number": ["96", 0]
     },
     "class_type": "NumberRemap",
     "_meta": {
@@ -1493,10 +1022,7 @@
   "416": {
     "inputs": {
       "filename_prefix": "controlnet",
-      "images": [
-        "284",
-        0
-      ]
+      "images": ["284", 0]
     },
     "class_type": "SaveImage",
     "_meta": {
@@ -1526,14 +1052,37 @@
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": [
-        "210",
-        0
-      ]
+      "images": ["210", 0]
     },
     "class_type": "EmProps_S3_Saver",
     "_meta": {
       "title": "Save to S3 (EmProps)"
+    }
+  },
+  "420": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "25a3e5d6-7254-480f-89b5-413223346515.png",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/0b8d3b8b-561b-40a6-8fff-727db812ae4a/0/42154/txt2img-flux.png"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
+    }
+  },
+  "421": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "25a3e5d6-7254-480f-89b5-413223346515.png",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/0b8d3b8b-561b-40a6-8fff-727db812ae4a/0/42154/txt2img-flux.png"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
     }
   }
 }
