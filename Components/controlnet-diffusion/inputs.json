@@ -1,6 +1,6 @@
 {
-  "16": {
-    "image": {
+  "421": {
+    "url": {
       "value": "controlnet_image",
       "type": "asset",
       "required": true
@@ -28,8 +28,8 @@
       "required": false
     }
   },
-  "145": {
-    "image": {
+  "420": {
+    "url": {
       "value": "style_image",
       "type": "asset",
       "required": false
