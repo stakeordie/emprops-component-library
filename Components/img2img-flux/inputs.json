@@ -64,8 +64,8 @@
   },
   "32": {
     "url": {
-      "value": "url"
-      , "is_required": true
+      "value": "image",
+      "is_required": true
     }
   }
 }

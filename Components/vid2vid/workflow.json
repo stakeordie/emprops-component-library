@@ -1,37 +1,16 @@
 {
   "3": {
     "inputs": {
-      "seed": [
-        "340",
-        0
-      ],
-      "steps": [
-        "373",
-        0
-      ],
+      "seed": ["340", 0],
+      "steps": ["373", 0],
       "cfg": 2,
       "sampler_name": "lcm",
       "scheduler": "sgm_uniform",
-      "denoise": [
-        "355",
-        0
-      ],
-      "model": [
-        "270",
-        0
-      ],
-      "positive": [
-        "59",
-        0
-      ],
-      "negative": [
-        "59",
-        1
-      ],
-      "latent_image": [
-        "44",
-        0
-      ]
+      "denoise": ["355", 0],
+      "model": ["270", 0],
+      "positive": ["59", 0],
+      "negative": ["59", 1],
+      "latent_image": ["44", 0]
     },
     "class_type": "KSampler",
     "_meta": {
@@ -50,10 +29,7 @@
   "6": {
     "inputs": {
       "text": "Fight to the death, crowds cheer with blood in their eyes",
-      "clip": [
-        "4",
-        1
-      ]
+      "clip": ["4", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -63,10 +39,7 @@
   "7": {
     "inputs": {
       "text": "text, watermark, low resolution, ugly, blurry, out of focus, worst quality, low quality, embedding:NEG_EMBED_STABLE_YOGI_V3",
-      "clip": [
-        "4",
-        1
-      ]
+      "clip": ["4", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -75,14 +48,8 @@
   },
   "8": {
     "inputs": {
-      "samples": [
-        "3",
-        0
-      ],
-      "vae": [
-        "4",
-        2
-      ]
+      "samples": ["3", 0],
+      "vae": ["4", 2]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -91,14 +58,8 @@
   },
   "12": {
     "inputs": {
-      "pixels": [
-        "198",
-        0
-      ],
-      "vae": [
-        "4",
-        2
-      ]
+      "pixels": ["198", 0],
+      "vae": ["4", 2]
     },
     "class_type": "VAEEncode",
     "_meta": {
@@ -113,18 +74,9 @@
       "start_at": 0,
       "end_at": 1,
       "embeds_scaling": "V only",
-      "model": [
-        "40",
-        0
-      ],
-      "ipadapter": [
-        "40",
-        1
-      ],
-      "image": [
-        "180",
-        0
-      ]
+      "model": ["40", 0],
+      "ipadapter": ["40", 1],
+      "image": ["180", 0]
     },
     "class_type": "IPAdapterAdvanced",
     "_meta": {
@@ -135,30 +87,12 @@
     "inputs": {
       "model_name": "AnimateLCM_sd15_t2v.ckpt",
       "beta_schedule": "lcm >> sqrt_linear",
-      "model": [
-        "4",
-        0
-      ],
-      "context_options": [
-        "33",
-        0
-      ],
-      "ad_settings": [
-        "36",
-        0
-      ],
-      "sample_settings": [
-        "29",
-        0
-      ],
-      "scale_multival": [
-        "32",
-        0
-      ],
-      "effect_multival": [
-        "34",
-        0
-      ]
+      "model": ["4", 0],
+      "context_options": ["33", 0],
+      "ad_settings": ["36", 0],
+      "sample_settings": ["29", 0],
+      "scale_multival": ["32", 0],
+      "effect_multival": ["34", 0]
     },
     "class_type": "ADE_AnimateDiffLoaderGen1",
     "_meta": {
@@ -172,14 +106,8 @@
       "seed_gen": "comfy",
       "seed_offset": 0,
       "adapt_denoise_steps": false,
-      "custom_cfg": [
-        "35",
-        0
-      ],
-      "sigma_schedule": [
-        "30",
-        0
-      ]
+      "custom_cfg": ["35", 0],
+      "sigma_schedule": ["30", 0]
     },
     "class_type": "ADE_AnimateDiffSamplingSettings",
     "_meta": {
@@ -241,14 +169,8 @@
   },
   "36": {
     "inputs": {
-      "pe_adjust": [
-        "37",
-        0
-      ],
-      "weight_adjust": [
-        "38",
-        0
-      ]
+      "pe_adjust": ["37", 0],
+      "weight_adjust": ["38", 0]
     },
     "class_type": "ADE_AnimateDiffSettings",
     "_meta": {
@@ -279,10 +201,7 @@
   "40": {
     "inputs": {
       "preset": "PLUS (high strength)",
-      "model": [
-        "28",
-        0
-      ]
+      "model": ["28", 0]
     },
     "class_type": "IPAdapterUnifiedLoader",
     "_meta": {
@@ -291,14 +210,8 @@
   },
   "44": {
     "inputs": {
-      "samples": [
-        "12",
-        0
-      ],
-      "mask": [
-        "363",
-        0
-      ]
+      "samples": ["12", 0],
+      "mask": ["363", 0]
     },
     "class_type": "SetLatentNoiseMask",
     "_meta": {
@@ -310,14 +223,8 @@
       "strength": 0.35000000000000003,
       "start_percent": 0,
       "end_percent": 1,
-      "control_net": [
-        "48",
-        0
-      ],
-      "image": [
-        "196",
-        0
-      ]
+      "control_net": ["48", 0],
+      "image": ["196", 0]
     },
     "class_type": "Control Net Stacker",
     "_meta": {
@@ -335,18 +242,9 @@
   },
   "59": {
     "inputs": {
-      "positive": [
-        "6",
-        0
-      ],
-      "negative": [
-        "7",
-        0
-      ],
-      "cnet_stack": [
-        "47",
-        0
-      ]
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "cnet_stack": ["47", 0]
     },
     "class_type": "Apply ControlNet Stack",
     "_meta": {
@@ -358,18 +256,9 @@
       "x": 0,
       "y": 0,
       "resize_source": false,
-      "destination": [
-        "198",
-        0
-      ],
-      "source": [
-        "8",
-        0
-      ],
-      "mask": [
-        "363",
-        0
-      ]
+      "destination": ["198", 0],
+      "source": ["8", 0],
+      "mask": ["363", 0]
     },
     "class_type": "ImageCompositeMasked",
     "_meta": {
@@ -378,18 +267,16 @@
   },
   "179": {
     "inputs": {
+      "source_type": "public_download",
       "video": "untitled-4b472e1b-eaa9-472d-aea3-38131e3d63b4-4b472e1b-eaa9-472d-aea3-38131e3d63b4.mp4",
-      "force_rate": [
-        "377",
-        0
-      ],
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/b8504506-6633-4087-bd2e-744d54cd5e20/0/42151/vid2vid.mp4",
+      "force_rate": ["377", 0],
       "force_size": "Disabled",
       "custom_width": 512,
       "custom_height": 512,
-      "frame_load_cap": [
-        "194",
-        0
-      ],
+      "frame_load_cap": ["194", 0],
       "skip_first_frames": 0,
       "select_every_nth": 1
     },
@@ -403,10 +290,7 @@
       "interpolation": "LANCZOS",
       "crop_position": "center",
       "sharpening": 0.05,
-      "image": [
-        "253",
-        0
-      ]
+      "image": ["253", 0]
     },
     "class_type": "PrepImageForClipVision",
     "_meta": {
@@ -416,14 +300,8 @@
   "192": {
     "inputs": {
       "preprocessor": "AnyLineArtPreprocessor_aux",
-      "resolution": [
-        "296",
-        1
-      ],
-      "image": [
-        "198",
-        0
-      ]
+      "resolution": ["296", 1],
+      "image": ["198", 0]
     },
     "class_type": "AIO_Preprocessor",
     "_meta": {
@@ -451,14 +329,8 @@
   "196": {
     "inputs": {
       "preprocessor": "DepthAnythingV2Preprocessor",
-      "resolution": [
-        "296",
-        1
-      ],
-      "image": [
-        "198",
-        0
-      ]
+      "resolution": ["296", 1],
+      "image": ["198", 0]
     },
     "class_type": "AIO_Preprocessor",
     "_meta": {
@@ -467,48 +339,23 @@
   },
   "198": {
     "inputs": {
-      "width": [
-        "193",
-        0
-      ],
-      "height": [
-        "193",
-        0
-      ],
+      "width": ["193", 0],
+      "height": ["193", 0],
       "interpolation": "lanczos",
       "method": "keep proportion",
       "condition": "always",
       "multiple_of": 8,
-      "image": [
-        "179",
-        0
-      ]
+      "image": ["179", 0]
     },
     "class_type": "ImageResize+",
     "_meta": {
       "title": " Image Resize"
     }
   },
-  "252": {
-    "inputs": {
-      "image": "import_drcrmo-1faf9803-2773-4f3a-a7bd-84185384df9e-1faf9803-2773-4f3a-a7bd-84185384df9e.png",
-      "upload": "image"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
-    }
-  },
   "253": {
     "inputs": {
-      "multiply_by": [
-        "194",
-        0
-      ],
-      "images": [
-        "252",
-        0
-      ]
+      "multiply_by": ["194", 0],
+      "images": ["380", 0]
     },
     "class_type": "VHS_DuplicateImages",
     "_meta": {
@@ -517,10 +364,7 @@
   },
   "270": {
     "inputs": {
-      "model": [
-        "26",
-        0
-      ]
+      "model": ["26", 0]
     },
     "class_type": "DifferentialDiffusion",
     "_meta": {
@@ -531,10 +375,7 @@
     "inputs": {
       "min": 0,
       "max": 1,
-      "mask": [
-        "303",
-        1
-      ]
+      "mask": ["303", 1]
     },
     "class_type": "RemapMaskRange",
     "_meta": {
@@ -544,10 +385,7 @@
   "279": {
     "inputs": {
       "channel": "red",
-      "image": [
-        "196",
-        0
-      ]
+      "image": ["196", 0]
     },
     "class_type": "ImageToMask",
     "_meta": {
@@ -557,10 +395,7 @@
   "287": {
     "inputs": {
       "channel": "red",
-      "image": [
-        "325",
-        0
-      ]
+      "image": ["325", 0]
     },
     "class_type": "ImageToMask",
     "_meta": {
@@ -570,14 +405,8 @@
   "296": {
     "inputs": {
       "expression": "min(a,b)",
-      "a": [
-        "198",
-        1
-      ],
-      "b": [
-        "198",
-        2
-      ]
+      "a": ["198", 1],
+      "b": ["198", 2]
     },
     "class_type": "Eden_Math",
     "_meta": {
@@ -588,10 +417,7 @@
     "inputs": {
       "min": 0,
       "max": 1,
-      "mask": [
-        "306",
-        1
-      ]
+      "mask": ["306", 1]
     },
     "class_type": "RemapMaskRange",
     "_meta": {
@@ -602,10 +428,7 @@
     "inputs": {
       "expression": "1 / (1 + exp(-5 * (a - 0.5)))",
       "conversion_mode": "mean",
-      "a": [
-        "279",
-        0
-      ]
+      "a": ["279", 0]
     },
     "class_type": "Eden_Image_Math",
     "_meta": {
@@ -616,10 +439,7 @@
     "inputs": {
       "expression": "1 / (1 + exp(-7 * (a - 0.5)))",
       "conversion_mode": "mean",
-      "a": [
-        "287",
-        0
-      ]
+      "a": ["287", 0]
     },
     "class_type": "Eden_Image_Math",
     "_meta": {
@@ -630,17 +450,11 @@
     "inputs": {
       "ckpt_name": "rife47.pth",
       "clear_cache_after_n_frames": 24,
-      "multiplier": [
-        "312",
-        1
-      ],
+      "multiplier": ["312", 1],
       "fast_mode": true,
       "ensemble": true,
       "scale_factor": 1,
-      "frames": [
-        "170",
-        0
-      ]
+      "frames": ["170", 0]
     },
     "class_type": "RIFE VFI",
     "_meta": {
@@ -650,14 +464,8 @@
   "312": {
     "inputs": {
       "expression": "a/b",
-      "a": [
-        "350",
-        0
-      ],
-      "b": [
-        "376",
-        0
-      ]
+      "a": ["350", 0],
+      "b": ["376", 0]
     },
     "class_type": "Eden_Math",
     "_meta": {
@@ -667,14 +475,8 @@
   "325": {
     "inputs": {
       "preprocessor": "ImageLuminanceDetector",
-      "resolution": [
-        "296",
-        1
-      ],
-      "image": [
-        "198",
-        0
-      ]
+      "resolution": ["296", 1],
+      "image": ["198", 0]
     },
     "class_type": "AIO_Preprocessor",
     "_meta": {
@@ -684,10 +486,7 @@
   "332": {
     "inputs": {
       "channel": "red",
-      "image": [
-        "192",
-        0
-      ]
+      "image": ["192", 0]
     },
     "class_type": "ImageToMask",
     "_meta": {
@@ -706,14 +505,8 @@
   "334": {
     "inputs": {
       "expression": "a*b",
-      "a": [
-        "333",
-        0
-      ],
-      "b": [
-        "296",
-        0
-      ]
+      "a": ["333", 0],
+      "b": ["296", 0]
     },
     "class_type": "Eden_Math",
     "_meta": {
@@ -724,10 +517,7 @@
     "inputs": {
       "min": 0,
       "max": 1,
-      "mask": [
-        "349",
-        1
-      ]
+      "mask": ["349", 1]
     },
     "class_type": "RemapMaskRange",
     "_meta": {
@@ -740,17 +530,11 @@
       "incremental_expandrate": 0,
       "tapered_corners": true,
       "flip_input": false,
-      "blur_radius": [
-        "334",
-        0
-      ],
+      "blur_radius": ["334", 0],
       "lerp_alpha": 1,
       "decay_factor": 1,
       "fill_holes": false,
-      "mask": [
-        "332",
-        0
-      ]
+      "mask": ["332", 0]
     },
     "class_type": "GrowMaskWithBlur",
     "_meta": {
@@ -759,7 +543,7 @@
   },
   "340": {
     "inputs": {
-      "seed": 921416308138985
+      "seed": 802477489155231
     },
     "class_type": "Eden_Seed",
     "_meta": {
@@ -774,18 +558,9 @@
       "lower_clamp": 6,
       "upper_clamp": 94,
       "gamma": 0.75,
-      "mask_a": [
-        "278",
-        0
-      ],
-      "mask_b": [
-        "335",
-        0
-      ],
-      "mask_c": [
-        "298",
-        0
-      ]
+      "mask_a": ["278", 0],
+      "mask_b": ["335", 0],
+      "mask_c": ["298", 0]
     },
     "class_type": "Eden_MaskCombiner",
     "_meta": {
@@ -796,10 +571,7 @@
     "inputs": {
       "expression": "1 / (1 + exp(-7 * (a - 0.5)))",
       "conversion_mode": "mean",
-      "a": [
-        "339",
-        0
-      ]
+      "a": ["339", 0]
     },
     "class_type": "Eden_Image_Math",
     "_meta": {
@@ -817,18 +589,9 @@
   },
   "351": {
     "inputs": {
-      "boolean": [
-        "352",
-        0
-      ],
-      "on_true": [
-        "309",
-        0
-      ],
-      "on_false": [
-        "170",
-        0
-      ]
+      "boolean": ["352", 0],
+      "on_true": ["309", 0],
+      "on_false": ["170", 0]
     },
     "class_type": "Switch any [Crystools]",
     "_meta": {
@@ -838,14 +601,8 @@
   "352": {
     "inputs": {
       "comparison": "a > b",
-      "a": [
-        "312",
-        1
-      ],
-      "b": [
-        "353",
-        0
-      ]
+      "a": ["312", 1],
+      "b": ["353", 0]
     },
     "class_type": "Eden_Compare",
     "_meta": {
@@ -863,15 +620,9 @@
   },
   "354": {
     "inputs": {
-      "min": [
-        "369",
-        0
-      ],
+      "min": ["369", 0],
       "max": 1,
-      "mask": [
-        "347",
-        0
-      ]
+      "mask": ["347", 0]
     },
     "class_type": "RemapMaskRange",
     "_meta": {
@@ -893,17 +644,11 @@
       "incremental_expandrate": 0,
       "tapered_corners": true,
       "flip_input": false,
-      "blur_radius": [
-        "366",
-        0
-      ],
+      "blur_radius": ["366", 0],
       "lerp_alpha": 1,
       "decay_factor": 1,
       "fill_holes": false,
-      "mask": [
-        "354",
-        0
-      ]
+      "mask": ["354", 0]
     },
     "class_type": "GrowMaskWithBlur",
     "_meta": {
@@ -913,14 +658,8 @@
   "366": {
     "inputs": {
       "expression": "a*b",
-      "a": [
-        "367",
-        0
-      ],
-      "b": [
-        "296",
-        0
-      ]
+      "a": ["367", 0],
+      "b": ["296", 0]
     },
     "class_type": "Eden_Math",
     "_meta": {
@@ -948,14 +687,8 @@
   "369": {
     "inputs": {
       "expression": "a/b",
-      "a": [
-        "368",
-        0
-      ],
-      "b": [
-        "355",
-        0
-      ]
+      "a": ["368", 0],
+      "b": ["355", 0]
     },
     "class_type": "Eden_Math",
     "_meta": {
@@ -982,10 +715,7 @@
   },
   "377": {
     "inputs": {
-      "a": [
-        "376",
-        0
-      ]
+      "a": ["376", 0]
     },
     "class_type": "Eden_FloatToInt",
     "_meta": {
@@ -994,10 +724,7 @@
   },
   "378": {
     "inputs": {
-      "frame_rate": [
-        "379",
-        0
-      ],
+      "frame_rate": ["379", 0],
       "loop_count": 0,
       "filename_prefix": "Result",
       "format": "video/h264-mp4",
@@ -1009,14 +736,8 @@
       "s3_prefix": "uploads",
       "s3_bucket": "emprops-share",
       "use_s3_upload": true,
-      "images": [
-        "351",
-        0
-      ],
-      "audio": [
-        "179",
-        2
-      ]
+      "images": ["351", 0],
+      "audio": ["179", 2]
     },
     "class_type": "VHS_VideoCombine",
     "_meta": {
@@ -1025,14 +746,24 @@
   },
   "379": {
     "inputs": {
-      "a": [
-        "350",
-        0
-      ]
+      "a": ["350", 0]
     },
     "class_type": "Eden_FloatToInt",
     "_meta": {
       "title": "Eden_FloatToInt"
+    }
+  },
+  "380": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "example.png",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/18d1b33b-9378-4f5a-953d-2435c843a20a/0/42152/txt2img-comfy.png"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
     }
   }
 }

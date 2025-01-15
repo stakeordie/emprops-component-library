@@ -14,14 +14,14 @@
     }
   },
   "179": {
-    "video": {
+    "url": {
       "value": "video",
       "type": "asset",
       "is_required": true
     }
   },
-  "252": {
-    "image": {
+  "380": {
+    "url": {
       "value": "image",
       "type": "asset",
       "is_required": true

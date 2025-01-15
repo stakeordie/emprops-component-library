@@ -37,8 +37,8 @@
       "default": 0.7
     }
   },
-  "38": {
-    "image": {
+  "44": {
+    "url": {
       "value": "image",
       "is_required": true
     }

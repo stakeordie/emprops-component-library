@@ -1,14 +1,8 @@
 {
   "8": {
     "inputs": {
-      "samples": [
-        "36",
-        0
-      ],
-      "vae": [
-        "14",
-        2
-      ]
+      "samples": ["36", 0],
+      "vae": ["14", 2]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -26,54 +20,26 @@
   },
   "36": {
     "inputs": {
-      "seed": 346938948944188,
+      "seed": 605194069621202,
       "steps": 25,
       "cfg": 1,
       "sampler_name": "dpmpp_2m",
       "scheduler": "ddim_uniform",
       "denoise": 0.7000000000000001,
-      "model": [
-        "14",
-        0
-      ],
-      "positive": [
-        "41",
-        0
-      ],
-      "negative": [
-        "42",
-        0
-      ],
-      "latent_image": [
-        "39",
-        0
-      ]
+      "model": ["14", 0],
+      "positive": ["41", 0],
+      "negative": ["42", 0],
+      "latent_image": ["39", 0]
     },
     "class_type": "KSampler",
     "_meta": {
       "title": "KSampler"
     }
   },
-  "38": {
-    "inputs": {
-      "image": "stada.jpg",
-      "upload": "image"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
-    }
-  },
   "39": {
     "inputs": {
-      "pixels": [
-        "40",
-        0
-      ],
-      "vae": [
-        "14",
-        2
-      ]
+      "pixels": ["40", 0],
+      "vae": ["14", 2]
     },
     "class_type": "VAEEncode",
     "_meta": {
@@ -86,10 +52,7 @@
       "width": 1024,
       "height": 1024,
       "crop": "center",
-      "image": [
-        "38",
-        0
-      ]
+      "image": ["44", 0]
     },
     "class_type": "ImageScale",
     "_meta": {
@@ -99,10 +62,7 @@
   "41": {
     "inputs": {
       "text": "a dog in a car",
-      "clip": [
-        "14",
-        1
-      ]
+      "clip": ["14", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -112,10 +72,7 @@
   "42": {
     "inputs": {
       "text": "test",
-      "clip": [
-        "14",
-        1
-      ]
+      "clip": ["14", 1]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -127,14 +84,24 @@
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": [
-        "8",
-        0
-      ]
+      "images": ["8", 0]
     },
     "class_type": "EmProps_S3_Saver",
     "_meta": {
       "title": "Save to S3 (EmProps)"
+    }
+  },
+  "44": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "example.png",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/18d1b33b-9378-4f5a-953d-2435c843a20a/0/42152/txt2img-comfy.png"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
     }
   }
 }
