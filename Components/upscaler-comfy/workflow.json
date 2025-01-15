@@ -6,7 +6,7 @@
         0
       ],
       "image": [
-        "100",
+        "106",
         0
       ]
     },
@@ -22,16 +22,6 @@
     "class_type": "UpscaleModelLoader",
     "_meta": {
       "title": "Load Upscale Model"
-    }
-  },
-  "100": {
-    "inputs": {
-      "image": "upscaler-comf.png",
-      "upload": "image"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
     }
   },
   "104": {
@@ -61,6 +51,19 @@
     "class_type": "EmProps_S3_Saver",
     "_meta": {
       "title": "Save to S3 (EmProps)"
+    }
+  },
+  "106": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "example.png",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/f89302ed-7cab-4fc0-b009-7d6e386c7d57/0/42154/txt2img-flux.png"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
     }
   }
 }
