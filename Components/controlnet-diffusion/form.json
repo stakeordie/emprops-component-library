@@ -1,6 +1,6 @@
 {
   "config": {
-    "groupOrder": ["main", "advanced"],
+    "groupOrder": ["basic", "advanced"],
     "maxNumberOfGenerations": 1,
     "componentGroup": "image"
   },
@@ -12,14 +12,27 @@
       "default": "cannyv2",
       "conf_file": "controlnet_types.json",
       "display": true,
-      "group": ["main", "advanced"]
+      "group": ["basic", "advanced"]
     },
     {
       "id": "controlnet_image",
       "name": "Controlnet Image",
       "type": "image_loader",
       "display": true,
-      "group": ["main", "advanced"]
+      "group": ["basic", "advanced"]
+    },
+    {
+      "id": "denoising",
+      "name": "Denoising Strength",
+      "type": "slider",
+      "default": 0.35,
+      "constraints": {
+        "min": 0,
+        "max": 1,
+        "step": 0.001
+      },
+      "display": true,
+      "group": ["basic", "advanced"]
     },
     {
       "id": "use_style_image",
@@ -43,26 +56,13 @@
       "type": "prompt_editor",
       "default": "",
       "display": true,
-      "group": ["main", "advanced"]
+      "group": ["basic", "advanced"]
     },
     {
       "id": "negative_prompt",
       "name": "Negative Prompt",
       "type": "prompt_editor",
       "default": "",
-      "display": true,
-      "group": ["advanced"]
-    },
-    {
-      "id": "denoising",
-      "name": "Denoising Strength",
-      "type": "slider",
-      "default": 0.35,
-      "constraints": {
-        "min": 0,
-        "max": 1,
-        "step": 0.001
-      },
       "display": true,
       "group": ["advanced"]
     }
