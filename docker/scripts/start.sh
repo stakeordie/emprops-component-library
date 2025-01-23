@@ -560,6 +560,8 @@ setup_nginx_auth() {
 
 setup_comfyui() {
     log "Setting up ComfyUI..."
+
+    pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python-headless opencv-contrib-python && pip install opencv-python opencv-python-headless opencv-contrib-python-headless && pip install opencv-contrib-python
         
     # Add --cpu flag in test mode
     if [ "${MOCK_GPU:-0}" -eq 1 ]; then
