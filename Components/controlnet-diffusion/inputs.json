@@ -2,60 +2,54 @@
   "421": {
     "url": {
       "value": "controlnet_image",
-      "type": "asset",
-      "required": true
+      "is_required": true
     }
   },
   "27": {
     "seed": {
       "value": "seed",
-      "required": true
+      "is_required": true
     }
   },
   "33": {
     "value": {
       "value": "negative_prompt",
-      "type": "prompt",
       "default": "embedding:negativeXL_D, (worst quality, low quality, normal quality:1.5)",
-      "required": false
+      "is_required": false
     }
   },
   "35": {
     "bool": {
       "value": "use_style_image",
-      "type": "boolean",
       "default": true,
-      "required": false
+      "is_required": false
     }
   },
   "420": {
     "url": {
       "value": "style_image",
-      "type": "asset",
-      "required": false
+      "is_required": false
     }
   },
   "283": {
     "select_item": {
       "value": "controlnet_type",
-      "type": "text",
       "default": "cannyv2",
-      "required": false
+      "is_required": false
     }
   },
   "370": {
     "body": {
       "value": "prompt",
-      "type": "prompt",
       "default": "",
-      "required": false
+      "is_required": false
     }
   },
   "417": {
     "value": {
       "value": "denoising",
       "default": 0.5,
-      "required": false
+      "is_required": false
     }
   },
   "419": {
