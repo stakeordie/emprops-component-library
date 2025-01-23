@@ -85,6 +85,13 @@ RUN chmod +x /etc/init.d/comfyui && \
 COPY ./scripts/mgpu /usr/local/bin/mgpu
 RUN chmod +x /usr/local/bin/mgpu
 
+RUN mkdir -p /usr/local/lib/mcomfy
+COPY ./scripts/mcomfy /usr/local/bin/mcomfy
+RUN chmod +x /usr/local/bin/mcomfy
+
+COPY ./scripts/update_nodes.sh /usr/local/lib/mcomfy/update_nodes.sh
+RUN chmod +x /usr/local/lib/mcomfy/update_nodes.sh
+
 # Copy startup script
 COPY scripts/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh

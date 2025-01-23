@@ -375,7 +375,9 @@ setup_preinstalled_nodes() {
     fi
 }
 
-s3_sync() {
+sync_models() {
+    log "=== Starting model sync process ==="
+    
     # Determine which bucket to use based on AWS_TEST_MODE
     local bucket="emprops-share"
     if [ "${AWS_TEST_MODE:-false}" = "true" ]; then
@@ -386,109 +388,161 @@ s3_sync() {
     fi
 
     # Sync models and configs from S3
-    echo "Syncing from s3://$bucket..."
-    log "Syncing from s3://$bucket..."
+    log "Starting sync from s3://$bucket to /workspace/shared..."
     if [ "${SKIP_AWS_SYNC:-false}" = "true" ]; then
         log "Skipping AWS S3 sync (SKIP_AWS_SYNC=true)"
     else
-        aws s3 sync "s3://$bucket" /workspace/shared --size-only 2>&1 | tee -a "${START_LOG}"
+        log "Running AWS S3 sync command..."
+        aws s3 sync "s3://$bucket" /workspace/shared --size-only --exclude "custom_nodes/*" 2>&1 | tee -a "${START_LOG}"
+        local sync_status=$?
+        if [ $sync_status -eq 0 ]; then
+            log "SUCCESS: AWS S3 sync completed successfully"
+        else
+            log "ERROR: AWS S3 sync failed with status $sync_status"
+            return 1
+        fi
     fi
+    
+    log "=== Model sync process complete ==="
+}
 
-    # Install custom nodes from config
-    log "Installing custom nodes..."
+manage_custom_nodes() {
+    log "=== Starting custom node management ==="
 
     # Determine which config file to use
     local config_file="/workspace/shared/config_nodes.json"
-
     if [ "${AWS_TEST_MODE:-false}" = "true" ]; then
         log "Using test config: config_nodes_test.json"
         config_file="/workspace/shared/config_nodes_test.json"
     fi
 
-    if [ -f "$config_file" ]; then
-        cd /workspace/shared/custom_nodes
-        for node in $(jq -r '.custom_nodes[] | @base64' "$config_file"); do
-            _jq() {
-                echo "${node}" | base64 --decode | jq -r "${1}"
-            }
+    log "Using config file: $config_file"
+    
+    if [ ! -f "$config_file" ]; then
+        log "ERROR: Config file $config_file not found"
+        return 1
+    fi
+
+    log "Validating config file format..."
+    if ! jq empty "$config_file" 2>/dev/null; then
+        log "ERROR: Invalid JSON in config file"
+        return 1
+    fi
+
+    cd /workspace/shared/custom_nodes || {
+        log "ERROR: Failed to change to custom_nodes directory"
+        return 1
+    }
+
+    log "Processing custom nodes from config..."
+    for node in $(jq -r '.custom_nodes[] | @base64' "$config_file"); do
+        _jq() {
+            echo "${node}" | base64 --decode | jq -r "${1}"
+        }
+        
+        name=$(_jq '.name')
+        url=$(_jq '.url')
+        branch=$(_jq '.branch')
+        commit=$(_jq '.commit // empty')
+        install_reqs=$(_jq '.requirements')
+        recursive=$(_jq '.recursive')
+        env_vars=$(_jq '.env')
+        
+        if [ "$name" != "null" ] && [ "$url" != "null" ]; then
+            log "Processing node: $name"
+            log "  URL: $url"
+            log "  Branch: ${branch:-default}"
+            log "  Commit: ${commit:-latest}"
             
-            name=$(_jq '.name')
-            url=$(_jq '.url')
-            branch=$(_jq '.branch')
-            commit=$(_jq '.commit // empty')
-            install_reqs=$(_jq '.requirements')
-            recursive=$(_jq '.recursive')
-            env_vars=$(_jq '.env')
-            
-            if [ "$name" != "null" ] && [ "$url" != "null" ]; then
-                log "Processing node: $name"
-                log "Debug - Branch value: '$branch'"
-                log "Debug - URL value: '$url'"
+            # Clone if directory doesn't exist
+            if [ ! -d "$name" ]; then
+                log "  Cloning new node: $name"
                 
-                # Clone if directory doesn't exist
-                if [ ! -d "$name" ]; then
-                    log "Cloning node: $name"
-                    
-                    # Build git clone command
-                    clone_cmd="git clone"
-                    if [ "$recursive" = "true" ]; then
-                        log "Using recursive clone for $name"
-                        clone_cmd="$clone_cmd --recursive"
-                    fi
-                    
-                    if [ "$branch" != "null" ] && [ ! -z "$branch" ]; then
-                        log "Cloning branch: $branch"
-                        $clone_cmd -b "$branch" "$url" "$name" || {
-                            log "ERROR: Failed to clone branch $branch"
-                            return 1
-                        }
-                    else
-                        log "No branch specified, cloning default branch"
-                        $clone_cmd "$url" "$name"
-                    fi
+                # Build git clone command
+                clone_cmd="git clone"
+                if [ "$recursive" = "true" ]; then
+                    log "  Using recursive clone"
+                    clone_cmd="$clone_cmd --recursive"
                 fi
                 
-                # If specific commit is requested, reset to it
-                if [ ! -z "$commit" ]; then
-                    cd "$name"
-                    git reset --hard "$commit"
-                    cd ..
-                fi
-                
-                # After repository is cloned/updated, handle .env file
-                if [ "$env_vars" != "null" ] && [ ! -z "$env_vars" ]; then
-                    log "Setting up .env file for $name"
-                    # Create or truncate .env file
-                    : > "$name/.env"
-                    
-                    # Process each environment variable
-                    while IFS="=" read -r key value; do
-                        if [ ! -z "$key" ]; then
-                            # Expand any environment variables in the value
-                            expanded_value=$(eval echo "$value")
-                            echo "$key=$expanded_value" >> "$name/.env"
-                            log "Added $key to $name/.env"
-                        fi
-                    done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
-                fi
-                
-                # Install requirements if specified
-                if [ "$install_reqs" = "true" ]; then
-                    cd "$name"
-                    if [ -f "requirements.txt" ]; then
-                        log "Installing requirements for $name using uv..."
-                        uv pip install --system -r requirements.txt || {
-                            log "WARNING: Failed to install requirements with uv for $name, falling back to pip..."
-                            pip install -r requirements.txt
-                        }
-                    else
-                        log "No requirements.txt found for $name"
-                    fi
-                    cd ..
+                if [ "$branch" != "null" ] && [ ! -z "$branch" ]; then
+                    log "  Cloning specific branch: $branch"
+                    $clone_cmd -b "$branch" "$url" "$name" || {
+                        log "ERROR: Failed to clone branch $branch for $name"
+                        continue
+                    }
+                else
+                    log "  Cloning default branch"
+                    $clone_cmd "$url" "$name" || {
+                        log "ERROR: Failed to clone default branch for $name"
+                        continue
+                    }
                 fi
             fi
-        done
+            
+            # Handle specific commit if specified
+            if [ ! -z "$commit" ]; then
+                log "  Resetting to specific commit: $commit"
+                (cd "$name" && git reset --hard "$commit") || {
+                    log "ERROR: Failed to reset to commit $commit for $name"
+                    continue
+                }
+            fi
+            
+            # Handle environment variables
+            if [ "$env_vars" != "null" ] && [ ! -z "$env_vars" ]; then
+                log "  Setting up .env file"
+                : > "$name/.env"
+                
+                while IFS="=" read -r key value; do
+                    if [ ! -z "$key" ]; then
+                        expanded_value=$(eval echo "$value")
+                        echo "$key=$expanded_value" >> "$name/.env"
+                        log "    Added env var: $key"
+                    fi
+                done < <(echo "$env_vars" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"')
+            fi
+            
+            # Handle requirements installation
+            if [ "$install_reqs" = "true" ]; then
+                if [ -f "$name/requirements.txt" ]; then
+                    log "  Installing requirements using uv..."
+                    (cd "$name" && uv pip install --system -r requirements.txt) || {
+                        log "WARNING: uv install failed, falling back to pip..."
+                        (cd "$name" && pip install -r requirements.txt) || {
+                            log "ERROR: Failed to install requirements for $name"
+                            continue
+                        }
+                    }
+                    log "  Requirements installed successfully"
+                else
+                    log "  No requirements.txt found"
+                fi
+            fi
+            
+            log "  Node $name processed successfully"
+        fi
+    done
+    
+    log "=== Custom node management complete ==="
+}
+
+s3_sync() {
+    log "=== Starting combined sync process ==="
+    
+    # First sync models
+    if ! sync_models; then
+        log "ERROR: Model sync failed"
+        return 1
     fi
+    
+    # Then manage custom nodes
+    if ! manage_custom_nodes; then
+        log "ERROR: Custom node management failed"
+        return 1
+    fi
+    
+    log "=== Combined sync process complete ==="
 }
 
 setup_nginx() {

@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Enable debug mode if DEBUG is set
+if [ "${DEBUG:-}" = "true" ]; then
+    set -x
+fi
+
+# Update nodes script location
+UPDATE_SCRIPT="/usr/local/lib/mcomfy/update_nodes.sh"
+
+usage() {
+    echo "Usage: mcomfy <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  nodes     Manage custom nodes (update, install, remove)"
+    echo "  models    Sync models from S3"
+    echo "  help      Show this help message"
+    echo ""
+    echo "Options:"
+    echo "  -t, --test    Use test configuration (config_nodes_test.json) and skip AWS sync"
+    echo "  -d, --debug   Enable debug mode"
+    echo ""
+    echo "Examples:"
+    echo "  mcomfy nodes              # Update nodes using production config"
+    echo "  mcomfy nodes -t           # Update nodes using test config"
+    echo "  mcomfy models             # Sync models from S3"
+    echo "  mcomfy models -t          # Test model sync (skips actual sync)"
+    echo ""
+    exit 1
+}
+
+# Parse command line arguments
+COMMAND=""
+TEST_MODE=false
+DEBUG=false
+
+# Default to production mode
+export AWS_TEST_MODE=false
+export SKIP_AWS_SYNC=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        nodes|models|help)
+            COMMAND="$1"
+            shift
+            ;;
+        -t|--test)
+            TEST_MODE=true
+            export AWS_TEST_MODE=true
+            export SKIP_AWS_SYNC=true
+            shift
+            ;;
+        -d|--debug)
+            DEBUG=true
+            export DEBUG=true
+            shift
+            ;;
+        *)
+            echo "Error: Unknown argument '$1'"
+            usage
+            ;;
+    esac
+done
+
+# If no command specified, show help
+if [ -z "$COMMAND" ]; then
+    usage
+fi
+
+# Check if update script exists
+if [ ! -f "$UPDATE_SCRIPT" ]; then
+    echo "Error: Update script not found at $UPDATE_SCRIPT"
+    exit 1
+fi
+
+# Main command processing
+case "$COMMAND" in
+    nodes)
+        exec "$UPDATE_SCRIPT" --nodes-only
+        ;;
+    models)
+        exec "$UPDATE_SCRIPT" --models-only
+        ;;
+    help|--help|-h)
+        usage
+        ;;
+    *)
+        echo "Error: Unknown command '$COMMAND'"
+        usage
+        ;;
+esac
