@@ -97,7 +97,7 @@
       "constraints": {
         "min": 1,
         "max": 60,
-        "step": 20
+        "step": 1
       },
       "display": true,
       "group": ["main", "advanced"]
