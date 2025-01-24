@@ -1,8 +1,8 @@
 function computeCost(context) {
-  // =FLOOR((((T10/T9)^2)/8)+2+(T10/1000),1)
-  // const { steps, output_size, tile_size } = context;
-  // const stepsCost = 1 + steps - 20 < 0 ? 1 : 1 + (steps - 20) * 0.1;
-  // return { cost: stepsCost };
-  return { cost: 1 };
-  // 
+  const outputSize = context.output_size; // T10
+  const tileSize = context.tile_size; // T9
+  const cost = Math.floor(
+    Math.pow(outputSize / tileSize, 2) / 8 + 2 + outputSize / 1000
+  );
+  return { cost };
 }
