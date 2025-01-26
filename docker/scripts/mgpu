@@ -370,6 +370,24 @@ setup_gpu() {
     fi
     
     log "Setup complete for ${gpu_id}"
+
+    
+    # Handle workflows directory
+    if [ -d "${target_dir}/user/default/workflows" ]; then
+        log "Removing existing workflows directory..."
+        rm -rf "${target_dir}/user/default/workflows"
+    fi
+    
+    if [ ! -d "${target_dir}/user/default" ]; then
+        log "Creating user/default directory..."
+        mkdir -p "${target_dir}/user/default"
+    fi
+    
+    if [ ! -L "${target_dir}/user/default/workflows" ]; then
+        log "Symlinking workflows directory..."
+        ln -s "/workspace/shared/workflows" "${target_dir}/user/default/workflows"
+    fi
+    
     return 0
 }
 

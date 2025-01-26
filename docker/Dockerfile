@@ -2,7 +2,7 @@
 FROM pytorch/pytorch:latest AS start
 
 RUN apt update && apt-get install -y \
-    git git-lfs rsync nginx wget curl nano net-tools lsof nvtop multitail ffmpeg libsm6 libxext6 \
+    git git-lfs rsync nginx wget curl nano net-tools lsof nvtop multitail ffmpeg libsm6 libxext6\
     cron sudo ssh zstd jq build-essential cmake ninja-build \
     gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
@@ -11,6 +11,7 @@ RUN apt update && apt-get install -y \
 
 RUN apt update && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
     && apt install -y gcc-11 g++-11 libstdc++6 \
+    && apt-get install -y locales \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

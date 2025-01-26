@@ -15,8 +15,11 @@ PATH=/usr/local/bin:$PATH
 
 echo "AFTER PATH: $PATH"
 
+locale-gen en_US.UTF-8
+
 # Add at the top of the file with other env vars
 COMFY_AUTH=""
+update-locale LANG=en_US.UTF-8
 
 # Ensure base directories exist
 mkdir -p "$LOG_DIR" "${ROOT}/shared"
