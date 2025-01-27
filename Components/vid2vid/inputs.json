@@ -40,5 +40,11 @@
       "value": "filename",
       "is_required": false
     }
+  },
+  "340": {
+    "seed": {
+      "value": "seed",
+      "is_required": true
+    }
   }
 }
