@@ -40,3 +40,13 @@ services:
     build:
       args:
         COMFY_REPO_URL: https://github.com/stakeordie/ComfyUI.git
+
+  comfyui-fork-devel:
+    <<: *base-service
+    container_name: comfy-fork-devel
+    image: emprops/comfy-fork-devel:latest
+    environment:
+      - COMFY_REPO_URL=https://github.com/stakeordie/ComfyUI.git
+    build:
+      args:
+        COMFY_REPO_URL: https://github.com/stakeordie/ComfyUI.git

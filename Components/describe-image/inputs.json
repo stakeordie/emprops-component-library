@@ -1,0 +1,14 @@
+{
+ "654": {
+    "seed": {
+      "value": "seed",
+      "is_required": true
+    }
+  },
+  "44": {
+    "url": {
+      "value": "image",
+      "is_required": true
+    }
+  }
+}

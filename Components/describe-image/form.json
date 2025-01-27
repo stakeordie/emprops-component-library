@@ -1,0 +1,17 @@
+{
+  "config": {
+    "groupOrder": ["main"],
+    "maxNumberOfGenerations": 20,
+    "componentGroup": "text"
+  },
+  "fields": [
+    {
+      "id": "image",
+      "name": "Image",
+      "type": "image_loader",
+      "default": "",
+      "display": true,
+      "group": ["main"]
+    }
+  ]
+}
