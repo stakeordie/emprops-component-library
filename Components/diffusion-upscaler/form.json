@@ -6,6 +6,20 @@
   },
   "fields": [
     {
+      "id": "seed",
+      "name": "Seed",
+      "type": "optional_input",
+      "display": true,
+      "group": "advanced",
+      "default": "0",
+      "type": "number",
+      "constraints": {
+        "min": 0,
+        "max": 1000000,
+        "step": 1
+      }
+    },
+    {
       "id": "image",
       "name": "Image",
       "type": "image_loader",
