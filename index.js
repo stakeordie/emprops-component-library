@@ -31,7 +31,10 @@ async function fetchGetComponent(config, name) {
     }
     return response.json(); // API already returns { data, error } structure
   } catch (error) {
-    return { data: null, error: `Failed to fetch component ${name}: ${error.message}` };
+    return {
+      data: null,
+      error: `Failed to fetch component ${name}: ${error.message}`,
+    };
   }
 }
 

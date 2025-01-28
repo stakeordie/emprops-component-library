@@ -13,10 +13,7 @@
   "6": {
     "inputs": {
       "text": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque backgroungd",
-      "clip": [
-        "11",
-        0
-      ]
+      "clip": ["11", 0]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -25,14 +22,8 @@
   },
   "8": {
     "inputs": {
-      "samples": [
-        "28:3",
-        0
-      ],
-      "vae": [
-        "10",
-        0
-      ]
+      "samples": ["28:3", 0],
+      "vae": ["10", 0]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -71,14 +62,8 @@
   },
   "25": {
     "inputs": {
-      "model": [
-        "12",
-        0
-      ],
-      "conditioning": [
-        "6",
-        0
-      ]
+      "model": ["12", 0],
+      "conditioning": ["6", 0]
     },
     "class_type": "BasicGuider",
     "_meta": {
@@ -90,10 +75,7 @@
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": [
-        "8",
-        0
-      ]
+      "images": ["8", 0]
     },
     "class_type": "EmProps_S3_Saver",
     "_meta": {
@@ -123,10 +105,7 @@
       "scheduler": "simple",
       "steps": 8,
       "denoise": 1,
-      "model": [
-        "12",
-        0
-      ]
+      "model": ["12", 0]
     },
     "class_type": "BasicScheduler",
     "_meta": {
@@ -135,26 +114,11 @@
   },
   "28:3": {
     "inputs": {
-      "noise": [
-        "28:0",
-        0
-      ],
-      "guider": [
-        "25",
-        0
-      ],
-      "sampler": [
-        "28:1",
-        0
-      ],
-      "sigmas": [
-        "28:2",
-        0
-      ],
-      "latent_image": [
-        "5",
-        0
-      ]
+      "noise": ["28:0", 0],
+      "guider": ["25", 0],
+      "sampler": ["28:1", 0],
+      "sigmas": ["28:2", 0],
+      "latent_image": ["5", 0]
     },
     "class_type": "SamplerCustomAdvanced",
     "_meta": {

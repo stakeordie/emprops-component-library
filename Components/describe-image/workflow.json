@@ -31,14 +31,8 @@
       "do_sample": true,
       "output_mask_select": "",
       "seed": 708763501026308,
-      "image": [
-        "556",
-        0
-      ],
-      "florence2_model": [
-        "650",
-        0
-      ]
+      "image": ["556", 0],
+      "florence2_model": ["650", 0]
     },
     "class_type": "Florence2Run",
     "_meta": {
@@ -47,10 +41,7 @@
   },
   "659": {
     "inputs": {
-      "text": [
-        "654",
-        2
-      ],
+      "text": ["654", 2],
       "text2": "The image shows an art gallery with four white glass cases arranged in a row. The cases are filled with different types of objects, including a black and white cow, a large rock, and a smaller rock. The room has a wooden floor and white walls, and there is a large window on the left side of the image that lets in natural light. The ceiling is high and has a chandelier hanging from it. The overall atmosphere of the gallery is bright and airy."
     },
     "class_type": "ShowText|pysssss",

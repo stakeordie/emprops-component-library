@@ -11,10 +11,10 @@
       "type": "optional_input",
       "display": true,
       "group": "advanced",
-      "type": "number",
+      "input_type": "number",
       "constraints": {
         "min": 0,
-        "max": 1000000,
+        "max": 999999,
         "step": 1
       }
     },

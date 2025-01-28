@@ -1,14 +1,8 @@
 {
   "67": {
     "inputs": {
-      "upscale_model": [
-        "68",
-        0
-      ],
-      "image": [
-        "106",
-        0
-      ]
+      "upscale_model": ["68", 0],
+      "image": ["106", 0]
     },
     "class_type": "ImageUpscaleWithModel",
     "_meta": {
@@ -28,10 +22,7 @@
     "inputs": {
       "upscale_method": "nearest-exact",
       "scale_by": 4,
-      "image": [
-        "67",
-        0
-      ]
+      "image": ["67", 0]
     },
     "class_type": "ImageScaleBy",
     "_meta": {
@@ -43,10 +34,7 @@
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": [
-        "104",
-        0
-      ]
+      "images": ["104", 0]
     },
     "class_type": "EmProps_S3_Saver",
     "_meta": {
