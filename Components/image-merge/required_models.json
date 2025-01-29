@@ -4,7 +4,7 @@
     "style_models": ["flux1-redux-dev.safetensors"],
     "unet": ["flux1-dev-fp8.safetensors"],
     "clip_vision": ["sigclip_vision_patch14_384.safetensors"],
-    "clip": ["clip_l.safetensors","t5xxl_fp16.safetensors"]
+    "clip": ["clip_l.safetensors", "t5xxl_fp16.safetensors"]
   },
   "dynamic": {}
 }

@@ -2,10 +2,7 @@
   "6": {
     "inputs": {
       "text": "",
-      "clip": [
-        "11",
-        0
-      ]
+      "clip": ["11", 0]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -14,14 +11,8 @@
   },
   "8": {
     "inputs": {
-      "samples": [
-        "13",
-        0
-      ],
-      "vae": [
-        "10",
-        0
-      ]
+      "samples": ["13", 0],
+      "vae": ["10", 0]
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -60,26 +51,11 @@
   },
   "13": {
     "inputs": {
-      "noise": [
-        "25",
-        0
-      ],
-      "guider": [
-        "22",
-        0
-      ],
-      "sampler": [
-        "16",
-        0
-      ],
-      "sigmas": [
-        "17",
-        0
-      ],
-      "latent_image": [
-        "27",
-        0
-      ]
+      "noise": ["25", 0],
+      "guider": ["22", 0],
+      "sampler": ["16", 0],
+      "sigmas": ["17", 0],
+      "latent_image": ["27", 0]
     },
     "class_type": "SamplerCustomAdvanced",
     "_meta": {
@@ -100,10 +76,7 @@
       "scheduler": "simple",
       "steps": 20,
       "denoise": 1,
-      "model": [
-        "30",
-        0
-      ]
+      "model": ["30", 0]
     },
     "class_type": "BasicScheduler",
     "_meta": {
@@ -112,14 +85,8 @@
   },
   "22": {
     "inputs": {
-      "model": [
-        "30",
-        0
-      ],
-      "conditioning": [
-        "45",
-        0
-      ]
+      "model": ["30", 0],
+      "conditioning": ["45", 0]
     },
     "class_type": "BasicGuider",
     "_meta": {
@@ -138,10 +105,7 @@
   "26": {
     "inputs": {
       "guidance": 3.5,
-      "conditioning": [
-        "6",
-        0
-      ]
+      "conditioning": ["6", 0]
     },
     "class_type": "FluxGuidance",
     "_meta": {
@@ -165,10 +129,7 @@
       "base_shift": 0.5,
       "width": 1024,
       "height": 1024,
-      "model": [
-        "12",
-        0
-      ]
+      "model": ["12", 0]
     },
     "class_type": "ModelSamplingFlux",
     "_meta": {
@@ -187,14 +148,8 @@
   "39": {
     "inputs": {
       "crop": "center",
-      "clip_vision": [
-        "38",
-        0
-      ],
-      "image": [
-        "56",
-        0
-      ]
+      "clip_vision": ["38", 0],
+      "image": ["56", 0]
     },
     "class_type": "CLIPVisionEncode",
     "_meta": {
@@ -205,18 +160,9 @@
     "inputs": {
       "strength": 1,
       "strength_type": "multiply",
-      "conditioning": [
-        "26",
-        0
-      ],
-      "style_model": [
-        "42",
-        0
-      ],
-      "clip_vision_output": [
-        "39",
-        0
-      ]
+      "conditioning": ["26", 0],
+      "style_model": ["42", 0],
+      "clip_vision_output": ["39", 0]
     },
     "class_type": "StyleModelApply",
     "_meta": {
@@ -245,18 +191,9 @@
     "inputs": {
       "strength": 1,
       "strength_type": "multiply",
-      "conditioning": [
-        "41",
-        0
-      ],
-      "style_model": [
-        "46",
-        0
-      ],
-      "clip_vision_output": [
-        "47",
-        0
-      ]
+      "conditioning": ["41", 0],
+      "style_model": ["46", 0],
+      "clip_vision_output": ["47", 0]
     },
     "class_type": "StyleModelApply",
     "_meta": {
@@ -275,14 +212,8 @@
   "47": {
     "inputs": {
       "crop": "center",
-      "clip_vision": [
-        "44",
-        0
-      ],
-      "image": [
-        "60",
-        0
-      ]
+      "clip_vision": ["44", 0],
+      "image": ["60", 0]
     },
     "class_type": "CLIPVisionEncode",
     "_meta": {
@@ -317,10 +248,7 @@
   },
   "62": {
     "inputs": {
-      "images": [
-        "8",
-        0
-      ]
+      "images": ["8", 0]
     },
     "class_type": "PreviewImage",
     "_meta": {
@@ -332,10 +260,7 @@
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": [
-        "8",
-        0
-      ]
+      "images": ["8", 0]
     },
     "class_type": "EmProps_S3_Saver",
     "_meta": {

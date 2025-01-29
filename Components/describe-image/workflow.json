@@ -21,14 +21,8 @@
       "do_sample": true,
       "output_mask_select": "",
       "seed": 235863532981602,
-      "image": [
-        "661",
-        0
-      ],
-      "florence2_model": [
-        "650",
-        0
-      ]
+      "image": ["661", 0],
+      "florence2_model": ["650", 0]
     },
     "class_type": "Florence2Run",
     "_meta": {
@@ -37,10 +31,7 @@
   },
   "659": {
     "inputs": {
-      "text": [
-        "654",
-        2
-      ],
+      "text": ["654", 2],
       "text2": "The image is a close-up of a woman's face with a pink and purple makeup look. The makeup appears to be a combination of pink, purple, and black colors. The woman's eyes are closed and her lips are slightly parted, as if she is about to apply the makeup. On the right side of the image, there is a black makeup brush with a black handle. The brush is resting on the woman's cheek. The background is a plain grey color."
     },
     "class_type": "ShowText|pysssss",
@@ -50,10 +41,7 @@
   },
   "660": {
     "inputs": {
-      "text": [
-        "665",
-        0
-      ],
+      "text": ["665", 0],
       "prefix": "text-uploads/",
       "filename": "text.txt",
       "bucket": "emprops-share"
@@ -78,10 +66,7 @@
   },
   "665": {
     "inputs": {
-      "String": [
-        "659",
-        0
-      ],
+      "String": ["659", 0],
       "Regex": "The image is ",
       "ReplaceWith": ""
     },
