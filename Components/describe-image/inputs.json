@@ -10,5 +10,19 @@
       "value": "image",
       "is_required": true
     }
+  },
+  "660": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
   }
 }
