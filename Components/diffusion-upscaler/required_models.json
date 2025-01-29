@@ -1,0 +1,9 @@
+{
+  "static": {
+    "upscale_models": ["4xNomosUniDAT_otf.safetensors"],
+    "controlnet": ["control_v11f1e_sd15_tile_fp16.safetensors"]
+  },
+  "dynamic": {
+    "checkpoints": ["juggernaut_reborn.safetensors"]
+  }
+}

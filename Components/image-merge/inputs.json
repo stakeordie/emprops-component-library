@@ -1,0 +1,73 @@
+{
+  "25": {
+    "noise_seed": {
+      "value": "seed",
+      "is_required": true
+    }
+  },
+  "27": {
+    "width": {
+      "value": "width",
+      "is_required": true,
+      "default": 1024
+    },
+    "height": {
+      "value": "height",
+      "is_required": false,
+      "default": 1024
+    }
+  },
+  "30": {
+    "width": {
+      "value": "width",
+      "is_required": true,
+      "default": 1024
+    },
+    "height": {
+      "value": "height",
+      "is_required": false,
+      "default": 1024
+    }
+  },
+  "41": {
+    "strength": {
+      "value": "strength_1",
+      "is_required": false,
+      "default": 1
+    }
+  },
+  "45": {
+    "strength": {
+      "value": "strength_2",
+      "is_required": false,
+      "default": 1
+    }
+  },
+  "56": {
+    "url": {
+      "value": "image_1",
+      "is_required": true
+    }
+  },
+  "60": {
+    "url": {
+      "value": "image_2",
+      "is_required": true
+    }
+  },
+  "63": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
+  }
+
+}

@@ -1,0 +1,5 @@
+{
+  "static": {
+    "checkpoints": ["SD15/LCM/realismBYSTABLEYOGI_v4LCM.safetensors"]
+  }
+}

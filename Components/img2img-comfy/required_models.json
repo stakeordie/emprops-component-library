@@ -1,0 +1,5 @@
+{
+  "dynamic": {
+    "checkpoints": ["Juggernaut-XI-byRunDiffusion.safetensors"]
+  }
+}

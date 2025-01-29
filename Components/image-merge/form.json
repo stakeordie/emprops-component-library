@@ -1,0 +1,88 @@
+{
+  "config": {
+    "groupOrder": ["basic", "advanced"],
+    "maxNumberOfGenerations": 4,
+    "componentGroup": "image"
+  },
+  "fields": [
+    {
+      "id": "seed",
+      "name": "Seed",
+      "type": "optional_input",
+      "display": true,
+      "group": "advanced",
+      "input_type": "number",
+      "constraints": {
+        "min": 0,
+        "max": 999999,
+        "step": 1
+      }
+    },
+    {
+      "id": "image_1",
+      "name": "First Image",
+      "type": "image_loader",
+      "display": true,
+      "group": ["basic", "advanced"]
+    },
+    {
+      "id": "strength_1",
+      "name": "First Image Strength (0-1)",
+      "type": "slider",
+      "default": 1,
+      "constraints": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "image_2",
+      "name": "Second Image",
+      "type": "image_loader",
+      "display": true,
+      "group": ["basic", "advanced"]
+    },
+    {
+      "id": "strength_2",
+      "name": "Second Image Strength (0-1)",
+      "type": "slider",
+      "default": 1,
+      "constraints": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": ["main", "advanced"]
+    }
+  ]
+}

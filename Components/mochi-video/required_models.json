@@ -1,0 +1,6 @@
+{
+  "static": {
+    "vae": ["mochi_vae.safetensors"],
+    "clip": ["t5xxl_fp8_e4m3fn_scaled.safetensors"]
+  }
+}
