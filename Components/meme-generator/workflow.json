@@ -1,0 +1,47 @@
+{
+  "14": {
+    "inputs": {
+      "preset": "custom",
+      "text_top": "When I'm at work",
+      "text_bottom": "Whatever",
+      "font_name": "comic.ttf",
+      "max_font_size": 150,
+      "font_color": "custom",
+      "font_outline": "none",
+      "bar_color": "custom",
+      "bar_options": "no bars",
+      "font_color_hex": "#fcba03",
+      "bar_color_hex": "#00a2ff",
+      "image": ["19", 0]
+    },
+    "class_type": "CR Simple Meme Template",
+    "_meta": {
+      "title": "📱 CR Simple Meme Template"
+    }
+  },
+  "19": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "a18dd73d-78fd-446b-8151-b6f1309ada2c.png",
+      "s3_key": "",
+      "s3_bucket": "emprops-share",
+      "url": ""
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
+    }
+  },
+  "20": {
+    "inputs": {
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": ["14", 0]
+    },
+    "class_type": "EmProps_S3_Saver",
+    "_meta": {
+      "title": "EmProps S3 Saver"
+    }
+  }
+}
