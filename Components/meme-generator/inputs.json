@@ -19,6 +19,14 @@
     "max_font_size": {
       "value": "max_font_size",
       "is_required": true
+    },
+    "bar_options": {
+      "value": "bar_options",
+      "is_required": true
+    },
+    "bar_color_hex": {
+      "value": "bar_color",
+      "is_required": true
     }
   },
   "19": {

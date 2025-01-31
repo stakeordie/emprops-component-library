@@ -27,6 +27,23 @@
       "group": ["main", "advanced"]
     },
     {
+      "id": "bar_options",
+      "name": "Bar Options",
+      "type": "select",
+      "default": "no bars",
+      "conf_file": "bar_options.json",
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "bar_color",
+      "name": "Bar Color",
+      "type": "color_picker",
+      "default": "#000000",
+      "display": true,
+      "group": "advanced"
+    },
+    {
       "id": "font_name",
       "name": "Font Name",
       "type": "select",
