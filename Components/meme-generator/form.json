@@ -15,14 +15,14 @@
     {
       "id": "text_top",
       "name": "Text Top",
-      "type": "text",
+      "type": "prompt_editor",
       "display": true,
       "group": ["main", "advanced"]
     },
     {
       "id": "text_bottom",
       "name": "Text Bottom",
-      "type": "text",
+      "type": "prompt_editor",
       "display": true,
       "group": ["main", "advanced"]
     },
