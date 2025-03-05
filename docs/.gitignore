@@ -1,0 +1,10 @@
+node_modules
+.DS_Store
+dist
+*.local
+.cache
+.temp
+cache
+.env
+.env.*
+!.env.example

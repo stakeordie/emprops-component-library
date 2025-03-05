@@ -1,0 +1,224 @@
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV PIP_PREFER_BINARY=1
+ENV ROOT=/workspace
+ENV PATH="${ROOT}/.local/bin:${PATH}"
+ENV CONFIG_DIR=${ROOT}/config
+ENV COMFY_DIR=${ROOT}/ComfyUI
+ENV CFLAGS="-O2"
+ENV CXXFLAGS="-O2"
+
+WORKDIR ${ROOT}
+
+# Install system dependencies for both ComfyUI and A1111
+RUN apt update && apt-get install -y \
+    git git-lfs rsync nginx wget curl nano net-tools lsof ffmpeg libsm6 libxext6 \
+    cron sudo ssh zstd jq build-essential cmake ninja-build \
+    gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
+    libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
+    fonts-dejavu-core aria2 libcairo2 libcairo2-dev pkg-config libgles2-mesa-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install newer gcc and libstdc++
+RUN apt update && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
+    && apt install -y gcc-11 g++-11 libstdc++6 \
+    && apt-get install -y locales \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install newer libstdc++ version
+RUN cd /tmp && \
+    wget http://security.ubuntu.com/ubuntu/pool/main/g/gcc-12/libstdc++6_12.3.0-1ubuntu1~22.04_amd64.deb && \
+    dpkg -x libstdc++6_12.3.0-1ubuntu1~22.04_amd64.deb . && \
+    cp -v usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30 /usr/lib/x86_64-linux-gnu/ && \
+    cp -v usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30 /opt/conda/lib/ && \
+    cd /usr/lib/x86_64-linux-gnu && \
+    ln -sf libstdc++.so.6.0.30 libstdc++.so.6 && \
+    cd /opt/conda/lib && \
+    ln -sf libstdc++.so.6.0.30 libstdc++.so.6
+
+# Upgrade pip and install PyTorch packages
+RUN pip install --upgrade pip && \
+    pip install --upgrade torch==2.1.2 torchvision torchaudio
+
+# Install Node.js and PM2 for A1111
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && apt-get install -y nodejs && \
+    npm install -g npm@9.8.0 && \
+    npm install -g pm2@latest
+
+# Install Google's TCMalloc for memory management
+RUN apt-get update && \
+    apt-get -y install libgoogle-perftools-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV LD_PRELOAD=libtcmalloc.so
+
+# Step 1: Clone A1111 repositories
+FROM alpine/git:2.36.2 as download
+
+COPY scripts/a1111/docker/clone.sh /clone.sh
+
+RUN . /clone.sh stable-diffusion-stability-ai https://github.com/Stability-AI/stablediffusion.git cf1d67a6fd5ea1aa600c4df58e5b47da45f6bdbf \
+  && rm -rf assets data/**/*.png data/**/*.jpg data/**/*.gif
+
+RUN . /clone.sh CodeFormer https://github.com/sczhou/CodeFormer.git c5b4593074ba6214284d6acd5f1719b6c5d739af \
+  && rm -rf assets inputs
+
+RUN . /clone.sh BLIP https://github.com/salesforce/BLIP.git 48211a1594f1321b00f14c9f7a5b4813144b2fb9
+RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git ab527a9a6d347f364e3d185ba6d714e22d80cb3c
+RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2cf03aaf6e704197fd0dae7c7f96aa59cf1b11c9
+RUN . /clone.sh generative-models https://github.com/Stability-AI/generative-models 45c443b316737a4ab6e40413d7794a7f5657c19f
+
+# Continue with main build
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV PIP_PREFER_BINARY=1
+ENV ROOT=/workspace
+ENV PATH="${ROOT}/.local/bin:${PATH}"
+ENV CONFIG_DIR=${ROOT}/config
+ENV COMFY_DIR=${ROOT}/ComfyUI
+ENV A1111_DIR=/stable-diffusion-webui
+ENV CFLAGS="-O2"
+ENV CXXFLAGS="-O2"
+
+WORKDIR ${ROOT}
+
+# Install system dependencies for both ComfyUI and A1111
+RUN apt update && apt-get install -y \
+    git git-lfs rsync nginx wget curl nano net-tools lsof ffmpeg libsm6 libxext6 \
+    cron sudo ssh zstd jq build-essential cmake ninja-build \
+    gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
+    libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
+    fonts-dejavu-core aria2 libcairo2 libcairo2-dev pkg-config libgles2-mesa-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install newer gcc and libstdc++
+RUN apt update && add-apt-repository ppa:ubuntu-toolchain-r/test -y \
+    && apt install -y gcc-11 g++-11 libstdc++6 \
+    && apt-get install -y locales \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install newer libstdc++ version
+RUN cd /tmp && \
+    wget http://security.ubuntu.com/ubuntu/pool/main/g/gcc-12/libstdc++6_12.3.0-1ubuntu1~22.04_amd64.deb && \
+    dpkg -x libstdc++6_12.3.0-1ubuntu1~22.04_amd64.deb . && \
+    cp -v usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30 /usr/lib/x86_64-linux-gnu/ && \
+    cp -v usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30 /opt/conda/lib/ && \
+    cd /usr/lib/x86_64-linux-gnu && \
+    ln -sf libstdc++.so.6.0.30 libstdc++.so.6 && \
+    cd /opt/conda/lib && \
+    ln -sf libstdc++.so.6.0.30 libstdc++.so.6
+
+# Setup locales
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8
+
+# Install Node.js and PM2 for A1111
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && apt-get install -y nodejs && \
+    npm install -g npm@9.8.0 && \
+    npm install -g pm2@latest
+
+# Upgrade pip and install PyTorch packages
+RUN pip install --upgrade pip && \
+    pip install --upgrade torch==2.1.2 torchvision torchaudio
+
+# Install Google's TCMalloc for memory management
+RUN apt-get update && \
+    apt-get -y install libgoogle-perftools-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV LD_PRELOAD=libtcmalloc.so
+
+# Set up A1111 Stable Diffusion WebUI
+WORKDIR /
+RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git && \
+    cd stable-diffusion-webui && \
+    git reset --hard cf2772fab0af5573da775e7437e6acdca424f26e && \
+    pip install -r requirements_versions.txt
+
+# Copy A1111 repositories 
+COPY --from=download /repositories/ ${A1111_DIR}/repositories/
+RUN mkdir ${A1111_DIR}/interrogate && cp ${A1111_DIR}/repositories/clip-interrogator/clip_interrogator/data/* ${A1111_DIR}/interrogate
+
+# Install A1111 dependencies
+RUN pip install -r ${A1111_DIR}/repositories/CodeFormer/requirements.txt && \
+    pip install pyngrok diffusers xformers==0.0.23.post1 \
+    git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379 \
+    git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1 \
+    git+https://github.com/mlfoundations/open_clip.git@v2.20.0
+
+# Clone and setup ComfyUI
+ARG COMFY_REPO_URL=https://github.com/comfyanonymous/ComfyUI.git
+ENV COMFY_REPO_URL=${COMFY_REPO_URL}
+
+RUN git clone ${COMFY_REPO_URL} ${COMFY_DIR} && \
+    cd ${COMFY_DIR} && \
+    pip uninstall -y onnxruntime && \
+    pip install --upgrade pip && \
+    pip install --upgrade mmengine opencv-python imgui-bundle pyav boto3 awscli librosa uv && \
+    pip install -r requirements.txt && \
+    pip uninstall -y onnxruntime-gpu && \
+    pip install onnxruntime-gpu==1.20.1
+
+# Create necessary directories
+RUN mkdir -p ${ROOT}/logs ${ROOT}/shared ${ROOT}/shared_custom_nodes ${ROOT}/config /data/config/auto/scripts/
+
+# Copy configuration files and scripts
+COPY scripts/comfyui /etc/init.d/comfyui
+COPY scripts/langflow /etc/init.d/langflow
+COPY scripts/mgpu /usr/local/bin/mgpu
+COPY scripts/mcomfy /usr/local/bin/mcomfy
+COPY scripts/update_nodes.sh /usr/local/lib/mcomfy/update_nodes.sh
+COPY scripts/cleanup_outputs.sh /usr/local/bin/cleanup_outputs.sh
+COPY scripts/start.sh /scripts/start.sh
+COPY scripts/hybrid_start.sh /scripts/hybrid_start.sh
+COPY scripts/a1111/hybrid_build.sh /scripts/a1111/hybrid_build.sh
+COPY scripts/a1111/docker/config.py /docker/config.py
+COPY scripts/a1111/docker/loader.py /docker/loader.py
+COPY scripts/a1111/docker/error_catch_all.sh /docker/error_catch_all.sh
+COPY scripts/a1111/docker/clone.sh /docker/clone.sh
+
+# Set file permissions
+RUN chmod +x /etc/init.d/comfyui && \
+    update-rc.d comfyui defaults && \
+    chmod +x /etc/init.d/langflow && \
+    update-rc.d langflow defaults && \
+    chmod +x /usr/local/bin/mgpu && \
+    chmod +x /usr/local/bin/mcomfy && \
+    chmod +x /usr/local/lib/mcomfy/update_nodes.sh && \
+    chmod +x /usr/local/bin/cleanup_outputs.sh && \
+    chmod +x /scripts/start.sh && \
+    chmod +x /scripts/hybrid_start.sh && \
+    chmod +x /scripts/a1111/hybrid_build.sh && \
+    chmod +x /docker/error_catch_all.sh && \
+    chmod +x /docker/clone.sh
+
+# Setup cron for cleanup
+RUN echo "*/15 * * * * /usr/local/bin/cleanup_outputs.sh >> /var/log/cleanup.log 2>&1" > /etc/cron.d/cleanup && \
+    chmod 0644 /etc/cron.d/cleanup && \
+    mkdir -p /var/run/cron && \
+    touch /var/run/cron/crond.pid && \
+    chmod 644 /var/run/cron/crond.pid && \
+    sed -i 's/touch $PIDFILE/# touch $PIDFILE/g' /etc/init.d/cron
+
+# Expose ports for both services
+EXPOSE 3188 3189 3190 3191 3192 3193 3194 3195 3130
+
+# Set GPU environment
+ENV NVIDIA_VISIBLE_DEVICES=all
+
+# Set the entrypoint
+CMD ["/scripts/hybrid_start.sh"]

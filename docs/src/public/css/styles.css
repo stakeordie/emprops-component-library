@@ -1,0 +1,36 @@
+/* Base styles for documentation site */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Main Navigation styles - more specific selector */
+.VPNav nav ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  background-color: #f4f4f4;
+  margin-bottom: 20px;
+}
+
+.VPNav nav ul li {
+  margin-right: 10px;
+}
+
+.VPNav nav ul li a {
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+  display: block;
+}
+
+.VPNav nav ul li a:hover {
+  background-color: #e0e0e0;
+}
+
+/* Mermaid diagram styles */
+.mermaid {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px 0;
+}
