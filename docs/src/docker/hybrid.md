@@ -1,6 +1,14 @@
-# Hybrid ComfyUI + A1111 Architecture Diagrams
+# Hybrid Container (ComfyUI + A1111)
+
+This page documents the hybrid container that combines ComfyUI and A1111 Stable Diffusion WebUI.
+
+## Overview
+
+The hybrid container integrates both ComfyUI and A1111 Stable Diffusion WebUI into a single Docker container with shared model management. This allows you to utilize both interfaces while maintaining a single model repository.
 
 ## Container Architecture
+
+<FullscreenDiagram>
 
 ```mermaid
 graph TD
@@ -48,7 +56,11 @@ graph TD
     user -->|Port 3130| nginx
 ```
 
+</FullscreenDiagram>
+
 ## Startup Process
+
+<FullscreenDiagram>
 
 ```mermaid
 sequenceDiagram
@@ -94,7 +106,11 @@ sequenceDiagram
     HybridScript->>Container: Keep container running
 ```
 
+</FullscreenDiagram>
+
 ## Model Sharing and Symlinking
+
+<FullscreenDiagram>
 
 ```mermaid
 graph TD
@@ -149,7 +165,11 @@ graph TD
     awsS3["AWS S3 Model Repository"] -->|Sync| sharedDir
 ```
 
+</FullscreenDiagram>
+
 ## Build and Run Process
+
+<FullscreenDiagram>
 
 ```mermaid
 flowchart TD
@@ -172,7 +192,11 @@ flowchart TD
     K --> L[Models Available to Both Services]
 ```
 
+</FullscreenDiagram>
+
 ## Directory Structure
+
+<FullscreenDiagram>
 
 ```mermaid
 graph TD
@@ -208,3 +232,34 @@ graph TD
     a1111Models --> a1111ESRGAN["ESRGAN (symlinks)"]
     a1111Models --> a1111Embed["embeddings (symlinks)"]
 ```
+
+</FullscreenDiagram>
+
+## Key Components
+
+### Scripts
+
+1. **hybrid_start.sh**
+   - Main entry point for the container
+   - Manages startup of all services
+   - Coordinates model syncing and service initialization
+
+2. **hybrid_build.sh**
+   - Sets up A1111 within the container
+   - Creates symbolic links between shared model repository and A1111's model directories
+   - Configures A1111 startup parameters
+
+### Process Management
+
+PM2 is used to manage both services:
+- ComfyUI runs as a PM2 process
+- A1111 runs as a PM2 process with error recovery
+
+### Ports
+
+- **ComfyUI**: Port 3188
+- **A1111**: Port 3130
+
+## Building and Running
+
+See the [Installation Guide](/docker/installation) for detailed instructions on building and running the hybrid container.

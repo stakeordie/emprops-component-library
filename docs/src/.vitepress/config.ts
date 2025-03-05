@@ -32,7 +32,7 @@ const config = defineConfig({
     startOnLoad: true,
     maxTextSize: 50000,
     flowchart: {
-      useMaxWidth: false,
+      useMaxWidth: true,
       htmlLabels: true
     },
     themeVariables: {
@@ -68,7 +68,8 @@ const config = defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/' },
-      { text: 'Examples', link: '/examples/' }
+      { text: 'Examples', link: '/examples/' },
+      { text: 'Docker', link: '/docker/' }
     ],
 
     sidebar: {
@@ -99,6 +100,21 @@ const config = defineConfig({
             { text: 'Mermaid', link: '/examples/mermaid' },
             { text: 'Advanced', link: '/examples/advanced' },
             { text: 'SubPage', link: '/examples/another-one-of-the-same' },
+          ]
+        }
+      ],
+      '/docker/': [
+        {
+          text: 'Docker',
+          items: [
+            { text: 'Overview', link: '/docker/' },
+            { text: 'Installation', link: '/docker/installation' },
+            { text: 'ComfyUI Container', link: '/docker/comfyui' },
+            { text: 'Hybrid Container', link: '/docker/hybrid' },
+            { text: 'Queue System', link: '/docker/queue-system' },
+            { text: 'Central Redis Queue', link: '/docker/central-redis' },
+            { text: 'Testing Redis Queue', link: '/docker/central-redis-test' },
+            { text: 'Environment & Security', link: '/docker/env-security' }
           ]
         }
       ]
