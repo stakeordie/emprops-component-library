@@ -1,0 +1,74 @@
+{
+  "4": {
+    "ckpt_name": {
+      "value": "model",
+      "default": "Juggernaut-XI-byRunDiffusion.safetensors",
+      "is_required": false
+    }
+  },
+  "3": {
+    "seed": {
+      "value": "seed",
+      "is_required": true
+    },
+    "steps": {
+      "value": "steps",
+      "is_required": false,
+      "default": 20
+    },
+    "cfg": {
+      "value": "cfg",
+      "is_required": false,
+      "default": 7
+    },
+    "sampler_name": {
+      "value": "sampler",
+      "is_required": false,
+      "default": "euler_ancestral"
+    },
+    "scheduler": {
+      "value": "scheduler",
+      "is_required": false,
+      "default": "normal"
+    }
+  },
+  "5": {
+    "width": {
+      "value": "width",
+      "is_required": true
+    },
+    "height": {
+      "value": "height",
+      "is_required": false,
+      "default": 1024
+    }
+  },
+  "6": {
+    "text": {
+      "value": "prompt",
+      "is_required": false,
+      "default": ""
+    }
+  },
+  "7": {
+    "text": {
+      "value": "negative_prompt",
+      "is_required": false,
+      "default": ""
+    }
+  },
+  "10": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
+  }
+}
