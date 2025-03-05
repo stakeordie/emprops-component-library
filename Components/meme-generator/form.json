@@ -1,0 +1,73 @@
+{
+  "config": {
+    "groupOrder": ["main", "advanced"],
+    "maxNumberOfGenerations": 6,
+    "componentGroup": "image"
+  },
+  "fields": [
+    {
+      "id": "image",
+      "name": "Image",
+      "type": "image_loader",
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "text_top",
+      "name": "Text Top",
+      "type": "prompt_editor",
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "text_bottom",
+      "name": "Text Bottom",
+      "type": "prompt_editor",
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "bar_options",
+      "name": "Bar Options",
+      "type": "select",
+      "default": "no bars",
+      "conf_file": "bar_options.json",
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "bar_color",
+      "name": "Bar Color",
+      "type": "color_picker",
+      "default": "#000000",
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "font_name",
+      "name": "Font Name",
+      "type": "select",
+      "default": "comic.ttf",
+      "conf_file": "fonts.json",
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "max_font_size",
+      "name": "Max Font Size",
+      "type": "input",
+      "input_type": "number",
+      "default": "120",
+      "display": true,
+      "group": "advanced"
+    },
+    {
+      "id": "font_color",
+      "name": "Font Color",
+      "type": "color_picker",
+      "default": "#000000",
+      "display": true,
+      "group": "advanced"
+    }
+  ]
+}

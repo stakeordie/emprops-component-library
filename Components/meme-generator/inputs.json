@@ -1,0 +1,52 @@
+{
+  "14": {
+    "text_top": {
+      "value": "text_top",
+      "is_required": true
+    },
+    "text_bottom": {
+      "value": "text_bottom",
+      "is_required": true
+    },
+    "font_color_hex": {
+      "value": "font_color",
+      "is_required": true
+    },
+    "font_name": {
+      "value": "font_name",
+      "is_required": true
+    },
+    "max_font_size": {
+      "value": "max_font_size",
+      "is_required": true
+    },
+    "bar_options": {
+      "value": "bar_options",
+      "is_required": true
+    },
+    "bar_color_hex": {
+      "value": "bar_color",
+      "is_required": true
+    }
+  },
+  "19": {
+    "url": {
+      "value": "image",
+      "is_required": true
+    }
+  },
+  "20": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
+  }
+}
