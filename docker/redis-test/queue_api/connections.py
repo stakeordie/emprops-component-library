@@ -70,6 +70,10 @@ class ConnectionManager:
             del self.worker_connections[worker_id]
             logger.info(f"Worker {worker_id} disconnected")
     
+    def is_worker_connected(self, worker_id: str) -> bool:
+        """Check if a worker is connected"""
+        return worker_id in self.worker_connections
+    
     def subscribe_to_job(self, job_id: str, client_id: str) -> None:
         """Subscribe a client to job updates"""
         self.job_subscriptions[job_id] = client_id

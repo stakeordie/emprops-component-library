@@ -354,23 +354,26 @@
                 <button id="send-btn" disabled>Send</button>
                 <button id="get-stats-btn" disabled>Get Stats</button>
                 <button id="submit-job-btn" disabled>Submit Test Job</button>
+                <button id="submit-priority-job-btn" disabled>Submit Priority Job</button>
             </div>
             
             <div id="job-status" style="margin-top: 20px; display: none;">
                 <h3>Current Job Status</h3>
-                <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                    <div style="margin-right: 20px;">
-                        <strong>Job ID:</strong> <span id="current-job-id">None</span>
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h4>Standard Jobs</h4>
+                        <div id="standard-jobs-list" style="margin-top: 10px;">
+                            <!-- Standard jobs will be listed here -->
+                            <div class="no-jobs-message">No standard jobs</div>
+                        </div>
                     </div>
-                    <div style="margin-right: 20px;">
-                        <strong>Status:</strong> <span id="current-job-status">None</span>
+                    <div style="flex: 1;">
+                        <h4>Priority Jobs</h4>
+                        <div id="priority-jobs-list" style="margin-top: 10px;">
+                            <!-- Priority jobs will be listed here -->
+                            <div class="no-jobs-message">No priority jobs</div>
+                        </div>
                     </div>
-                    <div>
-                        <strong>Progress:</strong> <span id="current-job-progress">0</span>%
-                    </div>
-                </div>
-                <div class="progress-bar-container" style="width: 100%; background-color: #e0e0e0; border-radius: 4px; height: 20px;">
-                    <div id="progress-bar" style="width: 0%; background-color: #4CAF50; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
                 </div>
             </div>
         </div>
@@ -441,6 +444,7 @@
         sendBtn.addEventListener('click', sendMessage);
         document.getElementById('get-stats-btn').addEventListener('click', sendGetStats);
         document.getElementById('submit-job-btn').addEventListener('click', submitTestJob);
+        document.getElementById('submit-priority-job-btn').addEventListener('click', submitPriorityJob);
         
         // Handle stats subscription toggle
         statsSubscriptionToggle.addEventListener('change', function() {
@@ -488,6 +492,7 @@
                     sendBtn.disabled = false;
                     document.getElementById('get-stats-btn').disabled = false;
                     document.getElementById('submit-job-btn').disabled = false;
+                    document.getElementById('submit-priority-job-btn').disabled = false;
                     connectionStatus.textContent = 'Connected';
                     connectionStatus.style.color = '#4CAF50';
                     
@@ -514,8 +519,10 @@
                         // Debug logging - log message type to console
                         console.log(`Received message type: ${message.type}`);
                         
-                        if (message.type === 'job_update') {
-                            console.log('Processing job update message');
+                        if (message.type === 'job_update' || message.type === 'job_status' || 
+                            (message.type === 'job_assigned' && message.job_id) || 
+                            (message.type === 'job_completed' && message.job_id)) {
+                            console.log('Processing job message:', message.type, message.job_id);
                             updateJobStatus(message);
                         } else if (message.type === 'job_accepted') {
                             console.log('Processing job accepted message');
@@ -545,6 +552,7 @@
                     sendBtn.disabled = true;
                     document.getElementById('get-stats-btn').disabled = true;
                     document.getElementById('submit-job-btn').disabled = true;
+                    document.getElementById('submit-priority-job-btn').disabled = true;
                     statsSubscriptionToggle.disabled = true;
                     subscriptionStatus.textContent = 'Not subscribed';
                     subscriptionStatus.style.color = '#666';
@@ -668,8 +676,8 @@
             }
         }
         
-        // Current job tracking
-        let currentJobId = null;
+        // Jobs tracking
+        let activeJobs = {};  // Will store all pending and processing jobs
         
         // Function to submit a test job
         function submitTestJob() {
@@ -690,42 +698,97 @@
                         "seed": seed
                     }
                 });
-                
-                // Reset progress display
-                document.getElementById('job-status').style.display = 'block';
-                document.getElementById('current-job-id').textContent = 'Waiting for job ID...';
-                document.getElementById('current-job-status').textContent = 'Submitting...';
-                document.getElementById('current-job-progress').textContent = '0';
-                document.getElementById('progress-bar').style.width = '0%';
-                
-                // Send the message
-                ws.send(jobMessage);
-                addMessage(jobMessage, 'sent');
-                sentMessages++;
-                totalMessages++;
-                updateStats();
+
+                submitJobToServer(jobMessage, 0);
             }
+        }
+        
+        // Function to submit a priority job
+        function submitPriorityJob() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                // Create a random seed
+                const seed = Math.floor(Math.random() * 1000000);
+                
+                // Create a properly formatted submit_job message with high priority
+                const jobMessage = JSON.stringify({
+                    "type": "submit_job",
+                    "job_type": "test_job",  // Required field
+                    "priority": 10,          // High priority value
+                    "payload": {              // Required field
+                        "description": "Priority job for debug interface",
+                        "width": 512,
+                        "height": 512,
+                        "steps": 30,
+                        "seed": seed
+                    }
+                });
+
+                submitJobToServer(jobMessage, 10);
+            }
+        }
+        
+        // Common function to submit jobs to the server
+        function submitJobToServer(jobMessage, priority) {
+            // Show the job status section
+            document.getElementById('job-status').style.display = 'block';
+            
+            // Create a temporary job entry for the pending submission
+            const tempJobId = 'pending-' + new Date().getTime();
+            activeJobs[tempJobId] = {
+                id: 'Submitting...',
+                status: 'submitting',
+                progress: 0,
+                priority: priority,
+                position: 'Calculating...',
+                added_at: new Date()
+            };
+            
+            // Update the UI
+            updateActiveJobsList();
+            
+            // Send the message
+            ws.send(jobMessage);
+            addMessage(jobMessage, 'sent');
+            sentMessages++;
+            totalMessages++;
+            updateStats();
         }
         
         // Function to handle job submission response
         function handleJobSubmission(message) {
             // The JobAcceptedMessage will have a job_id field
             if (message.job_id) {
-                // Store the job ID returned from the server
-                currentJobId = message.job_id;
+                // Remove any temporary job entries
+                Object.keys(activeJobs).forEach(key => {
+                    if (key.startsWith('pending-')) {
+                        delete activeJobs[key];
+                    }
+                });
                 
-                // Update the job status display
-                document.getElementById('current-job-id').textContent = currentJobId;
-                document.getElementById('current-job-status').textContent = message.status || 'Pending';
+                // Add to active jobs tracking
+                activeJobs[message.job_id] = {
+                    id: message.job_id,
+                    status: message.status || 'pending',
+                    progress: 0,
+                    position: message.position || 0,
+                    priority: message.priority || 0,
+                    added_at: new Date()
+                };
+                
+                // Show the job status section
+                document.getElementById('job-status').style.display = 'block';
+                
+                // Update the active jobs list
+                updateActiveJobsList();
                 
                 // Log job submission success
-                addMessage(`Job submitted successfully. ID: ${currentJobId}`, 'system');
+                addMessage(`Job submitted successfully. ID: ${message.job_id}`, 'system');
                 
                 // Auto-subscribe to the job updates
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     const subscribeMessage = JSON.stringify({
                         "type": "subscribe_job",
-                        "job_id": currentJobId
+                        "job_id": message.job_id
                     });
                     ws.send(subscribeMessage);
                     addMessage(subscribeMessage, 'sent');
@@ -742,25 +805,45 @@
         
         // Function to update job status display
         function updateJobStatus(message) {
-            if (message.job_id === currentJobId) {
-                const status = document.getElementById('current-job-status');
-                const progress = document.getElementById('current-job-progress');
-                const progressBar = document.getElementById('progress-bar');
-                
-                status.textContent = message.status || 'Unknown';
+            if (message.job_id && message.job_id in activeJobs) {
+                // Update the job in our tracking object
+                activeJobs[message.job_id].status = message.status || activeJobs[message.job_id].status;
                 
                 if (message.progress !== undefined) {
-                    progress.textContent = message.progress;
-                    progressBar.style.width = `${message.progress}%`;
+                    activeJobs[message.job_id].progress = message.progress;
                 }
+                
+                // If job completed or failed, schedule it for removal from active jobs list
+                if (message.status === 'completed' || message.status === 'failed') {
+                    // Mark the time of completion/failure for display
+                    activeJobs[message.job_id].completed_at = new Date();
+                    
+                    // Schedule removal after a brief display period
+                    setTimeout(() => {
+                        delete activeJobs[message.job_id];
+                        updateActiveJobsList();
+                    }, 5000); // Remove after 5 seconds
+                }
+                
+                // Update the UI
+                updateActiveJobsList();
                 
                 // Highlight this message in the message list with a special color
                 const messages = document.querySelectorAll('.message.received');
                 const lastMessage = messages[messages.length - 1];
-                if (lastMessage && lastMessage.querySelector('pre')?.textContent.includes(currentJobId)) {
+                if (lastMessage && lastMessage.querySelector('pre')?.textContent.includes(message.job_id)) {
                     lastMessage.style.borderLeftColor = '#FF9800';
                     lastMessage.style.backgroundColor = '#FFF3E0';
                 }
+            } else if (message.status === 'pending' || message.status === 'processing') {
+                // This is a new job we're not tracking yet - add it
+                activeJobs[message.job_id] = {
+                    id: message.job_id,
+                    status: message.status,
+                    progress: message.progress || 0,
+                    added_at: new Date()
+                };
+                updateActiveJobsList();
             }
         }
         
@@ -770,6 +853,104 @@
             jobs: {},
             subscriptions: {}
         };
+        
+        // Function to update the active jobs list in the UI
+        function updateActiveJobsList() {
+            const standardJobsList = document.getElementById('standard-jobs-list');
+            const priorityJobsList = document.getElementById('priority-jobs-list');
+            const jobs = Object.values(activeJobs);
+            
+            // Separate jobs by priority
+            const standardJobs = jobs.filter(job => !job.priority || job.priority < 5);
+            const priorityJobs = jobs.filter(job => job.priority && job.priority >= 5);
+            
+            // Handle standard jobs
+            if (standardJobs.length === 0) {
+                standardJobsList.innerHTML = '<div class="no-jobs-message">No standard jobs</div>';
+            } else {
+                let standardHtml = '';
+                
+                // Sort jobs by added time (newest first)
+                standardJobs.sort((a, b) => b.added_at - a.added_at);
+                
+                standardJobs.forEach(job => {
+                    standardHtml += createJobHtml(job);
+                });
+                
+                standardJobsList.innerHTML = standardHtml;
+            }
+            
+            // Handle priority jobs
+            if (priorityJobs.length === 0) {
+                priorityJobsList.innerHTML = '<div class="no-jobs-message">No priority jobs</div>';
+            } else {
+                let priorityHtml = '';
+                
+                // Sort priority jobs by priority (highest first) then by added time
+                priorityJobs.sort((a, b) => {
+                    if (b.priority !== a.priority) {
+                        return b.priority - a.priority;
+                    }
+                    return b.added_at - a.added_at;
+                });
+                
+                priorityJobs.forEach(job => {
+                    priorityHtml += createJobHtml(job);
+                });
+                
+                priorityJobsList.innerHTML = priorityHtml;
+            }
+        }
+        
+        function createJobHtml(job) {
+            const statusColor = {
+                'pending': '#FFC107',
+                'submitting': '#FFC107',
+                'processing': '#2196F3',
+                'completed': '#4CAF50',
+                'failed': '#F44336'
+            }[job.status] || '#777';
+            
+            let jobInfoHtml = '';
+            
+            // Different display for pending vs. processing jobs
+            if (job.status === 'pending' || job.status === 'submitting') {
+                // For pending jobs, show position and priority instead of progress bar
+                jobInfoHtml = `
+                    <div style="padding: 5px 0; background-color: #f9f9f9; border-radius: 4px; margin-bottom: 5px;">
+                        <div style="display: flex; justify-content: space-between; padding: 0 10px;">
+                            <div><strong>Priority:</strong> ${job.priority || 0}</div>
+                            <div><strong>Position:</strong> ${job.position || 'Waiting...'}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #666;">
+                        <div>Waiting for processing</div>
+                        <div>Added: ${job.added_at.toLocaleTimeString()}</div>
+                    </div>
+                `;
+            } else {
+                // For processing/completed/failed jobs, show progress bar
+                jobInfoHtml = `
+                    <div class="progress-bar-container" style="width: 100%; background-color: #e0e0e0; border-radius: 4px; height: 15px;">
+                        <div style="width: ${job.progress}%; background-color: ${statusColor}; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #666;">
+                        <div>Progress: ${job.progress}%</div>
+                        <div>${job.completed_at ? 'Completed: ' + job.completed_at.toLocaleTimeString() : 'Added: ' + job.added_at.toLocaleTimeString()}</div>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="job-item" style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; padding: 10px; border-left: 5px solid ${statusColor};">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <div style="font-weight: bold;">${job.id}</div>
+                        <div>Status: <span style="color: ${statusColor};">${job.status}</span></div>
+                    </div>
+                    ${jobInfoHtml}
+                </div>
+            `;
+        }
         
         // Function to update the system overview panels in sidebar
         function updateSystemOverview(statsData) {

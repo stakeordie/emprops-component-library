@@ -18,7 +18,7 @@ from .models import (
     Job
 )
 from .connections import ConnectionManager
-from .redis_service import RedisService
+from .redis_service import RedisService, STANDARD_QUEUE, PRIORITY_QUEUE
 
 logger = logging.getLogger(__name__)
 
@@ -537,20 +537,157 @@ def init_routes(app: FastAPI) -> None:
             await connection_manager.send_to_client(client_id, error)
     
     # Define worker message handlers
+    # Track active polling tasks per worker
+    worker_polling_tasks = {}
+    # Track worker job processing status
+    worker_processing_jobs = {}
+    
+    async def job_polling_task(worker_id: str):
+        """Background task to continuously poll for jobs for a specific worker"""
+        retry_count = 0
+        poll_interval = 1  # Start with 1 second interval
+        max_interval = 5   # Maximum interval between polls
+        
+        while True:
+            try:
+                # Check if worker is still connected
+                if not connection_manager.is_worker_connected(worker_id):
+                    logger.info(f"Worker {worker_id} disconnected, stopping job polling task")
+                    # Clean up worker status
+                    if worker_id in worker_processing_jobs:
+                        del worker_processing_jobs[worker_id]
+                    break
+                
+                # Skip polling if worker is already processing a job
+                if worker_id in worker_processing_jobs and worker_processing_jobs[worker_id]:
+                    logger.debug(f"Worker {worker_id} is already processing a job, skipping poll")
+                    await asyncio.sleep(poll_interval)
+                    continue
+                
+                # Get next job from Redis
+                job_data = redis_service.get_next_job(worker_id)
+                
+                if job_data:
+                    # Reset poll interval on successful job retrieval
+                    poll_interval = 1
+                    retry_count = 0
+                    
+                    # Mark worker as processing a job
+                    worker_processing_jobs[worker_id] = True
+                    
+                    # Process and send the job
+                    await process_and_send_job(worker_id, job_data)
+                else:
+                    # No jobs available, increase retry count and backoff interval
+                    retry_count += 1
+                    
+                    # Implement exponential backoff with a maximum limit
+                    poll_interval = min(poll_interval * 1.5, max_interval)
+                    
+                    # Log at different levels depending on retry count to avoid log spam
+                    if retry_count % 10 == 0:  # Log every 10th attempt
+                        logger.info(f"No jobs available for worker {worker_id}, retry count: {retry_count}, next poll in {poll_interval:.1f}s")
+            
+            except Exception as e:
+                logger.error(f"Error in job polling task for worker {worker_id}: {str(e)}")
+                logger.error(traceback.format_exc())
+            
+            # Sleep before next poll
+            await asyncio.sleep(poll_interval)
+    
+    async def notify_client_of_job_assignment(client_id: str, job_id: str, worker_id: str):
+        """Notify client that a job has been assigned to a worker"""
+        try:
+            # Create notification message for client
+            notification = JobStatusMessage(
+                job_id=job_id,
+                status="processing",
+                progress=0,
+                worker_id=worker_id,
+                message="Job assigned to worker and processing started"
+            )
+            
+            # Send notification to client
+            await connection_manager.send_to_client(client_id, notification)
+            logger.debug(f"Sent job assignment notification to client {client_id} for job {job_id}")
+        except Exception as e:
+            logger.error(f"Error notifying client {client_id} of job assignment: {str(e)}")
+            logger.error(traceback.format_exc())
+    
+    async def process_and_send_job(worker_id: str, job_data: Dict[str, Any]):
+        """Process job data and send it to the worker"""
+        # Extract job details
+        job_id = job_data["id"]
+        job_type = job_data["type"]
+        priority = int(job_data.get("priority", 0))
+        params = job_data["params"]
+        
+        # Log detailed job assignment information
+        logger.info(f"✅ Assigning job {job_id} (type: {job_type}, priority: {priority}) to worker {worker_id}")
+        logger.debug(f"Job parameters summary for {job_id}: {str(params)[:200]}{'...' if len(str(params)) > 200 else ''}")
+        
+        # Create job assigned message
+        response = JobAssignedMessage(
+            job_id=job_id,
+            job_type=job_type,
+            priority=priority,
+            params=params
+        )
+        
+        # Send job to worker
+        logger.debug(f"Sending job assignment message for job {job_id} to worker {worker_id}")
+        send_success = await connection_manager.send_to_worker(worker_id, response)
+        
+        if send_success:
+            logger.debug(f"Job assignment message sent successfully to worker {worker_id}")
+            
+            # Also send update to client if subscribed
+            if 'client_id' in job_data and job_data['client_id']:
+                client_id = job_data['client_id']
+                await notify_client_of_job_assignment(client_id, job_id, worker_id)
+        else:
+            logger.error(f"Failed to send job assignment to worker {worker_id}")
+    
     async def handle_get_next_job(worker_id: str, message_data: Dict[str, Any]):
         """Handle next job request from worker"""
         start_time = time.time()
-        logger.debug(f"Worker {worker_id} requesting next job")
+        logger.info(f"⏳ Worker {worker_id} requesting next job")
+        
+        # Check if the worker is already processing a job
+        if worker_id in worker_processing_jobs and worker_processing_jobs[worker_id]:
+            logger.info(f"⚠️ Worker {worker_id} is already processing a job, ignoring request")
+            return
+            
+        # Check current queue stats before processing
+        queue_stats = redis_service.get_stats()
+        logger.info(f"📊 Current queue stats: {queue_stats}")
+        logger.info(f"📊 Standard queue length: {redis_service.client.llen(STANDARD_QUEUE)}")
+        logger.info(f"📊 Priority queue length: {redis_service.client.zcard(PRIORITY_QUEUE)}")
         
         try:
-            # Get next job from Redis
-            job_data = redis_service.get_next_job(worker_id)
+            # Inspect the standard queue contents
+            standard_queue_jobs = redis_service.client.lrange(STANDARD_QUEUE, 0, -1)
+            logger.info(f"📋 Standard queue jobs: {standard_queue_jobs}")
             
-            if not job_data:
-                logger.debug(f"No jobs available for worker {worker_id}")
-                # No jobs available
-                await asyncio.sleep(1)  # Wait before responding
-                return
+            # Start or restart the polling task for this worker
+            if worker_id in worker_polling_tasks and not worker_polling_tasks[worker_id].done():
+                logger.info(f"Worker {worker_id} already has an active polling task")
+            else:
+                logger.info(f"Starting job polling task for worker {worker_id}")
+                # Cancel any existing task
+                if worker_id in worker_polling_tasks:
+                    worker_polling_tasks[worker_id].cancel()
+                
+                # Start a new polling task
+                worker_polling_tasks[worker_id] = asyncio.create_task(job_polling_task(worker_id))
+                
+                # Initialize worker job processing status
+                worker_processing_jobs[worker_id] = False
+            
+            # Use background task only, don't get job immediately
+            # This prevents duplicate job assignments
+            logger.info(f"Worker {worker_id} registered for job polling")
+            return
             
             # Extract job details
             job_id = job_data["id"]
@@ -559,7 +696,7 @@ def init_routes(app: FastAPI) -> None:
             params = job_data["params"]
             
             # Log detailed job assignment information
-            logger.info(f"Assigning job {job_id} (type: {job_type}, priority: {priority}) to worker {worker_id}")
+            logger.info(f"✅ Assigning job {job_id} (type: {job_type}, priority: {priority}) to worker {worker_id}")
             logger.debug(f"Job parameters summary for {job_id}: {str(params)[:200]}{'...' if len(str(params)) > 200 else ''}")
             
             # Create job assigned message
@@ -674,6 +811,11 @@ def init_routes(app: FastAPI) -> None:
         start_time = time.time()
         
         try:
+            # Mark worker as available for new jobs
+            if worker_id in worker_processing_jobs:
+                worker_processing_jobs[worker_id] = False
+                logger.info(f"Worker {worker_id} marked as available for new jobs")
+            
             # Clear debug separator to make these logs stand out
             print("\n\n****************************************************")
             print(f"********** WORKER {worker_id} JOB COMPLETION **********")
