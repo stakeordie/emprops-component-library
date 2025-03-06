@@ -1,0 +1,20 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY run_api.py .
+COPY queue_api/ queue_api/
+
+# Set executable permissions
+RUN chmod +x run_api.py
+
+# Expose the API port
+EXPOSE 8000
+
+# Run the API
+CMD ["python", "run_api.py"]

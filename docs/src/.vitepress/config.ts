@@ -114,6 +114,7 @@ const config = defineConfig({
             { text: 'Queue System', link: '/docker/queue-system' },
             { text: 'Central Redis Queue', link: '/docker/central-redis' },
             { text: 'Testing Redis Queue', link: '/docker/central-redis-test' },
+            { text: 'Queue Archtecture', link: '/docker/redis-queue-architecture'},
             { text: 'Environment & Security', link: '/docker/env-security' }
           ]
         }
