@@ -1,1 +1,0 @@
-from queue_api.redis_service import RedisService; rs = RedisService(); print(f"Cleaning up stale jobs with 1 second timeout..."); count = rs.cleanup_stale_jobs(max_heartbeat_age=1); print(f"Cleaned up {count} jobs")

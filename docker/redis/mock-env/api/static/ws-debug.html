@@ -309,6 +309,16 @@
 <body>
     <h1>WebSocket Queue Debug</h1>
     
+    <!-- Job ID Display Area -->
+    <div id="job-id-display" style="display: none; margin: 10px 0; padding: 10px; background-color: #e8f5e9; border: 1px solid #81c784; border-radius: 4px;">
+        <h3 style="margin: 0 0 5px 0;">Latest Job ID:</h3>
+        <div style="display: flex; align-items: center;">
+            <code id="latest-job-id" style="font-size: 16px; padding: 5px 10px; background-color: #c8e6c9; border-radius: 3px; margin-right: 10px; overflow-x: auto; max-width: 500px;">No job ID yet</code>
+            <button id="copy-job-id" style="padding: 5px 10px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Copy</button>
+        </div>
+        <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Use this ID in the sequence monitor to track job progress</p>
+    </div>
+    
     <div class="controls">
         <input type="text" id="ws-host" value="localhost" placeholder="WebSocket Host">
         <input type="text" id="ws-port" value="8000" placeholder="WebSocket Port">
@@ -446,6 +456,27 @@
         document.getElementById('submit-job-btn').addEventListener('click', submitTestJob);
         document.getElementById('submit-priority-job-btn').addEventListener('click', submitPriorityJob);
         
+        // Add event listener for copying job ID
+        document.getElementById('copy-job-id').addEventListener('click', function() {
+            const jobId = document.getElementById('latest-job-id').textContent;
+            if (jobId && jobId !== 'No job ID yet') {
+                navigator.clipboard.writeText(jobId)
+                    .then(() => {
+                        this.textContent = 'Copied!';
+                        setTimeout(() => {
+                            this.textContent = 'Copy';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Error copying text: ', err);
+                        this.textContent = 'Failed';
+                        setTimeout(() => {
+                            this.textContent = 'Copy';
+                        }, 2000);
+                    });
+            }
+        });
+        
         // Handle stats subscription toggle
         statsSubscriptionToggle.addEventListener('change', function() {
             if (!ws || ws.readyState !== WebSocket.OPEN) {
@@ -479,7 +510,10 @@
                 const id = clientId.value || 'debug-viewer';
                 
                 // Connect to WebSocket server with client ID
+                // Use the correct format for the WebSocket URL expected by the backend
                 ws = new WebSocket(`ws://${host}:${port}/ws/client/${id}`);
+                
+                console.log(`Connecting to WebSocket at ws://${host}:${port}/ws/client/${id}`);
                 
                 connectionStatus.textContent = 'Connecting...';
                 connectionStatus.style.color = '#F57C00';
@@ -515,29 +549,10 @@
                     // Process message for job updates
                     try {
                         const message = JSON.parse(data);
+                        console.log('Received message:', message);
                         
-                        // Debug logging - log message type to console
-                        console.log(`Received message type: ${message.type}`);
-                        
-                        if (message.type === 'job_update' || message.type === 'job_status' || 
-                            (message.type === 'job_assigned' && message.job_id) || 
-                            (message.type === 'job_completed' && message.job_id)) {
-                            console.log('Processing job message:', message.type, message.job_id);
-                            updateJobStatus(message);
-                        } else if (message.type === 'job_accepted') {
-                            console.log('Processing job accepted message');
-                            // Process job_accepted message according to JobAcceptedMessage model
-                            handleJobSubmission(message);
-                        } else if (message.type === 'stats_response') {
-                            console.log('Processing stats response message', message);
-                            // Add visual indicator for stats updates
-                            addMessage('Received stats update - updating system overview panels', 'system');
-                            updateSystemOverview(message);
-                        } else if (message.type === 'error') {
-                            console.log('Processing error message');
-                            // Handle error messages
-                            handleJobSubmission(message);
-                        }
+                        // Process the message for UI updates
+                        processIncomingMessage(message);
                     } catch (e) {
                         console.error('Error parsing message:', e);
                         // Not JSON or other error
@@ -685,21 +700,33 @@
                 // Create a random seed
                 const seed = Math.floor(Math.random() * 1000000);
                 
-                // Create a properly formatted submit_job message according to SubmitJobMessage schema
-                const jobMessage = JSON.stringify({
+                // Create a properly formatted submit_job message
+                const jobData = {
                     "type": "submit_job",
-                    "job_type": "test_job",  // Required field
-                    "priority": 0,           // Must be an integer
-                    "payload": {              // Required field
+                    "job_type": "test_job",
+                    "priority": 0,
+                    "payload": {
                         "description": "Test job for debug interface",
                         "width": 512,
                         "height": 512,
                         "steps": 30,
                         "seed": seed
                     }
-                });
-
-                submitJobToServer(jobMessage, 0);
+                };
+                
+                // Send the job message
+                const jobMessage = JSON.stringify(jobData);
+                ws.send(jobMessage);
+                addMessage(jobMessage, 'sent');
+                sentMessages++;
+                totalMessages++;
+                updateStats();
+                
+                // Show the job status section
+                document.getElementById('job-status').style.display = 'block';
+                
+                // Update the job ID display
+                // We'll wait for server confirmation to get the actual job ID
             }
         }
         
@@ -709,61 +736,103 @@
                 // Create a random seed
                 const seed = Math.floor(Math.random() * 1000000);
                 
-                // Create a properly formatted submit_job message with high priority
-                const jobMessage = JSON.stringify({
+                // Create a priority job message
+                const jobData = {
                     "type": "submit_job",
-                    "job_type": "test_job",  // Required field
-                    "priority": 10,          // High priority value
-                    "payload": {              // Required field
-                        "description": "Priority job for debug interface",
+                    "job_type": "test_job",
+                    "priority": 10,  // Higher priority value
+                    "payload": {
+                        "description": "Priority job with priority=10",
                         "width": 512,
                         "height": 512,
                         "steps": 30,
                         "seed": seed
                     }
-                });
-
-                submitJobToServer(jobMessage, 10);
+                };
+                
+                // Send the job message
+                const jobMessage = JSON.stringify(jobData);
+                ws.send(jobMessage);
+                addMessage(jobMessage, 'sent');
+                sentMessages++;
+                totalMessages++;
+                updateStats();
+                
+                // Show the job status section
+                document.getElementById('job-status').style.display = 'block';
             }
         }
         
-        // Common function to submit jobs to the server
-        function submitJobToServer(jobMessage, priority) {
-            // Show the job status section
-            document.getElementById('job-status').style.display = 'block';
-            
-            // Create a temporary job entry for the pending submission
-            const tempJobId = 'pending-' + new Date().getTime();
-            activeJobs[tempJobId] = {
-                id: 'Submitting...',
-                status: 'submitting',
-                progress: 0,
-                priority: priority,
-                position: 'Calculating...',
-                added_at: new Date()
-            };
-            
-            // Update the UI
-            updateActiveJobsList();
-            
-            // Send the message
-            ws.send(jobMessage);
-            addMessage(jobMessage, 'sent');
-            sentMessages++;
-            totalMessages++;
-            updateStats();
+        // Process incoming message for job tracking
+        function processIncomingMessage(message) {
+            try {
+                // Check if it's a job-related message
+                if (['job_update', 'job_status', 'job_accepted', 'job_completed', 'job_assigned'].includes(message.type)) {
+                    console.log(`[${message.type.toUpperCase()}] Job ID: ${message.job_id || 'unknown'}, Status: ${message.status || 'unknown'}, Priority: ${message.priority !== undefined ? message.priority : 'not specified'}`);
+                    
+                    // Update job ID display if this is an accepted job
+                    if (message.type === 'job_accepted' && message.job_id) {
+                        document.getElementById('job-id-display').style.display = 'block';
+                        document.getElementById('latest-job-id').textContent = message.job_id;
+                        
+                        // Add to active jobs list
+                        addOrUpdateJob(message.job_id, message);
+                    }
+                    else if (['job_status', 'job_update', 'job_completed'].includes(message.type) && message.job_id) {
+                        // Update job status in our UI
+                        addOrUpdateJob(message.job_id, message);
+                    }
+                }
+                else if (message.type === 'stats_response') {
+                    updateSystemStats(message);
+                }
+                else if (message.type === 'welcome') {
+                    console.log('Received welcome message:', message);
+                    addMessage(`Connected to server: ${message.message}`, 'system');
+                }
+                else {
+                    console.log('Received message type:', message.type);
+                }
+            } catch (error) {
+                console.error('Error processing message:', error);
+            }
         }
         
         // Function to handle job submission response
         function handleJobSubmission(message) {
             // The JobAcceptedMessage will have a job_id field
             if (message.job_id) {
-                // Remove any temporary job entries
+                console.log('Job submission response received:', message);
+                
+                // Display the job ID prominently in the dedicated area
+                const jobIdDisplay = document.getElementById('job-id-display');
+                const latestJobId = document.getElementById('latest-job-id');
+                jobIdDisplay.style.display = 'block';
+                latestJobId.textContent = message.job_id;
+                
+                // Preserve priority from temporary job if it exists
+                let jobPriority = 0;
                 Object.keys(activeJobs).forEach(key => {
                     if (key.startsWith('pending-')) {
-                        delete activeJobs[key];
+                        jobPriority = Number(activeJobs[key].priority || 0);
+                        console.log(`Found pending job with priority ${jobPriority}`);
                     }
                 });
+                
+                // Use message priority if provided, otherwise use the pending job priority
+                // Ensure it's a valid number with fallback to 0 if NaN
+                let priority;
+                if (message.priority !== undefined) {
+                    priority = Number(message.priority);
+                    if (isNaN(priority)) {
+                        console.warn(`Received NaN priority in message for job ${message.job_id}, using 0`);
+                        priority = 0;
+                    }
+                } else {
+                    priority = jobPriority;
+                }
+                
+                console.log(`Setting job ${message.job_id} priority to ${priority} (type: ${typeof priority})`);
                 
                 // Add to active jobs tracking
                 activeJobs[message.job_id] = {
@@ -771,9 +840,16 @@
                     status: message.status || 'pending',
                     progress: 0,
                     position: message.position || 0,
-                    priority: message.priority || 0,
+                    priority: priority, // Use preserved priority
                     added_at: new Date()
                 };
+                
+                // Remove any temporary job entries after creating the real job
+                Object.keys(activeJobs).forEach(key => {
+                    if (key.startsWith('pending-')) {
+                        delete activeJobs[key];
+                    }
+                });
                 
                 // Show the job status section
                 document.getElementById('job-status').style.display = 'block';
@@ -781,7 +857,7 @@
                 // Update the active jobs list
                 updateActiveJobsList();
                 
-                // Log job submission success
+                // Log job submission success with prominent styling
                 addMessage(`Job submitted successfully. ID: ${message.job_id}`, 'system');
                 
                 // Auto-subscribe to the job updates
@@ -802,10 +878,105 @@
                 addMessage(`Job submission error: ${message.error}`, 'error');
             }
         }
+                // Function to add or update job in the tracking system
+        function addOrUpdateJob(jobId, message) {
+            if (!jobId) {
+                console.error('Cannot add/update job: No job ID provided');
+                return;
+            }
+            
+            // Check if job already exists in our tracking
+            if (activeJobs[jobId]) {
+                // Job exists - update it
+                console.log(`Updating existing job ${jobId} with status: ${message.status || 'unknown'}`);
+                
+                // Update status if provided
+                if (message.status) {
+                    activeJobs[jobId].status = message.status;
+                }
+                
+                // Update progress if provided
+                if (message.progress !== undefined) {
+                    activeJobs[jobId].progress = message.progress;
+                }
+                
+                // Update position if provided
+                if (message.position !== undefined) {
+                    activeJobs[jobId].position = Number(message.position);
+                }
+                
+                // Update priority if provided
+                if (message.priority !== undefined) {
+                    // Ensure priority is a number
+                    const newPriority = Number(message.priority);
+                    if (!isNaN(newPriority)) {
+                        activeJobs[jobId].priority = newPriority;
+                    }
+                }
+                
+                // Add error info if job failed
+                if (message.status === 'failed' && message.error) {
+                    activeJobs[jobId].error = message.error;
+                    addMessage(`❌ Job ${jobId} failed: ${message.error}`, 'system');
+                }
+                
+                // Handle job completion
+                if (message.status === 'completed' || message.status === 'failed') {
+                    activeJobs[jobId].completed_at = new Date();
+                    
+                    // Schedule removal after a delay
+                    const removeDelay = message.status === 'failed' ? 15000 : 5000;
+                    setTimeout(() => {
+                        delete activeJobs[jobId];
+                        updateActiveJobsList();
+                    }, removeDelay);
+                }
+            } else {
+                // New job - add it to tracking
+                console.log(`Adding new job ${jobId} with status: ${message.status || 'pending'}`);
+                
+                activeJobs[jobId] = {
+                    id: jobId,
+                    status: message.status || 'pending',
+                    progress: message.progress || 0,
+                    priority: message.priority !== undefined ? Number(message.priority) : 0,
+                    position: message.position !== undefined ? Number(message.position) : 999999,
+                    added_at: new Date()
+                };
+                
+                // If this is a job acceptance, display it prominently
+                if (message.type === 'job_accepted') {
+                    const jobIdDisplay = document.getElementById('job-id-display');
+                    const latestJobId = document.getElementById('latest-job-id');
+                    jobIdDisplay.style.display = 'block';
+                    latestJobId.textContent = jobId;
+                }
+            }
+            
+            // Update the UI
+            updateActiveJobsList();
+        }
         
         // Function to update job status display
         function updateJobStatus(message) {
             if (message.job_id && message.job_id in activeJobs) {
+                // Store the existing job's priority before updating
+                const existingPriority = activeJobs[message.job_id].priority;
+                const isPriorityJob = existingPriority >= 5; // Using same threshold as in updateActiveJobsList
+                
+                // Get existing position if available
+                const existingPosition = activeJobs[message.job_id].position !== undefined ? 
+                    Number(activeJobs[message.job_id].position) : 999999;
+                
+                console.log(`🔍 DETAILED UPDATE for job ${message.job_id}:`);
+                console.log(`- Current priority: ${existingPriority} (${isPriorityJob ? 'PRIORITY' : 'STANDARD'})`);
+                console.log(`- Current position: ${existingPosition}`);
+                console.log(`- Old status: ${activeJobs[message.job_id].status}`);
+                console.log(`- New status: ${message.status || activeJobs[message.job_id].status}`);
+                console.log(`- Message priority included: ${message.priority !== undefined ? message.priority : 'NOT PRESENT'}`);
+                console.log(`- Message position included: ${message.position !== undefined ? message.position : 'NOT PRESENT'}`);
+                console.log(`- Message raw:`, message);
+                
                 // Update the job in our tracking object
                 activeJobs[message.job_id].status = message.status || activeJobs[message.job_id].status;
                 
@@ -813,16 +984,58 @@
                     activeJobs[message.job_id].progress = message.progress;
                 }
                 
+                // Update position if provided in the message
+                if (message.position !== undefined) {
+                    const newPosition = Number(message.position);
+                    console.log(`📏 Updating job ${message.job_id} position: ${existingPosition} → ${newPosition}`);
+                    activeJobs[message.job_id].position = newPosition;
+                }
+                
+                // CRITICAL FIX: Always preserve priority for priority jobs!
+                // If it's already a priority job (≥5), it MUST stay that way
+                if (isPriorityJob) {
+                    // This is a priority job and should stay that way regardless of the message
+                    console.log(`⭐ PRESERVING priority value ${existingPriority} for priority job ${message.job_id}`);
+                    activeJobs[message.job_id].priority = existingPriority;
+                } else {
+                    // For standard jobs, we can accept updates to priority
+                    if (message.priority !== undefined) {
+                        const newPriority = Number(message.priority);
+                        console.log(`📊 Updating standard job ${message.job_id} priority: ${existingPriority} → ${newPriority}`);
+                        activeJobs[message.job_id].priority = newPriority;
+                    }
+                }
+                
+                // Debug log to confirm final priority
+                console.log(`✅ FINAL priority for job ${message.job_id}: ${activeJobs[message.job_id].priority} ` +
+                    `(${activeJobs[message.job_id].priority >= 5 ? 'PRIORITY' : 'STANDARD'})`);
+                
+                // If this is a priority job, but message doesn't have priority, add debug info
+                if (isPriorityJob && message.priority === undefined) {
+                    console.warn(`⚠️ Priority job ${message.job_id} received update without priority value!`);
+                }
+                
+                // Capture error information for failed jobs
+                if (message.status === 'failed' && message.error) {
+                    activeJobs[message.job_id].error = message.error;
+                    console.error(`Job ${message.job_id} failed with error: ${message.error}`);
+                    // Add a visible error message to the message log
+                    addMessage(`❌ Job ${message.job_id} failed: ${message.error}`, 'system');
+                }
+                
                 // If job completed or failed, schedule it for removal from active jobs list
                 if (message.status === 'completed' || message.status === 'failed') {
                     // Mark the time of completion/failure for display
                     activeJobs[message.job_id].completed_at = new Date();
                     
-                    // Schedule removal after a brief display period
+                    // For failed jobs, keep them visible longer before removing
+                    const removeDelay = message.status === 'failed' ? 15000 : 5000; // 15 seconds for failed, 5 for completed
+                    
+                    // Schedule removal after display period
                     setTimeout(() => {
                         delete activeJobs[message.job_id];
                         updateActiveJobsList();
-                    }, 5000); // Remove after 5 seconds
+                    }, removeDelay);
                 }
                 
                 // Update the UI
@@ -832,8 +1045,17 @@
                 const messages = document.querySelectorAll('.message.received');
                 const lastMessage = messages[messages.length - 1];
                 if (lastMessage && lastMessage.querySelector('pre')?.textContent.includes(message.job_id)) {
-                    lastMessage.style.borderLeftColor = '#FF9800';
-                    lastMessage.style.backgroundColor = '#FFF3E0';
+                    // Use different highlight colors for different statuses
+                    if (message.status === 'failed') {
+                        lastMessage.style.borderLeftColor = '#F44336';
+                        lastMessage.style.backgroundColor = '#FFEBEE';
+                    } else if (message.status === 'completed') {
+                        lastMessage.style.borderLeftColor = '#4CAF50';
+                        lastMessage.style.backgroundColor = '#E8F5E9';
+                    } else {
+                        lastMessage.style.borderLeftColor = '#FF9800';
+                        lastMessage.style.backgroundColor = '#FFF3E0';
+                    }
                 }
             } else if (message.status === 'pending' || message.status === 'processing') {
                 // This is a new job we're not tracking yet - add it
@@ -841,6 +1063,8 @@
                     id: message.job_id,
                     status: message.status,
                     progress: message.progress || 0,
+                    priority: message.priority ? Number(message.priority) : 0, // Ensure priority is included and is a number
+                    position: message.position !== undefined ? Number(message.position) : 999999, // Track position for sorting
                     added_at: new Date()
                 };
                 updateActiveJobsList();
@@ -860,9 +1084,36 @@
             const priorityJobsList = document.getElementById('priority-jobs-list');
             const jobs = Object.values(activeJobs);
             
-            // Separate jobs by priority
-            const standardJobs = jobs.filter(job => !job.priority || job.priority < 5);
-            const priorityJobs = jobs.filter(job => job.priority && job.priority >= 5);
+            console.log('Updating jobs list:', jobs);
+            
+            // Separate jobs by priority - ensure priority is treated as a valid number
+            // Priority value determines categorization regardless of job status
+            const standardJobs = jobs.filter(job => {
+                // Ensure priority is a valid number (not NaN)
+                let jobPriority = Number(job.priority || 0);
+                if (isNaN(jobPriority)) {
+                    console.warn(`Job ${job.id} has NaN priority, setting to 0`);
+                    jobPriority = 0;
+                    // Fix the job object itself
+                    activeJobs[job.id].priority = 0;
+                }
+                
+                console.log(`Job ${job.id} priority: ${jobPriority}, status: ${job.status}`);
+                return jobPriority < 5;
+            });
+            
+            const priorityJobs = jobs.filter(job => {
+                // Ensure priority is a valid number (not NaN)
+                let jobPriority = Number(job.priority || 0);
+                if (isNaN(jobPriority)) {
+                    console.warn(`Job ${job.id} has NaN priority, setting to 0`);
+                    jobPriority = 0;
+                    // Fix the job object itself
+                    activeJobs[job.id].priority = 0;
+                }
+                
+                return jobPriority >= 5;
+            });
             
             // Handle standard jobs
             if (standardJobs.length === 0) {
@@ -870,8 +1121,15 @@
             } else {
                 let standardHtml = '';
                 
-                // Sort jobs by added time (newest first)
-                standardJobs.sort((a, b) => b.added_at - a.added_at);
+                // Sort jobs by position (ascending order - lower position numbers first)
+                standardJobs.sort((a, b) => {
+                    // If both have position, sort by position
+                    if (a.position !== undefined && b.position !== undefined) {
+                        return a.position - b.position;
+                    }
+                    // Fall back to added time if position not available
+                    return a.added_at - b.added_at;
+                });
                 
                 standardJobs.forEach(job => {
                     standardHtml += createJobHtml(job);
@@ -886,12 +1144,19 @@
             } else {
                 let priorityHtml = '';
                 
-                // Sort priority jobs by priority (highest first) then by added time
+                // Sort priority jobs by position (ascending order - lower position numbers first)
                 priorityJobs.sort((a, b) => {
-                    if (b.priority !== a.priority) {
-                        return b.priority - a.priority;
+                    // If both have position, sort by position
+                    if (a.position !== undefined && b.position !== undefined) {
+                        return a.position - b.position;
                     }
-                    return b.added_at - a.added_at;
+                    // Fall back to priority (highest first) then by added time if position not available
+                    const aPriority = Number(a.priority || 0);
+                    const bPriority = Number(b.priority || 0);
+                    if (bPriority !== aPriority) {
+                        return bPriority - aPriority;
+                    }
+                    return a.added_at - b.added_at;
                 });
                 
                 priorityJobs.forEach(job => {
@@ -903,6 +1168,8 @@
         }
         
         function createJobHtml(job) {
+            // Add debug logging to help troubleshoot priority issues
+            console.log(`Creating job HTML for job: ${job.id}, priority: ${job.priority}, type: ${typeof job.priority}`);
             const statusColor = {
                 'pending': '#FFC107',
                 'submitting': '#FFC107',
@@ -931,14 +1198,29 @@
             } else {
                 // For processing/completed/failed jobs, show progress bar
                 jobInfoHtml = `
+                    <div style="padding: 5px 0; background-color: #f9f9f9; border-radius: 4px; margin-bottom: 5px;">
+                        <div style="display: flex; justify-content: space-between; padding: 0 10px;">
+                            <div><strong>Priority:</strong> ${job.priority || 0}</div>
+                            <div><strong>Position:</strong> ${job.position !== undefined ? job.position : 'N/A'}</div>
+                        </div>
+                    </div>
                     <div class="progress-bar-container" style="width: 100%; background-color: #e0e0e0; border-radius: 4px; height: 15px;">
                         <div style="width: ${job.progress}%; background-color: ${statusColor}; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #666;">
                         <div>Progress: ${job.progress}%</div>
-                        <div>${job.completed_at ? 'Completed: ' + job.completed_at.toLocaleTimeString() : 'Added: ' + job.added_at.toLocaleTimeString()}</div>
+                        <div>${job.completed_at ? (job.status === 'failed' ? 'Failed: ' : 'Completed: ') + job.completed_at.toLocaleTimeString() : 'Added: ' + job.added_at.toLocaleTimeString()}</div>
                     </div>
                 `;
+                
+                // Add error message for failed jobs
+                if (job.status === 'failed' && job.error) {
+                    jobInfoHtml += `
+                        <div style="margin-top: 5px; padding: 5px; background-color: #ffebee; border-radius: 4px; color: #d32f2f; font-size: 12px;">
+                            <strong>Error:</strong> ${job.error}
+                        </div>
+                    `;
+                }
             }
             
             return `

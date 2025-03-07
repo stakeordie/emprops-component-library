@@ -108,14 +108,7 @@ const config = defineConfig({
           text: 'Docker',
           items: [
             { text: 'Overview', link: '/docker/' },
-            { text: 'Installation', link: '/docker/installation' },
-            { text: 'ComfyUI Container', link: '/docker/comfyui' },
-            { text: 'Hybrid Container', link: '/docker/hybrid' },
-            { text: 'Queue System', link: '/docker/queue-system' },
-            { text: 'Central Redis Queue', link: '/docker/central-redis' },
-            { text: 'Testing Redis Queue', link: '/docker/central-redis-test' },
-            { text: 'Queue Archtecture', link: '/docker/redis-queue-architecture'},
-            { text: 'Environment & Security', link: '/docker/env-security' }
+            { text: 'Redis Queue Integration', link: '/docker/redis-queue-integration'}
           ]
         }
       ]

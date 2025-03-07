@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmProps Job Sequence Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .job-flow {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .step {
+            flex: 1;
+            min-width: 140px;
+            margin: 0 5px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            border-left: 4px solid #ccc;
+            position: relative;
+        }
+        .step h3 {
+            margin-top: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .step-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            background-color: #ccc;
+        }
+        .step-status.pending { background-color: #ccc; }
+        .step-status.success { background-color: #4CAF50; }
+        .step-status.running { background-color: #2196F3; }
+        .step-status.failed { background-color: #F44336; }
+        
+        .step-arrow {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 20px;
+            z-index: 1;
+        }
+        .log-container {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .log-entry {
+            margin-bottom: 2px;
+            padding: 3px 5px;
+            border-radius: 3px;
+        }
+        .log-system { color: #777; }
+        .log-client { color: #2196F3; }
+        .log-hub { color: #673AB7; }
+        .log-worker { color: #4CAF50; }
+        .log-gpu { color: #FF9800; }
+        
+        .job-info {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #job-id-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EmProps Job Sequence Monitor</h1>
+        
+        <div class="section">
+            <h2>Job Flow Visualization</h2>
+            <div class="controls">
+                <input type="text" id="job-id-input" placeholder="Enter job ID to track">
+                <button id="track-job-btn">Track Job</button>
+                <button id="clear-logs-btn">Clear Logs</button>
+            </div>
+            
+            <div class="job-info" id="current-job-info">
+                No job currently tracked
+            </div>
+            
+            <div class="job-flow">
+                <div class="step" id="step-submission">
+                    <span class="step-status pending"></span>
+                    <h3>1. Job Submission</h3>
+                    <p>Client → API</p>
+                    <span class="step-arrow">→</span>
+                </div>
+                
+                <div class="step" id="step-queue">
+                    <span class="step-status pending"></span>
+                    <h3>2. Queue Storage</h3>
+                    <p>API → Hub → Redis</p>
+                    <span class="step-arrow">→</span>
+                </div>
+                
+                <div class="step" id="step-notify">
+                    <span class="step-status pending"></span>
+                    <h3>3. Worker Notification</h3>
+                    <p>Hub → Workers</p>
+                    <span class="step-arrow">→</span>
+                </div>
+                
+                <div class="step" id="step-claim">
+                    <span class="step-status pending"></span>
+                    <h3>4. Job Claiming</h3>
+                    <p>Worker → Hub</p>
+                    <span class="step-arrow">→</span>
+                </div>
+                
+                <div class="step" id="step-execution">
+                    <span class="step-status pending"></span>
+                    <h3>5. GPU Execution</h3>
+                    <p>Worker → GPU</p>
+                    <span class="step-arrow">→</span>
+                </div>
+                
+                <div class="step" id="step-progress">
+                    <span class="step-status pending"></span>
+                    <h3>6. Progress Updates</h3>
+                    <p>GPU → Worker → Hub → Client</p>
+                    <span class="step-arrow">→</span>
+                </div>
+                
+                <div class="step" id="step-completion">
+                    <span class="step-status pending"></span>
+                    <h3>7. Job Completion</h3>
+                    <p>GPU → Worker → Hub → Client</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Real-time Logs</h2>
+            <div class="log-container" id="log-container">
+                <div class="log-entry log-system">System: Waiting for job tracking to start...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const jobIdInput = document.getElementById('job-id-input');
+        const trackJobBtn = document.getElementById('track-job-btn');
+        const clearLogsBtn = document.getElementById('clear-logs-btn');
+        const currentJobInfo = document.getElementById('current-job-info');
+        const logContainer = document.getElementById('log-container');
+        
+        // Step elements for updating status
+        const steps = {
+            submission: document.getElementById('step-submission'),
+            queue: document.getElementById('step-queue'),
+            notify: document.getElementById('step-notify'),
+            claim: document.getElementById('step-claim'),
+            execution: document.getElementById('step-execution'),
+            progress: document.getElementById('step-progress'),
+            completion: document.getElementById('step-completion')
+        };
+        
+        // Log levels for different components
+        const LOG_LEVELS = {
+            SYSTEM: 'system',
+            CLIENT: 'client',
+            HUB: 'hub',
+            WORKER: 'worker',
+            GPU: 'gpu'
+        };
+        
+        // Docker container names to log sources mapping
+        const CONTAINER_SOURCES = {
+            'mock-env-api-1': LOG_LEVELS.CLIENT,
+            'mock-env-hub-1': LOG_LEVELS.HUB,
+            'mock-env-gpu1-1': LOG_LEVELS.GPU,
+            'mock-env-gpu2-1': LOG_LEVELS.GPU,
+            'mock-env-gpu3-1': LOG_LEVELS.GPU,
+            'mock-env-gpu4-1': LOG_LEVELS.GPU,
+            'mock-env-gpu5-1': LOG_LEVELS.GPU
+        };
+        
+        // WebSocket connection for log streaming
+        let ws = null;
+        let currentJobId = null;
+        
+        // Initialize the monitor
+        function initMonitor() {
+            // Event listeners
+            trackJobBtn.addEventListener('click', startJobTracking);
+            clearLogsBtn.addEventListener('click', clearLogs);
+            
+            // Add a test log entry
+            addLogEntry('Sequence monitor initialized and ready', LOG_LEVELS.SYSTEM);
+            
+            // Connect to WebSocket for log streaming
+            connectWebSocket();
+        }
+        
+        // Connect to WebSocket for real-time updates
+        function connectWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsHost = window.location.host;
+            const clientId = 'monitor-' + Math.random().toString(36).substring(2, 10);
+            const wsUrl = `${wsProtocol}//${wsHost}/ws/client/${clientId}`;
+            
+            addLogEntry(`Connecting to WebSocket at ${wsUrl}`, LOG_LEVELS.SYSTEM);
+            
+            const socket = new WebSocket(wsUrl);
+            
+            socket.onopen = function(e) {
+                addLogEntry('WebSocket connection established', LOG_LEVELS.SYSTEM);
+                
+                // Subscribe to stats updates
+                const statsMsg = { type: 'subscribe_stats' };
+                socket.send(JSON.stringify(statsMsg));
+                addLogEntry('Subscribed to system stats', LOG_LEVELS.SYSTEM);
+            };
+            
+            socket.onmessage = function(event) {
+                try {
+                    const message = JSON.parse(event.data);
+                    console.log('Received WebSocket message:', message);
+                    
+                    // Enhanced message logging with timestamp
+                    const timestamp = new Date().toLocaleTimeString();
+                    addLogEntry(`[${timestamp}] Received: ${message.type}`, LOG_LEVELS.SYSTEM);
+                    
+                    // ENHANCED: Handle more job-related message types and normalize them
+                    if (message.type === 'job_status' || 
+                        message.type === 'job_update' || 
+                        message.type === 'job_accepted' || 
+                        message.type === 'job_completed' || 
+                        message.type === 'job_assigned' || 
+                        message.type === 'error') {
+                        
+                        // Log all job-related messages for debugging
+                        console.log(`JOB MESSAGE RECEIVED: ${message.type}`, message);
+                        
+                        // Handle job messages - either for the current job or if no job is selected yet
+                        // Always update the UI if the message is for the currently tracked job
+                        if (message.job_id === currentJobId) {
+                            // We're already tracking this job, update the UI
+                            updateJobInfo(message);
+                            
+                            // Add detailed log entry with job ID and status
+                            const statusText = message.status || 
+                                               (message.type === 'job_completed' ? 'completed' : 
+                                               (message.type === 'job_assigned' ? 'assigned' : 'N/A'));
+                                               
+                            addLogEntry(`Job ${message.job_id}: ${message.type} - ${statusText}`, LOG_LEVELS.HUB);
+                        } 
+                        else if (!currentJobId) {
+                            // No job currently being tracked, so track this one
+                            currentJobId = message.job_id;
+                            currentJobInfo.textContent = `Tracking job: ${message.job_id}`;
+                            updateJobInfo(message);
+                            addLogEntry(`Started tracking job ${message.job_id}`, LOG_LEVELS.SUCCESS);
+                        }
+                        else {
+                            // This is for a different job than we're tracking
+                            // Just log it but don't update the UI
+                            addLogEntry(`Other job ${message.job_id}: ${message.type} - ${message.status || 'N/A'}`, LOG_LEVELS.INFO);
+                        }
+                    }
+                    else if (message.type === 'stats_response') {
+                        updateSystemStats(message);
+                    }
+                    else if (message.type === 'worker_update') {
+                        updateWorkerInfo(message);
+                    }
+                    else if (message.type === 'welcome') {
+                        // Server welcome message - good chance to request any needed data
+                        console.log('Connected to server:', message.message);
+                        addLogEntry(`Connected to server: ${message.message}`, LOG_LEVELS.SUCCESS);
+                    }
+                }
+                else if (message.type === 'welcome') {
+                    addLogEntry(`Server message: ${message.message}`, LOG_LEVELS.SYSTEM);
+                }
+            };
+            
+            socket.onclose = function(event) {
+                if (event.wasClean) {
+                    addLogEntry(`Connection closed cleanly, code=${event.code} reason=${event.reason}`, LOG_LEVELS.SYSTEM);
+                } else {
+                    addLogEntry('Connection died unexpectedly', LOG_LEVELS.SYSTEM);
+                    setTimeout(connectWebSocket, 5000); // Try to reconnect after 5 seconds
+                }
+            };
+            
+            socket.onerror = function(error) {
+                addLogEntry(`WebSocket error: ${error.message}`, LOG_LEVELS.SYSTEM);
+            };
+            
+            // Store socket reference globally
+            window.monitorSocket = socket;
+        }
+        
+        // Start tracking a specific job
+        function startJobTracking() {
+            const jobId = jobIdInput.value.trim();
+            
+            if (!jobId) {
+                addLogEntry('Please enter a valid job ID', LOG_LEVELS.SYSTEM);
+                return;
+            }
+            
+            currentJobId = jobId;
+            resetStepStatuses();
+            currentJobInfo.textContent = `Tracking job: ${jobId}`;
+            
+            addLogEntry(`Started tracking job ${jobId}`, LOG_LEVELS.SYSTEM);
+            
+            // Subscribe to this job via WebSocket
+            if (window.monitorSocket && window.monitorSocket.readyState === WebSocket.OPEN) {
+                const subscribeMsg = {
+                    type: 'subscribe_job',
+                    job_id: jobId
+                };
+                window.monitorSocket.send(JSON.stringify(subscribeMsg));
+                addLogEntry(`Subscribed to updates for job ${jobId}`, LOG_LEVELS.SYSTEM);
+                
+                // Also request current job status
+                const statusMsg = {
+                    type: 'get_job_status',
+                    job_id: jobId
+                };
+                window.monitorSocket.send(JSON.stringify(statusMsg));
+                addLogEntry(`Requested current status for job ${jobId}`, LOG_LEVELS.SYSTEM);
+            } else {
+                addLogEntry('WebSocket not connected, cannot track job', LOG_LEVELS.SYSTEM);
+            }
+        }
+        
+        // Reset all step statuses to pending
+        function resetStepStatuses() {
+            Object.values(steps).forEach(step => {
+                const statusElement = step.querySelector('.step-status');
+                statusElement.className = 'step-status pending';
+            });
+        }
+        
+        // Update the status of a step
+        function updateStepStatus(stepKey, status) {
+            const step = steps[stepKey];
+            if (!step) return;
+            
+            const statusElement = step.querySelector('.step-status');
+            statusElement.className = `step-status ${status}`;
+        }
+        
+        // Add a log entry to the log container
+        function addLogEntry(message, level = LOG_LEVELS.SYSTEM) {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${level}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${level.toUpperCase()}: ${message}`;
+            
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // Clear all logs
+        function clearLogs() {
+            logContainer.innerHTML = '';
+            addLogEntry('Logs cleared', LOG_LEVELS.SYSTEM);
+        }
+        
+        // Update system stats in the UI
+        function updateSystemStats(data) {
+            console.log('Updating system stats:', data);
+            
+            // Update workers information
+            if (data.workers) {
+                const workerCount = Object.keys(data.workers).length;
+                if (workerCount > 0) {
+                    workersSection.innerHTML = '<h2>Workers</h2>';
+                    for (const [workerId, workerInfo] of Object.entries(data.workers)) {
+                        const workerDiv = document.createElement('div');
+                        workerDiv.classList.add('job-info');
+                        workerDiv.innerHTML = `
+                            <strong>Worker:</strong> ${workerId}<br>
+                            <strong>Status:</strong> ${workerInfo.status || 'unknown'}<br>
+                            <strong>Jobs:</strong> ${workerInfo.job_count || 0}
+                        `;
+                        workersSection.appendChild(workerDiv);
+                    }
+                } else {
+                    workersSection.innerHTML = '<h2>Workers</h2><div class="job-info">No worker data available</div>';
+                }
+            }
+            
+            // Update jobs queue information
+            if (data.jobs) {
+                const jobCount = Object.keys(data.jobs).length;
+                if (jobCount > 0) {
+                    jobsSection.innerHTML = '<h2>Jobs Queue</h2>';
+                    for (const [jobId, jobInfo] of Object.entries(data.jobs)) {
+                        const jobDiv = document.createElement('div');
+                        jobDiv.classList.add('job-info');
+                        jobDiv.innerHTML = `
+                            <strong>Job ID:</strong> ${jobId}<br>
+                            <strong>Type:</strong> ${jobInfo.job_type || 'unknown'}<br>
+                            <strong>Status:</strong> ${jobInfo.status || 'unknown'}<br>
+                            <strong>Priority:</strong> ${jobInfo.priority || 0}
+                        `;
+                        jobsSection.appendChild(jobDiv);
+                    }
+                } else {
+                    jobsSection.innerHTML = '<h2>Jobs Queue</h2><div class="job-info">No job data available</div>';
+                }
+            }
+            
+            // Update subscriptions information
+            if (data.subscriptions) {
+                const subCount = Object.keys(data.subscriptions).length;
+                if (subCount > 0) {
+                    subscriptionsSection.innerHTML = '<h2>Subscriptions</h2>';
+                    for (const [clientId, subs] of Object.entries(data.subscriptions)) {
+                        const subDiv = document.createElement('div');
+                        subDiv.classList.add('job-info');
+                        subDiv.innerHTML = `
+                            <strong>Client:</strong> ${clientId}<br>
+                            <strong>Subscribed to:</strong> ${subs.join(', ') || 'none'}
+                        `;
+                        subscriptionsSection.appendChild(subDiv);
+                    }
+                } else {
+                    subscriptionsSection.innerHTML = '<h2>Subscriptions</h2><div class="job-info">No subscription data available</div>';
+                }
+            }
+        }
+        
+        // Update job info in the UI based on real data
+        function updateJobInfo(message) {
+            console.log('Updating job info:', message);
+            if (!message || !message.job_id) return;
+            
+            // Add verbose logging to see exact message content
+            console.log(`RECEIVED UPDATE FOR JOB ${message.job_id}:`, JSON.stringify(message, null, 2));
+            addLogEntry(`Job update received: ${message.job_id} - Status: ${message.status || 'unknown'}`, LOG_LEVELS.INFO);
+            
+            // Update the current job info display
+            if (currentJobId === message.job_id) {
+                // Update the visual status display
+                currentJobInfo.textContent = `Tracking job: ${message.job_id} (${message.status || 'unknown'})`;
+                
+                // Add additional status information if present
+                if (message.progress) {
+                    currentJobInfo.textContent += ` - Progress: ${message.progress}`;
+                }
+                
+                // Normalize status - handle both message.status and specialized message types
+                let status = message.status || 'unknown';
+                
+                // Derive status from message type if not explicitly provided
+                if (status === 'unknown' && message.type) {
+                    console.log(`Deriving status from message type: ${message.type}`);
+                    if (message.type === 'job_completed') {
+                        status = 'completed';
+                    } else if (message.type === 'job_assigned') {
+                        status = 'assigned';
+                    } else if (message.type === 'job_accepted') {
+                        status = 'queued';
+                    }
+                }
+                
+                console.log(`Processing job update with normalized status: ${status}`);
+                
+                // Always update the job_tree to show the most recent data
+                const jobTreeDiv = document.getElementById('job-tree');
+                if (jobTreeDiv) {
+                    const statusInfo = document.createElement('div');
+                    statusInfo.className = 'status-update';
+                    statusInfo.innerHTML = `<strong>${new Date().toISOString()}</strong>: Status = ${status}`;
+                    jobTreeDiv.appendChild(statusInfo);
+                }
+                
+                // Update step status based on the job status
+                switch (status) {
+                    case 'created':
+                        updateStepStatus('creation', 'success');
+                        break;
+                    case 'pending':
+                    case 'queued':
+                        updateStepStatus('creation', 'success');
+                        updateStepStatus('queued', 'success');
+                        break;
+                    case 'assigned':
+                        updateStepStatus('creation', 'success');
+                        updateStepStatus('queued', 'success');
+                        updateStepStatus('assigned', 'success');
+                        break;
+                    case 'running':
+                    case 'executing':
+                        updateStepStatus('creation', 'success');
+                        updateStepStatus('queued', 'success');
+                        updateStepStatus('assigned', 'success');
+                        updateStepStatus('execution', 'running');
+                        break;
+                    case 'completed':
+                        updateStepStatus('creation', 'success');
+                        updateStepStatus('queued', 'success');
+                        updateStepStatus('assigned', 'success');
+                        updateStepStatus('execution', 'success');
+                        updateStepStatus('completion', 'success');
+                        
+                        // Show job completion notification
+                        addLogEntry(`🎉 Job ${message.job_id} completed successfully!`, LOG_LEVELS.SUCCESS);
+                        break;
+                    case 'failed':
+                        // Mark the appropriate step as failed based on the error info
+                        if (message.error_stage) {
+                            updateStepStatus(message.error_stage, 'failed');
+                        } else {
+                            // If no specific stage, mark execution as failed
+                            updateStepStatus('execution', 'failed');
+                        }
+                        
+                        // Show failure information
+                        const errorMessage = message.error || 'Unknown error';
+                        addLogEntry(`❌ Job ${message.job_id} failed: ${errorMessage}`, LOG_LEVELS.ERROR);
+                        break;
+                    default:
+                        console.log(`Unhandled job status: ${status}`);
+                }
+            } else {
+                // This is an update for a job we're not currently tracking
+                // Log it in case the user wants to switch to tracking it
+                console.log(`Received update for non-tracked job: ${message.job_id}`);
+                addLogEntry(`Update for job ${message.job_id}: Status = ${message.status || message.type || 'unknown'}`, LOG_LEVELS.INFO);
+            }
+        }
+        
+        // Update worker information in the UI
+        function updateWorkerInfo(message) {
+            // Implementation depends on the worker message format
+            console.log('Worker update received:', message);
+            addLogEntry(`Worker update: ${JSON.stringify(message)}`, LOG_LEVELS.WORKER);
+        }
+        
+        // Initialize the monitor when the page loads
+        window.addEventListener('load', initMonitor);
+    </script>
+</body>
+</html>
