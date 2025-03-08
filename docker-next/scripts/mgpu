@@ -1,0 +1,486 @@
+#!/bin/bash
+
+# Base directory for your ComfyUI instances
+ROOT="${ROOT:-/workspace}"
+LOG_DIR="${ROOT}/logs"
+START_LOG="${LOG_DIR}/start.log"
+
+# Ensure log directory exists
+mkdir -p "$LOG_DIR"
+chmod 755 "$LOG_DIR"
+touch "$START_LOG"
+chmod 644 "$START_LOG"
+
+# Source environment variables
+if [ -f /etc/environment ]; then
+    while IFS='=' read -r key value; do
+        if [ -n "$key" ]; then
+            # Remove any leading/trailing whitespace and quotes
+            key=$(echo "$key" | tr -d '"' | xargs)
+            value=$(echo "$value" | tr -d '"' | xargs)
+            export "$key=$value"
+        fi
+    done < /etc/environment
+fi
+
+log() {
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local msg="[MGPU] $*"
+    
+    # Ensure log directory exists
+    if [ ! -d "$LOG_DIR" ]; then
+        mkdir -p "$LOG_DIR"
+        chmod 755 "$LOG_DIR"
+    fi
+    
+    # Ensure log file exists and is writable
+    if [ ! -f "$START_LOG" ]; then
+        touch "$START_LOG"
+        chmod 644 "$START_LOG"
+    fi
+    
+    if [ -w "$START_LOG" ]; then
+        echo "[$timestamp] $msg" | tee -a "$START_LOG" >&2
+    else
+        echo "[$timestamp] $msg (Warning: Could not write to $START_LOG)" >&2
+    fi
+}
+
+# Test logging at startup
+log "MGPU script starting, log file: $START_LOG"
+
+# Add debug logging at start (only once)
+if [ "${DEBUG:-}" = "true" ]; then
+    log "Debug: Environment variables at script start:"
+    log "NUM_GPUS=${NUM_GPUS:-not set}"
+    log "ROOT=$ROOT"
+    log "PATH=$PATH"
+    log "MOCK_GPU=${MOCK_GPU:-not set}"
+fi
+
+# Validate GPU ID
+validate_gpu_id() {
+    local gpu_id=$1
+
+    # Special case for 'all'
+    if [ "$gpu_id" = "all" ]; then
+        [ "${DEBUG:-}" = "true" ] && log "Debug: Validating GPU ID: all"
+        return 0
+    fi
+
+    # Check if gpu_id is a number
+    if ! [[ "$gpu_id" =~ ^[0-9]+$ ]]; then
+        log "Error: Invalid GPU ID '$gpu_id'. Must be a number or 'all'"
+        return 1
+    fi
+
+    [ "${DEBUG:-}" = "true" ] && log "Debug: Validating GPU ID: $gpu_id"
+    [ "${DEBUG:-}" = "true" ] && log "Debug: Current NUM_GPUS value: $NUM_GPUS"
+
+    # Check if gpu_id is within range
+    if [ "$gpu_id" -ge "${NUM_GPUS:-0}" ]; then
+        log "Error: GPU ID '$gpu_id' is out of range. Must be between 0 and $((NUM_GPUS-1))"
+        return 1
+    fi
+
+    return 0
+}
+
+# Function to show logs
+show_logs() {
+    # Check if multitail is available
+    if ! command -v multitail >/dev/null 2>&1; then
+        log "ERROR: multitail is not installed. Please install it first."
+        return 1
+    fi
+
+    # Define colors for each GPU
+    local colors=("green" "yellow" "blue" "magenta" "cyan" "red" "white" "purple")
+    
+        # If only one GPU is specified, use tail instead of multitail
+    if [ "$#" -eq 1 ] && [ "$1" != "all" ]; then
+        local gpu=$1
+        # Validate GPU number
+        if ! [[ "$gpu" =~ ^[0-9]+$ ]]; then
+            log "Error: Invalid GPU ID '$gpu'"
+            return 1
+        fi
+        if [ "$gpu" -ge "${NUM_GPUS:-0}" ]; then
+            log "Error: GPU ID '$gpu' is out of range"
+            return 1
+        fi
+        
+        local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+        if [ -f "$log_file" ]; then
+            log "Starting log view for GPU $gpu (Ctrl+C to exit)"
+            tail -f "$log_file"
+            return 0
+        else
+            log "ERROR: Log file not found for GPU $gpu"
+            return 1
+        fi
+    fi
+    
+    # For multiple GPUs or 'all', use multitail
+    if ! command -v multitail >/dev/null 2>&1; then
+        log "ERROR: multitail is not installed. Please install it first."
+        return 1
+    fi
+
+    # Build the multitail command
+    local cmd="multitail --mergeall -m 5000"  # 5000 lines of scroll buffer
+    
+    if [ "$1" = "all" ]; then
+        # Show all available GPUs
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+            if [ -f "$log_file" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU$gpu: \" $log_file"
+            fi
+        done
+    else
+        # Handle specific GPU numbers
+        local found_valid=false
+        for gpu in "$@"; do
+            # Validate GPU number
+            if ! [[ "$gpu" =~ ^[0-9]+$ ]]; then
+                log "Warning: Invalid GPU ID '$gpu'. Skipping..."
+                continue
+            fi
+            if [ "$gpu" -ge "${NUM_GPUS:-0}" ]; then
+                log "Warning: GPU ID '$gpu' is out of range. Skipping..."
+                continue
+            fi
+            
+            local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+            if [ -f "$log_file" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU$gpu: \" $log_file"
+                found_valid=true
+            else
+                log "Warning: Log file not found for GPU $gpu"
+            fi
+        done
+        
+        if [ "$found_valid" = "false" ]; then
+            log "ERROR: No valid GPU logs found"
+            return 1
+        fi
+    fi
+    
+    if [ "$cmd" = "multitail --mergeall -m 5000" ]; then
+        log "ERROR: No log files found"
+        return 1
+    fi
+    
+    # Execute the multitail command
+    log "Starting log view (Press 'b' to scroll, 'q' to exit scroll mode, Ctrl+C to exit)"
+    eval "$cmd"
+}
+
+# Function to start a specific GPU service
+start_service() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        start_all_services
+        return $?
+    fi
+    
+    log "Starting service for GPU $gpu_id..."
+    # Pass test_gpus as third parameter if MOCK_GPU is set
+    if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        service comfyui start "$gpu_id" "1" || return 1
+    else
+        service comfyui start "$gpu_id" || return 1
+    fi
+}
+
+# Function to start all GPU services
+start_all_services() {
+    log "Starting all GPU services..."
+    local failed=0
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        # Pass test_gpus as third parameter if MOCK_GPU is set
+        if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+            start_service "$gpu" || failed=1
+        else
+            start_service "$gpu" || failed=1
+        fi
+    done
+    return $failed
+}
+
+# Function to stop a specific GPU service
+stop_service() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        stop_all_services
+        return
+    fi
+    
+    # Validate GPU ID first (only once)
+    validate_gpu_id "$gpu_id" >/dev/null || return 1
+    
+    log "Stopping service for GPU $gpu_id..."
+    service comfyui stop "$gpu_id"
+}
+
+# Internal function to stop a service
+stop_service_internal() {
+    local gpu_id=$1
+    service comfyui stop "$gpu_id"
+}
+
+# Function to stop all GPU services
+stop_all_services() {
+    local failed=0
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        if ! stop_service "$gpu"; then
+            failed=1
+        fi
+    done
+    return $failed
+}
+
+## Function to restart a specific GPU service
+restart_service() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        restart_all_services
+        return
+    fi
+    
+    # Validate GPU ID first (only once)
+    validate_gpu_id "$gpu_id" >/dev/null || return 1
+    
+    log "Restarting service for GPU $gpu_id..."
+    service comfyui restart "$gpu_id"
+}
+
+# Function to restart all GPU services
+restart_all_services() {
+    local failed=0
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        if ! restart_service "$gpu"; then
+            failed=1
+        fi
+    done
+    return $failed
+}
+
+# Function to check status of a specific GPU service
+check_status() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        check_all_status
+        return $?
+    fi
+    
+    # Validate GPU ID first (only once)
+    validate_gpu_id "$gpu_id" >/dev/null || return 1
+    
+    # Capture the output of comfyui status
+    local status_output
+    status_output=$(service comfyui status "$gpu_id" 2>&1)
+    local exit_code=$?
+    
+    # Extract status from the output (matches "Service is running" or "Service is not running")
+    if echo "$status_output" | grep -q "Service is running"; then
+        printf "GPU %d: %s\n" "$gpu_id" "$(echo "$status_output" | grep "Service is" | sed "s/\[.*\] //")"
+        return 0
+    else
+        printf "GPU %d: %s\n" "$gpu_id" "$(echo "$status_output" | grep "Service is" | sed "s/\[.*\] //")"
+        return $exit_code
+    fi
+}
+
+# Function to check status of all GPU services
+check_all_status() {
+    local failed=0
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        if ! check_status "$gpu"; then
+            failed=1
+        fi
+    done
+    return $failed
+}
+
+# Function to setup ComfyUI for a specific GPU or CPU
+setup_gpu() {
+    local gpu_id=$1
+    local target_dir
+    
+    if [ "$gpu_id" = "all" ]; then
+        setup_all_gpus
+        return $?
+    else
+        target_dir="${ROOT}/comfyui_gpu${gpu_id}"
+    fi
+    
+    log "Setting up ComfyUI for ${gpu_id}..."
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$target_dir"
+    chmod 755 "$target_dir"
+    
+    # Use COMFY_REPO_URL environment variable with fallback
+    local repo_url="${COMFY_REPO_URL:-https://github.com/comfyanonymous/ComfyUI.git}"
+    local base_commit="0c04a6ae780b5eefb1a701467439ae1235607a4f"
+    
+    log "Cloning ComfyUI from ${repo_url} for ${gpu_id}..."
+    if ! git clone "$repo_url" "$target_dir"; then
+        log "ERROR: Failed to clone ComfyUI"
+        return 1
+    fi
+    
+    cd "$target_dir" || return 1
+    
+    # Handle different branches based on whether it's a fork
+    if [ "$repo_url" = "https://github.com/stakeordie/ComfyUI.git" ]; then
+        log "Fork detected, checking out websocket_version branch..."
+        if ! git checkout websocket_version; then
+            log "ERROR: Failed to checkout websocket_version branch"
+            return 1
+        fi
+    else
+        log "Base repo detected, resetting to specific commit ${base_commit}..."
+        if ! git reset --hard "$base_commit"; then
+            log "ERROR: Failed to reset to specific commit"
+            return 1
+        fi
+    fi
+    cd - > /dev/null || return 1
+    
+    # Create logs directory
+    mkdir -p "${target_dir}/logs"
+    chmod 755 "${target_dir}/logs"
+    touch "${target_dir}/logs/output.log"
+    chmod 644 "${target_dir}/logs/output.log"
+    
+    # Verify setup
+    if [ ! -f "${target_dir}/main.py" ]; then
+        log "ERROR: Setup failed - main.py not found in $target_dir"
+        return 1
+    fi
+    
+    log "Setup complete for ${gpu_id}"
+
+    
+    # Handle workflows directory
+    if [ -d "${target_dir}/user/default/workflows" ]; then
+        log "Removing existing workflows directory..."
+        rm -rf "${target_dir}/user/default/workflows"
+    fi
+    
+    if [ ! -d "${target_dir}/user/default" ]; then
+        log "Creating user/default directory..."
+        mkdir -p "${target_dir}/user/default"
+    fi
+    
+    if [ ! -L "${target_dir}/user/default/workflows" ]; then
+        log "Symlinking workflows directory..."
+        ln -s "/workspace/shared/workflows" "${target_dir}/user/default/workflows"
+    fi
+    
+    return 0
+}
+
+# Function to setup all GPU directories
+setup_all_gpus() {
+    local failed=0
+    for gpu in $(seq 0 $((NUM_GPUS-1))); do
+        setup_gpu "$gpu" || failed=1
+    done
+    return $failed
+}
+
+# Show usage information
+show_usage() {
+    cat << EOF
+Usage: $0 COMMAND [gpu_id] [options]
+
+Commands:
+    start   [gpu_id]       Start ComfyUI service for GPU
+    stop    [gpu_id]       Stop ComfyUI service for GPU
+    restart [gpu_id]       Restart ComfyUI service for GPU
+    status  [gpu_id]       Show status of ComfyUI service for GPU
+    logs    [gpu_id] [-n]  Show logs for GPU (default: follow mode, -n for no-follow)
+    setup   [gpu_id]       Setup ComfyUI for GPU
+    count                  Show number of available GPUs
+
+Arguments:
+    gpu_id                 GPU ID (0-N) or 'all' for all GPUs
+    
+Options:
+    -n, no-follow         For logs: show recent logs and exit (default: follow mode)
+
+Examples:
+    $0 start 0            Start ComfyUI on GPU 0
+    $0 start all          Start ComfyUI on all GPUs
+    $0 logs 0             Follow logs for GPU 0
+    $0 logs all           Follow logs for all GPUs
+    $0 logs 0 -n          Show recent logs for GPU 0 and exit
+EOF
+}
+
+# Function to show GPU count
+show_count() {
+    if [ "${MOCK_GPU:-0}" = "1" ]; then
+        echo "${NUM_GPUS}"
+    else
+        # Try to get real GPU count from nvidia-smi
+        if command -v nvidia-smi >/dev/null 2>&1; then
+            nvidia-smi --query-gpu=gpu_name --format=csv,noheader | wc -l
+        else
+            echo "0"
+        fi
+    fi
+}
+
+# Main command handling
+case "$1" in
+    start|stop|restart|status|logs|setup|count)
+        if [ -z "$2" ] && [ "$1" != "count" ]; then
+            show_usage
+            exit 1
+        fi
+        case "$1" in
+            start)
+                start_service "$2"
+                ;;
+            stop)
+                stop_service "$2"
+                ;;
+            restart)
+                restart_service "$2"
+                ;;
+            status)
+                check_status "$2"
+                ;;
+            logs)
+                if [ -z "$2" ]; then
+                    show_logs "all"
+                else
+                    shift  # Remove 'logs' from arguments
+                    show_logs "$@"  # Pass all remaining arguments to show_logs
+                fi
+                ;;
+            setup)
+                setup_gpu "$2"
+                ;;
+            count)
+                show_count
+                ;;
+        esac
+        ;;
+    *)
+        show_usage
+        exit 1
+        ;;
+esac

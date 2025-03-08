@@ -1,0 +1,284 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          comfyui
+# Required-Start:    $network
+# Required-Stop:     $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start ComfyUI
+### END INIT INFO
+
+# Paths
+ROOT="${ROOT:-/workspace}"
+NUM_GPUS="${NUM_GPUS:-0}"  # Default to CPU mode
+
+# Use MOCK_GPU and COMFY_ARGS as provided by environment
+if [ "${MOCK_GPU:-0}" = "1" ]; then
+    export COMFY_ARGS="--cpu"
+fi
+
+# Setup logging
+setup_logs() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    
+    # Create log directories
+    mkdir -p "${WORK_DIR}/logs"
+    chmod 755 "${WORK_DIR}/logs"
+    
+    # Create empty log file if it doesn't exist
+    touch "${WORK_DIR}/logs/output.log"
+    chmod 644 "${WORK_DIR}/logs/output.log"
+}
+
+log() {
+    local GPU_NUM=$1
+    shift
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local msg="[ComfyUI GPU${GPU_NUM}] $*"
+    local log_line="[$timestamp] $msg"
+    
+    # Always write to start.log
+    if [ -w "${ROOT}/logs/start.log" ]; then
+        echo "$log_line" >> "${ROOT}/logs/start.log"
+    else
+        echo "WARNING: Cannot write to ${ROOT}/logs/start.log" >&2
+    fi
+    
+    # Write to service-specific logs
+    local LOG_DIR="${ROOT}/comfyui_gpu${GPU_NUM}/logs"
+    
+    if [ -d "$LOG_DIR" ]; then
+        echo "$log_line" >> "${LOG_DIR}/output.log"
+    fi
+    
+    # Always echo to stdout for Docker logs
+    echo "$msg"
+}
+
+start() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    local PORT=$((8188 + GPU_NUM))
+    
+    # Setup logs first
+    setup_logs "$GPU_NUM"
+    
+    # Check if already running
+    if [ -f "${WORK_DIR}/comfyui.pid" ] && kill -0 "$(cat "${WORK_DIR}/comfyui.pid")" 2>/dev/null; then
+        if netstat -tuln | grep -q ":$PORT "; then
+            log "$GPU_NUM" "Service is already running"
+            return 0
+        fi
+    fi
+    
+    # Ensure directory exists and has main.py
+    cd "$WORK_DIR" || {
+        log "$GPU_NUM" "ERROR: Working directory $WORK_DIR does not exist"
+        return 1
+    }
+    
+    if [ ! -f "main.py" ]; then
+        log "$GPU_NUM" "ERROR: main.py not found in $WORK_DIR"
+        return 1
+    fi
+    
+    # Ensure port is free
+    if netstat -tuln | grep -q ":$PORT "; then
+        log "$GPU_NUM" "ERROR: Port $PORT is already in use"
+        return 1
+    fi
+    
+    log "$GPU_NUM" "Starting ComfyUI service for GPU $GPU_NUM"
+    
+    # Build command with any additional args
+    local CMD="python main.py --listen 127.0.0.1 --port $PORT --extra-model-paths-config ${ROOT}/shared/comfy_dir_config.yaml"
+    
+    # Add mode-specific args
+    log "$GPU_NUM" "COMFYUI: Building command... GPU_NUM=$GPU_NUM MOCK_GPU=${MOCK_GPU:-0}"
+    if [ "${MOCK_GPU:-0}" = "1" ]; then
+        log "$GPU_NUM" "COMFYUI: Adding --cpu flag (Mock GPU mode)"
+        CMD="$CMD --cpu"
+    else
+        log "$GPU_NUM" "COMFYUI: Adding CUDA_VISIBLE_DEVICES=$GPU_NUM"
+        CMD="CUDA_VISIBLE_DEVICES=$GPU_NUM $CMD"
+    fi
+    
+    # Add any additional args from COMFY_ARGS
+    if [ -n "${COMFY_ARGS:-}" ]; then
+        if [[ "$CMD" != *"--cpu"* ]]; then
+            log "$GPU_NUM" "COMFYUI: Adding additional args: $COMFY_ARGS"
+            CMD="$CMD $COMFY_ARGS"
+        else
+            log "$GPU_NUM" "COMFYUI: Skipping COMFY_ARGS (--cpu already set)"
+        fi
+    fi
+    
+    log "$GPU_NUM" "COMFYUI: Running command: $CMD"
+    PYTHONUNBUFFERED=1 eval "$CMD" >> "${WORK_DIR}/logs/output.log" 2>&1 &
+    
+    echo $! > "${WORK_DIR}/comfyui.pid"
+    # Save mock state alongside PID
+    echo "${MOCK_GPU:-0}" > "${WORK_DIR}/comfyui.mock"
+    [ -n "${COMFY_ARGS:-}" ] && echo "${COMFY_ARGS}" > "${WORK_DIR}/comfyui.args"
+    
+    # Wait for service
+    for i in {1..60}; do
+        if [ -f "${WORK_DIR}/comfyui.pid" ] && kill -0 "$(cat "${WORK_DIR}/comfyui.pid")" 2>/dev/null; then
+            if netstat -tuln | grep -q ":$PORT "; then
+                log "$GPU_NUM" "Service is running on port $PORT"
+                return 0
+            fi
+        fi
+        sleep 1
+        if [ $i -eq 60 ]; then
+            log "$GPU_NUM" "ERROR: Service startup timeout"
+            stop "$GPU_NUM"  # Cleanup failed start
+            return 1
+        fi
+    done
+}
+
+stop() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    local PORT=$((8188 + GPU_NUM))
+    
+    log "$GPU_NUM" "Stopping service..."
+    
+    # First check if there's a process using our port
+    local port_pid
+    port_pid=$(lsof -ti :$PORT 2>/dev/null)
+    if [ -n "$port_pid" ]; then
+        log "$GPU_NUM" "Found process $port_pid using port $PORT"
+        kill "$port_pid" 2>/dev/null
+        sleep 2
+        # If still alive, force kill
+        if kill -0 "$port_pid" 2>/dev/null; then
+            log "$GPU_NUM" "Process still alive, force killing..."
+            kill -9 "$port_pid" 2>/dev/null
+            sleep 1
+        fi
+    fi
+    
+    # Check PID file
+    if [ -f "${WORK_DIR}/comfyui.pid" ]; then
+        local PID
+        PID=$(cat "${WORK_DIR}/comfyui.pid")
+        if kill -0 "$PID" 2>/dev/null; then
+            log "$GPU_NUM" "Stopping service (PID: $PID)"
+            kill "$PID"
+            sleep 2
+        else
+            log "$GPU_NUM" "Process not running but PID file exists"
+        fi
+        rm -f "${WORK_DIR}/comfyui.pid"
+    fi
+    
+    # Final check if port is still in use
+    port_pid=$(lsof -ti :$PORT 2>/dev/null)
+    if [ -n "$port_pid" ]; then
+        log "$GPU_NUM" "Found another process $port_pid using port $PORT, force killing..."
+        kill -9 "$port_pid" 2>/dev/null
+        sleep 2
+    fi
+    
+    # Verify port is free
+    if netstat -tuln | grep -q ":$PORT "; then
+        log "$GPU_NUM" "WARNING: Port $PORT is still in use after stop"
+        return 1
+    fi
+    
+    log "$GPU_NUM" "Service stopped successfully"
+    return 0
+}
+
+restart() {
+    local GPU_NUM=$1
+    local PORT=$((8188 + GPU_NUM))
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    
+    # Load saved mock state if it exists
+    if [ -f "${WORK_DIR}/comfyui.mock" ]; then
+        export MOCK_GPU=$(cat "${WORK_DIR}/comfyui.mock")
+        log "$GPU_NUM" "Loaded mock state: MOCK_GPU=$MOCK_GPU"
+    fi
+    if [ -f "${WORK_DIR}/comfyui.args" ]; then
+        export COMFY_ARGS=$(cat "${WORK_DIR}/comfyui.args")
+        log "$GPU_NUM" "Loaded args: COMFY_ARGS=$COMFY_ARGS"
+    fi
+    
+    log "$GPU_NUM" "Restarting service..."
+    
+    # Stop the service
+    if ! stop "$GPU_NUM"; then
+        log "$GPU_NUM" "Failed to stop service"
+        return 1
+    fi
+    
+    # Final check if port is free
+    if ! netstat -tuln | grep -q ":$PORT "; then
+        log "$GPU_NUM" "Port $PORT is free, starting service..."
+        start "$GPU_NUM"
+        return $?
+    else
+        log "$GPU_NUM" "ERROR: Port $PORT is still in use"
+        return 1
+    fi
+}
+
+status() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/comfyui_gpu${GPU_NUM}"
+    local PORT=$((8188 + GPU_NUM))
+    local RETRIES=3  # Number of retries for port check
+    
+    local STATUS="not running"
+    local DETAILS=()
+    
+    # Check PID file and process
+    if [ -f "${WORK_DIR}/comfyui.pid" ]; then
+        local PID
+        PID=$(cat "${WORK_DIR}/comfyui.pid")
+        if kill -0 "$PID" 2>/dev/null; then
+            STATUS="running"
+            DETAILS+=("PID: $PID")
+            
+            # Retry port check a few times
+            for ((i=0; i<RETRIES; i++)); do
+                if netstat -tuln | grep -q ":$PORT "; then
+                    DETAILS+=("listening on port $PORT")
+                    log "$GPU_NUM" "Service is $STATUS (${DETAILS[*]})"
+                    return 0
+                fi
+                sleep 1
+            done
+            
+            # Port not found after retries
+            DETAILS+=("port $PORT not listening")
+            STATUS="not running"
+        else
+            DETAILS+=("stale PID file")
+        fi
+    fi
+    
+    log "$GPU_NUM" "Service is $STATUS (${DETAILS[*]})"
+    [ "$STATUS" = "running" ]
+}
+
+case "$1" in
+    start|stop|status|restart)
+        # Set mock mode only if test_gpus is provided and not 0
+        if [ -n "$3" ] && [ "$3" != "0" ]; then
+            export MOCK_GPU=1
+            export COMFY_ARGS="--cpu"
+        fi
+        
+        # Call the appropriate function
+        $1 "${2:-0}"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart} [gpu_id] [test_gpus]"
+        exit 1
+        ;;
+esac

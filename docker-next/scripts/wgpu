@@ -1,0 +1,478 @@
+#!/bin/bash
+
+# Base directory for your worker instances
+ROOT="${ROOT:-/workspace}"
+LOG_DIR="${ROOT}/logs"
+START_LOG="${LOG_DIR}/start.log"
+WORKER_REPO="${ROOT}/redis-worker"
+
+# Ensure log directory exists
+mkdir -p "$LOG_DIR"
+chmod 755 "$LOG_DIR"
+touch "$START_LOG"
+chmod 644 "$START_LOG"
+
+# Source environment variables
+if [ -f /etc/environment ]; then
+    while IFS='=' read -r key value; do
+        if [ -n "$key" ]; then
+            # Remove any leading/trailing whitespace and quotes
+            key=$(echo "$key" | tr -d '"' | xargs)
+            value=$(echo "$value" | tr -d '"' | xargs)
+            export "$key=$value"
+        fi
+    done < /etc/environment
+fi
+
+log() {
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local msg="[WGPU] $*"
+    
+    # Ensure log directory exists
+    if [ ! -d "$LOG_DIR" ]; then
+        mkdir -p "$LOG_DIR"
+        chmod 755 "$LOG_DIR"
+    fi
+    
+    # Ensure log file exists and is writable
+    if [ ! -f "$START_LOG" ]; then
+        touch "$START_LOG"
+        chmod 644 "$START_LOG"
+    fi
+    
+    if [ -w "$START_LOG" ]; then
+        echo "[$timestamp] $msg" | tee -a "$START_LOG" >&2
+    else
+        echo "[$timestamp] $msg (Warning: Could not write to $START_LOG)" >&2
+    fi
+}
+
+# Test logging at startup
+log "WGPU script starting, log file: $START_LOG"
+
+# Add debug logging at start (only once)
+if [ "${DEBUG:-}" = "true" ]; then
+    log "Debug: Environment variables at script start:"
+    log "NUM_GPUS=${NUM_GPUS:-not set}"
+    log "ROOT=$ROOT"
+    log "PATH=$PATH"
+    log "MOCK_GPU=${MOCK_GPU:-not set}"
+fi
+
+# Validate GPU ID
+validate_gpu_id() {
+    local gpu_id=$1
+
+    # Special case for 'all'
+    if [ "$gpu_id" = "all" ]; then
+        [ "${DEBUG:-}" = "true" ] && log "Debug: Validating GPU ID: all"
+        return 0
+    fi
+
+    # Check if gpu_id is a number
+    if ! [[ "$gpu_id" =~ ^[0-9]+$ ]]; then
+        log "Error: Invalid GPU ID '$gpu_id'. Must be a number or 'all'"
+        return 1
+    fi
+
+    [ "${DEBUG:-}" = "true" ] && log "Debug: Validating GPU ID: $gpu_id"
+    [ "${DEBUG:-}" = "true" ] && log "Debug: Current NUM_GPUS value: $NUM_GPUS"
+
+    # Check if gpu_id is within range
+    if [ "$gpu_id" -ge "${NUM_GPUS:-0}" ]; then
+        log "Error: GPU ID '$gpu_id' is out of range. Must be between 0 and $((NUM_GPUS-1))"
+        return 1
+    fi
+
+    return 0
+}
+
+# Function to show logs
+show_logs() {
+    # Check if multitail is available
+    if ! command -v multitail >/dev/null 2>&1; then
+        log "ERROR: multitail is not installed. Please install it first."
+        return 1
+    fi
+
+    # Define colors for each GPU
+    local colors=("green" "yellow" "blue" "magenta" "cyan" "red" "white" "purple")
+    
+    # If only one GPU is specified, use tail instead of multitail
+    if [ "$#" -eq 1 ] && [ "$1" != "all" ]; then
+        local gpu=$1
+        # Validate GPU number
+        if ! [[ "$gpu" =~ ^[0-9]+$ ]]; then
+            log "Error: Invalid GPU ID '$gpu'"
+            return 1
+        fi
+        if [ "$gpu" -ge "${NUM_GPUS:-0}" ]; then
+            log "Error: GPU ID '$gpu' is out of range"
+            return 1
+        fi
+        
+        local log_file="${ROOT}/worker_gpu${gpu}/logs/output.log"
+        if [ -f "$log_file" ]; then
+            log "Starting log view for Worker GPU $gpu (Ctrl+C to exit)"
+            tail -f "$log_file"
+            return 0
+        else
+            log "ERROR: Log file not found for Worker GPU $gpu"
+            return 1
+        fi
+    fi
+    
+    # For multiple GPUs or 'all', use multitail
+    if ! command -v multitail >/dev/null 2>&1; then
+        log "ERROR: multitail is not installed. Please install it first."
+        return 1
+    fi
+
+    # Build the multitail command
+    local cmd="multitail --mergeall -m 5000"  # 5000 lines of scroll buffer
+    
+    if [ "$1" = "all" ]; then
+        # Show all available GPUs
+        for gpu in $(seq 0 $((NUM_GPUS-1))); do
+            local log_file="${ROOT}/worker_gpu${gpu}/logs/output.log"
+            if [ -f "$log_file" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"Worker GPU$gpu: \" $log_file"
+            fi
+        done
+    else
+        # Handle specific GPU numbers
+        local found_valid=false
+        for gpu in "$@"; do
+            # Validate GPU number
+            if ! [[ "$gpu" =~ ^[0-9]+$ ]]; then
+                log "Warning: Invalid GPU ID '$gpu'. Skipping..."
+                continue
+            fi
+            if [ "$gpu" -ge "${NUM_GPUS:-0}" ]; then
+                log "Warning: GPU ID '$gpu' is out of range. Skipping..."
+                continue
+            fi
+            
+            local log_file="${ROOT}/worker_gpu${gpu}/logs/output.log"
+            if [ -f "$log_file" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"Worker GPU$gpu: \" $log_file"
+                found_valid=true
+            else
+                log "Warning: Log file not found for Worker GPU $gpu"
+            fi
+        done
+        
+        if [ "$found_valid" = "false" ]; then
+            log "ERROR: No valid Worker GPU logs found"
+            return 1
+        fi
+    fi
+    
+    if [ "$cmd" = "multitail --mergeall -m 5000" ]; then
+        log "ERROR: No log files found"
+        return 1
+    fi
+    
+    # Execute the multitail command
+    log "Starting log view (Press 'b' to scroll, 'q' to exit scroll mode, Ctrl+C to exit)"
+    eval "$cmd"
+}
+
+# Function to start a specific worker service
+start_service() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        start_all_services
+        return $?
+    fi
+    
+    log "Starting worker service for GPU $gpu_id..."
+    # Pass test_gpus as third parameter if MOCK_GPU is set
+    if [ "${MOCK_GPU:-0}" -eq 1 ]; then
+        service worker start "$gpu_id" "1" || return 1
+    else
+        service worker start "$gpu_id" || return 1
+    fi
+}
+
+# Function to start all worker services
+start_all_services() {
+    log "Starting all worker services..."
+    local success=true
+    
+    for gpu_id in $(seq 0 $((NUM_GPUS-1))); do
+        log "Starting worker service for GPU $gpu_id..."
+        if ! start_service "$gpu_id"; then
+            log "ERROR: Failed to start worker service for GPU $gpu_id"
+            success=false
+        fi
+    done
+    
+    if [ "$success" = "true" ]; then
+        log "All worker services started successfully"
+        return 0
+    else
+        log "WARNING: Some worker services failed to start"
+        return 1
+    fi
+}
+
+# Function to stop a specific worker service
+stop_service() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        stop_all_services
+        return $?
+    fi
+    
+    log "Stopping worker service for GPU $gpu_id..."
+    service worker stop "$gpu_id" || return 1
+}
+
+# Internal function to stop a service
+stop_service_internal() {
+    local gpu_id=$1
+    service worker stop "$gpu_id" >/dev/null 2>&1 || true
+}
+
+# Function to stop all worker services
+stop_all_services() {
+    log "Stopping all worker services..."
+    local success=true
+    
+    for gpu_id in $(seq 0 $((NUM_GPUS-1))); do
+        log "Stopping worker service for GPU $gpu_id..."
+        if ! stop_service "$gpu_id"; then
+            log "WARNING: Failed to stop worker service for GPU $gpu_id"
+            success=false
+        fi
+    done
+    
+    return 0  # Always return success for stop operations
+}
+
+# Function to restart a specific worker service
+restart_service() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        restart_all_services
+        return $?
+    fi
+    
+    log "Restarting worker service for GPU $gpu_id..."
+    stop_service "$gpu_id"
+    sleep 2
+    start_service "$gpu_id" || return 1
+}
+
+# Function to restart all worker services
+restart_all_services() {
+    log "Restarting all worker services..."
+    stop_all_services
+    sleep 2
+    start_all_services
+    return $?
+}
+
+# Function to check status of a specific worker service
+check_status() {
+    local gpu_id=$1
+    
+    if [ "$gpu_id" = "all" ]; then
+        check_all_status
+        return $?
+    fi
+    
+    log "Checking status of worker service for GPU $gpu_id..."
+    
+    # Check if service is running
+    local target_dir="${ROOT}/worker_gpu${gpu_id}"
+    local pid_file="${target_dir}/worker.pid"
+    local port=$((8188 + gpu_id))
+    
+    if [ -f "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
+        log "Worker service for GPU $gpu_id is RUNNING (PID: $(cat "$pid_file"))"
+        return 0
+    else
+        log "Worker service for GPU $gpu_id is NOT RUNNING"
+        return 1
+    fi
+}
+
+# Function to check status of all worker services
+check_all_status() {
+    log "Checking status of all worker services..."
+    local success=true
+    
+    for gpu_id in $(seq 0 $((NUM_GPUS-1))); do
+        if ! check_status "$gpu_id"; then
+            success=false
+        fi
+    done
+    
+    return $success
+}
+
+# Function to setup worker for a specific GPU
+setup_gpu() {
+    local gpu_id=$1
+    local target_dir
+    
+    if [ "$gpu_id" = "all" ]; then
+        setup_all_gpus
+        return $?
+    else
+        target_dir="${ROOT}/worker_gpu${gpu_id}"
+    fi
+    
+    log "Setting up worker for GPU ${gpu_id}..."
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$target_dir"
+    chmod 755 "$target_dir"
+    
+    # Clone the worker repository if it doesn't exist
+    if [ ! -d "$WORKER_REPO" ]; then
+        log "ERROR: Worker repository not found at $WORKER_REPO"
+        return 1
+    fi
+    
+    # Copy worker.py to the target directory
+    log "Copying worker.py to ${target_dir}..."
+    cp "$WORKER_REPO/worker.py" "$target_dir/" || {
+        log "ERROR: Failed to copy worker.py"
+        return 1
+    }
+    
+    # Create logs directory
+    mkdir -p "${target_dir}/logs"
+    chmod 755 "${target_dir}/logs"
+    touch "${target_dir}/logs/output.log"
+    chmod 644 "${target_dir}/logs/output.log"
+    
+    # Verify setup
+    if [ ! -f "${target_dir}/worker.py" ]; then
+        log "ERROR: Setup failed - worker.py not found in $target_dir"
+        return 1
+    fi
+    
+    log "Setup complete for worker GPU ${gpu_id}"
+    return 0
+}
+
+# Function to setup all worker directories
+setup_all_gpus() {
+    log "Setting up all worker directories..."
+    local success=true
+    
+    for gpu_id in $(seq 0 $((NUM_GPUS-1))); do
+        if ! setup_gpu "$gpu_id"; then
+            success=false
+        fi
+    done
+    
+    return $success
+}
+
+# Show usage information
+show_usage() {
+    echo "Usage: wgpu <command> [gpu_id]"
+    echo ""
+    echo "Commands:"
+    echo "  start [gpu_id|all]    Start worker for specified GPU or all GPUs"
+    echo "  stop [gpu_id|all]     Stop worker for specified GPU or all GPUs"
+    echo "  restart [gpu_id|all]  Restart worker for specified GPU or all GPUs"
+    echo "  status [gpu_id|all]   Check status of worker for specified GPU or all GPUs"
+    echo "  logs [gpu_id|all]     Show logs for specified GPU or all GPUs"
+    echo "  setup [gpu_id|all]    Setup worker directories for specified GPU or all GPUs"
+    echo "  count                 Show number of available GPUs"
+    echo ""
+    echo "Examples:"
+    echo "  wgpu start 0          Start worker for GPU 0"
+    echo "  wgpu start all        Start workers for all GPUs"
+    echo "  wgpu logs 1           Show logs for worker on GPU 1"
+    echo "  wgpu logs all         Show logs for all worker instances"
+    echo "  wgpu setup all        Setup worker directories for all GPUs"
+    echo ""
+    echo "Note: GPU IDs start from 0"
+}
+
+# Function to show GPU count
+show_count() {
+    if [ -z "${NUM_GPUS:-}" ]; then
+        log "ERROR: NUM_GPUS environment variable not set"
+        return 1
+    fi
+    
+    if [ "${NUM_GPUS:-0}" -eq 0 ]; then
+        log "No GPUs available"
+    elif [ "${NUM_GPUS:-0}" -eq 1 ]; then
+        log "1 GPU available (ID: 0)"
+    else
+        log "${NUM_GPUS} GPUs available (IDs: 0-$((NUM_GPUS-1)))"
+    fi
+}
+
+# Main command handling
+case "$1" in
+    start|stop|restart|status|logs|setup|count)
+        if [ -z "$2" ] && [ "$1" != "count" ]; then
+            log "ERROR: No GPU ID specified"
+            show_usage
+            exit 1
+        fi
+        
+        case "$1" in
+            start)
+                if ! validate_gpu_id "$2"; then
+                    exit 1
+                fi
+                start_service "$2"
+                ;;
+            stop)
+                if ! validate_gpu_id "$2"; then
+                    exit 1
+                fi
+                stop_service "$2"
+                ;;
+            restart)
+                if ! validate_gpu_id "$2"; then
+                    exit 1
+                fi
+                restart_service "$2"
+                ;;
+            status)
+                if ! validate_gpu_id "$2"; then
+                    exit 1
+                fi
+                check_status "$2"
+                ;;
+            logs)
+                if ! validate_gpu_id "$2"; then
+                    exit 1
+                fi
+                shift
+                show_logs "$@"
+                ;;
+            setup)
+                if ! validate_gpu_id "$2"; then
+                    exit 1
+                fi
+                setup_gpu "$2"
+                ;;
+            count)
+                show_count
+                ;;
+        esac
+        ;;
+    *)
+        show_usage
+        exit 1
+        ;;
+esac
