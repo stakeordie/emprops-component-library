@@ -1,37 +1,44 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# Dependencies
 /node_modules
+**/node_modules
 /.pnp
 .pnp.js
+package-lock.json
+yarn.lock
 
-# production
+# Production
 /dist
+/build
 
-# misc
+# Misc
 .DS_Store
 *.pem
+.idea/
 
-# debug
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
+# Local env files
 .env
 .env*.local
 .env.local*
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 
-# vscode
+# VSCode
 .vscode
 
 # Sentry Config File
+.sentryclirc
 
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -59,6 +66,27 @@ ENV/
 .env/
 .virtualenv/
 pyenv/
-.sentryclirc
+**/venv/
+docker/redis/venv/
 
-package-lock.json
+# ComfyUI specific
+**/ComfyUI/output/
+**/ComfyUI/models/
+**/ComfyUI/custom_nodes/
+**/ComfyUI/temp/
+
+# Docker specific
+.docker/
+*.log
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Large media files
+*.ckpt
+*.safetensors
+*.pth
+*.bin
+*.onnx
+*.pt
