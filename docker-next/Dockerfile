@@ -74,9 +74,6 @@ RUN find ${ROOT}/shared_custom_nodes -name "requirements.txt" -execdir pip insta
 
 FROM langflow AS end
 
-ARG COMFY_REPO_URL=https://github.com/comfyanonymous/ComfyUI.git
-ENV COMFY_REPO_URL=${COMFY_REPO_URL}
-
 # Copy init.d script
 COPY scripts/comfyui /etc/init.d/comfyui
 

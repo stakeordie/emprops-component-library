@@ -168,6 +168,9 @@ setup_env_vars() {
         echo "LANGFLOW_NEW_USER_IS_ACTIVE=${LANGFLOW_NEW_USER_IS_ACTIVE}"
         echo "LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=${LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT}"
         echo "COMFY_REPO_URL=${COMFY_REPO_URL}"
+        echo "REDIS_WORKER_REPO_URL=${REDIS_WORKER_REPO_URL}"
+        echo "REDIS_API_HOST=${REDIS_API_HOST}"
+        echo "REDIS_API_PORT=${REDIS_API_PORT}"
     } >> /etc/environment
     
     # Also add to profile for interactive sessions
@@ -190,6 +193,9 @@ setup_env_vars() {
         echo "LANGFLOW_NEW_USER_IS_ACTIVE=${LANGFLOW_NEW_USER_IS_ACTIVE}"
         echo "LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=${LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT}"
         echo "COMFY_REPO_URL=${COMFY_REPO_URL}"
+        echo "REDIS_WORKER_REPO_URL=${REDIS_WORKER_REPO_URL}"
+        echo "REDIS_API_HOST=${REDIS_API_HOST}"
+        echo "REDIS_API_PORT=${REDIS_API_PORT}"
     } > /etc/profile.d/comfyui-env.sh
     
     # Set for current session
@@ -683,17 +689,10 @@ setup_service_scripts() {
 setup_services() {
     log "Setting up cron..."
     
-    # Setup and start cron if cleanup is needed
-    if [ -d "${COMFY_DIR}/output" ]; then
-        log "Setting up cleanup cron job..."
-        CRON_JOB="0 * * * * rm -f ${COMFY_DIR}/output/*"
-        (crontab -l 2>/dev/null | grep -v "$COMFY_DIR/output"; echo "$CRON_JOB") | crontab -
-        
-        log "Starting cron service..."
-        service cron start
-    else
-        log "Output directory not found, skipping cron setup"
-    fi
+    # Start cron service for the cleanup_outputs.sh script that's configured in the Dockerfile
+    log "Starting cron service..."
+    service cron start
+    log "Cron service started. Using cleanup_outputs.sh for output directory maintenance."
 }
 
 start_nginx() {
@@ -925,12 +924,21 @@ make_auth_request() {
 setup_redis_worker() {
     log "Setting up Redis Worker Repository..."
     
+    # Set default repo URL if not provided in environment
+    REDIS_WORKER_REPO_URL="${REDIS_WORKER_REPO_URL:-git@github.com:stakeordie/redis-worker.git}"
+    log "Using Redis Worker repo URL: ${REDIS_WORKER_REPO_URL}"
+    
+    # Set default Redis API connection details if not provided
+    REDIS_API_HOST="${REDIS_API_HOST:-hub}"
+    REDIS_API_PORT="${REDIS_API_PORT:-8001}"
+    log "Redis workers will register at: ${REDIS_API_HOST}:${REDIS_API_PORT}"
+    
     # Check if Redis worker repository exists
     if [ ! -d "${ROOT}/redis-worker" ]; then
         log "Redis worker repository not found, cloning..."
         
         # Clone the repository
-        if ! git clone git@github.com:stakeordie/redis-worker.git "${ROOT}/redis-worker"; then
+        if ! git clone "${REDIS_WORKER_REPO_URL}" "${ROOT}/redis-worker"; then
             log "ERROR: Failed to clone Redis worker repository"
             return 1
         fi
