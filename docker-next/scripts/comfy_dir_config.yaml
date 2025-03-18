@@ -1,4 +1,0 @@
-comfyui:
-    base_path: /workspace/shared
-    custom_nodes: custom_nodes/
-    checkpoints: models/checkpoints/

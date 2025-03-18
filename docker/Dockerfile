@@ -6,6 +6,7 @@ RUN apt update && apt-get install -y \
     cron sudo ssh zstd jq build-essential cmake ninja-build \
     gcc g++ openssh-client libx11-dev libxrandr-dev libxinerama-dev \
     libxcursor-dev libxi-dev libgl1-mesa-dev libglfw3-dev software-properties-common \
+    redis-server \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -54,6 +55,11 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git ${COMFY_DIR} && \
 FROM middle AS shared
 
 RUN cd ${ROOT} && rm -rf ${COMFY_DIR}
+
+# Clone worker repository
+RUN git clone https://github.com/emprops/emp-redis.git ${ROOT}/emp-redis && \
+    cd ${ROOT}/emp-redis && \
+    pip install -r requirements.txt
 
 FROM shared AS langflow
 

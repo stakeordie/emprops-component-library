@@ -58,7 +58,8 @@ main() {
     log "9. Setup service scripts"
     log "10. Start NGINX"
     log "11. Start ComfyUI services"
-    log "12. Verify all services"
+    log "12. Setup and start worker services"
+    log "13. Verify all services"
     log "====================================="
     log ""
     
@@ -109,8 +110,15 @@ main() {
     log_phase "11" "Starting ComfyUI services"
     start_comfyui
     
-    # Phase 12: Verify all services
-    log_phase "12" "Verifying all services"
+    # Phase 12: Setup and start worker services
+    log_phase "12" "Setting up worker services"
+    if ! setup_worker_services; then
+        log "ERROR: Worker setup failed"
+        return 1
+    fi
+    
+    # Phase 13: Verify all services
+    log_phase "13" "Verifying all services"
     if ! verify_and_report; then
         log "ERROR: Service verification failed"
         # Don't exit - keep container running for debugging
@@ -904,6 +912,43 @@ setup_langflow() {
     fi
     
     log "Langflow setup complete"
+    return 0
+}
+
+# Add new function for worker setup
+setup_worker_services() {
+    log "Setting up worker services..."
+    
+    # Start workers for each GPU
+    for i in $(seq 0 $((NUM_GPUS-1))); do
+        log "Starting worker for GPU $i..."
+        
+        # Set GPU-specific environment variables
+        export CUDA_VISIBLE_DEVICES=$i
+        export WORKER_ID="${MACHINE_ID:-default}-worker-$i"
+        export REDIS_API_HOST=${REDIS_API_HOST:-localhost}
+        export REDIS_API_PORT=${REDIS_API_PORT:-6379}
+        
+        # Start worker process
+        cd ${ROOT}/emp-redis/worker
+        python main.py &
+        
+        # Store PID
+        echo $! > /var/run/emprops-worker-$i.pid
+        
+        # Wait a bit before starting next worker
+        sleep 1
+    done
+    
+    # Verify workers are running
+    for i in $(seq 0 $((NUM_GPUS-1))); do
+        if ! pgrep -f "worker-$i" > /dev/null; then
+            log "ERROR: Worker $i failed to start"
+            return 1
+        fi
+    done
+    
+    log "Worker services started successfully"
     return 0
 }
 

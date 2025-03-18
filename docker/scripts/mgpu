@@ -98,7 +98,7 @@ show_logs() {
     # Define colors for each GPU
     local colors=("green" "yellow" "blue" "magenta" "cyan" "red" "white" "purple")
     
-        # If only one GPU is specified, use tail instead of multitail
+    # If only one GPU is specified, use tail instead of multitail
     if [ "$#" -eq 1 ] && [ "$1" != "all" ]; then
         local gpu=$1
         # Validate GPU number
@@ -111,13 +111,22 @@ show_logs() {
             return 1
         fi
         
-        local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
-        if [ -f "$log_file" ]; then
+        local comfy_log="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+        local worker_log="${ROOT}/worker_gpu${gpu}/logs/output.log"
+        
+        if [ -f "$comfy_log" ] || [ -f "$worker_log" ]; then
             log "Starting log view for GPU $gpu (Ctrl+C to exit)"
-            tail -f "$log_file"
+            if [ -f "$comfy_log" ]; then
+                echo "=== ComfyUI Logs ==="
+                tail -f "$comfy_log"
+            fi
+            if [ -f "$worker_log" ]; then
+                echo "=== Worker Logs ==="
+                tail -f "$worker_log"
+            fi
             return 0
         else
-            log "ERROR: Log file not found for GPU $gpu"
+            log "ERROR: Log files not found for GPU $gpu"
             return 1
         fi
     fi
@@ -134,10 +143,16 @@ show_logs() {
     if [ "$1" = "all" ]; then
         # Show all available GPUs
         for gpu in $(seq 0 $((NUM_GPUS-1))); do
-            local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
-            if [ -f "$log_file" ]; then
+            local comfy_log="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+            local worker_log="${ROOT}/worker_gpu${gpu}/logs/output.log"
+            
+            if [ -f "$comfy_log" ]; then
                 local color_index=$((gpu % ${#colors[@]}))
-                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU$gpu: \" $log_file"
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU${gpu} ComfyUI: \" $comfy_log"
+            fi
+            if [ -f "$worker_log" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU${gpu} Worker: \" $worker_log"
             fi
         done
     else
@@ -154,13 +169,18 @@ show_logs() {
                 continue
             fi
             
-            local log_file="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
-            if [ -f "$log_file" ]; then
+            local comfy_log="${ROOT}/comfyui_gpu${gpu}/logs/output.log"
+            local worker_log="${ROOT}/worker_gpu${gpu}/logs/output.log"
+            
+            if [ -f "$comfy_log" ]; then
                 local color_index=$((gpu % ${#colors[@]}))
-                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU$gpu: \" $log_file"
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU${gpu} ComfyUI: \" $comfy_log"
                 found_valid=true
-            else
-                log "Warning: Log file not found for GPU $gpu"
+            fi
+            if [ -f "$worker_log" ]; then
+                local color_index=$((gpu % ${#colors[@]}))
+                cmd="$cmd -ci ${colors[$color_index]} --label \"GPU${gpu} Worker: \" $worker_log"
+                found_valid=true
             fi
         done
         
@@ -189,12 +209,14 @@ start_service() {
         return $?
     fi
     
-    log "Starting service for GPU $gpu_id..."
+    log "Starting services for GPU $gpu_id..."
     # Pass test_gpus as third parameter if MOCK_GPU is set
     if [ "${MOCK_GPU:-0}" -eq 1 ]; then
         service comfyui start "$gpu_id" "1" || return 1
+        service redis_worker start "$gpu_id" || return 1
     else
         service comfyui start "$gpu_id" || return 1
+        service redis_worker start "$gpu_id" || return 1
     fi
 }
 
@@ -225,14 +247,16 @@ stop_service() {
     # Validate GPU ID first (only once)
     validate_gpu_id "$gpu_id" >/dev/null || return 1
     
-    log "Stopping service for GPU $gpu_id..."
+    log "Stopping services for GPU $gpu_id..."
     service comfyui stop "$gpu_id"
+    service redis_worker stop "$gpu_id"
 }
 
 # Internal function to stop a service
 stop_service_internal() {
     local gpu_id=$1
     service comfyui stop "$gpu_id"
+    service redis_worker stop "$gpu_id"
 }
 
 # Function to stop all GPU services
@@ -311,92 +335,48 @@ check_all_status() {
     return $failed
 }
 
-# Function to setup ComfyUI for a specific GPU or CPU
+# Function to setup a specific GPU
 setup_gpu() {
     local gpu_id=$1
-    local target_dir
+    local comfy_dir="${ROOT}/comfyui_gpu${gpu_id}"
+    local worker_dir="${ROOT}/worker_gpu${gpu_id}"
     
-    if [ "$gpu_id" = "all" ]; then
-        setup_all_gpus
-        return $?
-    else
-        target_dir="${ROOT}/comfyui_gpu${gpu_id}"
+    log "Setting up GPU $gpu_id..."
+    
+    # Setup ComfyUI
+    if [ ! -d "$comfy_dir" ]; then
+        log "Cloning ComfyUI for GPU $gpu_id..."
+        git clone "${COMFY_REPO_URL:-https://github.com/comfyanonymous/ComfyUI.git}" "$comfy_dir"
+        cd "$comfy_dir"
+        pip install -r requirements.txt
     fi
     
-    log "Setting up ComfyUI for ${gpu_id}..."
-    
-    # Create directory if it doesn't exist
-    mkdir -p "$target_dir"
-    chmod 755 "$target_dir"
-    
-    # Use COMFY_REPO_URL environment variable with fallback
-    local repo_url="${COMFY_REPO_URL:-https://github.com/comfyanonymous/ComfyUI.git}"
-    local base_commit="0c04a6ae780b5eefb1a701467439ae1235607a4f"
-    
-    log "Cloning ComfyUI from ${repo_url} for ${gpu_id}..."
-    if ! git clone "$repo_url" "$target_dir"; then
-        log "ERROR: Failed to clone ComfyUI"
-        return 1
+    # Setup Worker
+    if [ ! -d "$worker_dir" ]; then
+        log "Cloning worker for GPU $gpu_id..."
+        git clone https://github.com/emprops/emp-redis.git "$worker_dir"
+        cd "$worker_dir"
+        pip install -r requirements.txt
     fi
     
-    cd "$target_dir" || return 1
-    
-    # Handle different branches based on whether it's a fork
-    if [ "$repo_url" = "https://github.com/stakeordie/ComfyUI.git" ]; then
-        log "Fork detected, checking out websocket_version branch..."
-        if ! git checkout websocket_version; then
-            log "ERROR: Failed to checkout websocket_version branch"
-            return 1
-        fi
-    else
-        log "Base repo detected, resetting to specific commit ${base_commit}..."
-        if ! git reset --hard "$base_commit"; then
-            log "ERROR: Failed to reset to specific commit"
-            return 1
-        fi
-    fi
-    cd - > /dev/null || return 1
-    
-    # Create logs directory
-    mkdir -p "${target_dir}/logs"
-    chmod 755 "${target_dir}/logs"
-    touch "${target_dir}/logs/output.log"
-    chmod 644 "${target_dir}/logs/output.log"
-    
-    # Verify setup
-    if [ ! -f "${target_dir}/main.py" ]; then
-        log "ERROR: Setup failed - main.py not found in $target_dir"
-        return 1
-    fi
-    
-    log "Setup complete for ${gpu_id}"
-
-    
-    # Handle workflows directory
-    if [ -d "${target_dir}/user/default/workflows" ]; then
-        log "Removing existing workflows directory..."
-        rm -rf "${target_dir}/user/default/workflows"
-    fi
-    
-    if [ ! -d "${target_dir}/user/default" ]; then
-        log "Creating user/default directory..."
-        mkdir -p "${target_dir}/user/default"
-    fi
-    
-    if [ ! -L "${target_dir}/user/default/workflows" ]; then
-        log "Symlinking workflows directory..."
-        ln -s "/workspace/shared/workflows" "${target_dir}/user/default/workflows"
-    fi
+    # Create log directories
+    mkdir -p "${comfy_dir}/logs" "${worker_dir}/logs"
+    chmod 755 "${comfy_dir}/logs" "${worker_dir}/logs"
     
     return 0
 }
 
-# Function to setup all GPU directories
+# Function to setup all GPUs
 setup_all_gpus() {
+    log "Setting up all GPUs..."
     local failed=0
+    
     for gpu in $(seq 0 $((NUM_GPUS-1))); do
-        setup_gpu "$gpu" || failed=1
+        if ! setup_gpu "$gpu"; then
+            failed=1
+        fi
     done
+    
     return $failed
 }
 
@@ -472,7 +452,15 @@ case "$1" in
                 fi
                 ;;
             setup)
-                setup_gpu "$2"
+                if [ -z "$2" ]; then
+                    echo "Usage: $0 setup <gpu_number|all>"
+                    exit 1
+                fi
+                if [ "$2" = "all" ]; then
+                    setup_all_gpus
+                else
+                    setup_gpu "$2"
+                fi
                 ;;
             count)
                 show_count
