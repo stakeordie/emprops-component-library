@@ -1,0 +1,209 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          redis_worker
+# Required-Start:    $network
+# Required-Stop:     $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start Redis Worker
+### END INIT INFO
+
+# Paths
+ROOT="${ROOT:-/workspace}"
+NUM_GPUS="${NUM_GPUS:-0}"  # Default to CPU mode
+
+# Setup logging
+setup_logs() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/worker_gpu${GPU_NUM}"
+    
+    # Create log directories
+    mkdir -p "${WORK_DIR}/logs"
+    chmod 755 "${WORK_DIR}/logs"
+    
+    # Create empty log file if it doesn't exist
+    touch "${WORK_DIR}/logs/output.log"
+    chmod 644 "${WORK_DIR}/logs/output.log"
+}
+
+log() {
+    local GPU_NUM=$1
+    shift
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local msg="[Worker GPU${GPU_NUM}] $*"
+    local log_line="[$timestamp] $msg"
+    
+    # Always write to start.log
+    if [ -w "${ROOT}/logs/start.log" ]; then
+        echo "$log_line" >> "${ROOT}/logs/start.log"
+    else
+        echo "WARNING: Cannot write to ${ROOT}/logs/start.log" >&2
+    fi
+    
+    # Write to service-specific logs
+    local LOG_DIR="${ROOT}/worker_gpu${GPU_NUM}/logs"
+    
+    if [ -d "$LOG_DIR" ]; then
+        echo "$log_line" >> "${LOG_DIR}/output.log"
+    fi
+    
+    # Always echo to stdout for Docker logs
+    echo "$msg"
+}
+
+start() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/worker_gpu${GPU_NUM}"
+    
+    # Setup logs first
+    setup_logs "$GPU_NUM"
+    
+    # Check if already running
+    if [ -f "${WORK_DIR}/worker.pid" ] && kill -0 "$(cat "${WORK_DIR}/worker.pid")" 2>/dev/null; then
+        log "$GPU_NUM" "Service is already running"
+        return 0
+    fi
+    
+    # Ensure directory exists and has main.py
+    cd "$WORK_DIR" || {
+        log "$GPU_NUM" "ERROR: Working directory $WORK_DIR does not exist"
+        return 1
+    }
+    
+    if [ ! -f "main.py" ]; then
+        log "$GPU_NUM" "ERROR: main.py not found in $WORK_DIR"
+        return 1
+    fi
+    
+    log "$GPU_NUM" "Starting worker service for GPU $GPU_NUM"
+    
+    # Set environment variables
+    export CUDA_VISIBLE_DEVICES=$GPU_NUM
+    export WORKER_ID="${MACHINE_ID:-default}-worker-$GPU_NUM"
+    export REDIS_API_HOST=${REDIS_API_HOST:-localhost}
+    export REDIS_API_PORT=${REDIS_API_PORT:-6379}
+    
+    # Start worker process
+    PYTHONUNBUFFERED=1 python main.py >> "${WORK_DIR}/logs/output.log" 2>&1 &
+    
+    echo $! > "${WORK_DIR}/worker.pid"
+    
+    # Wait for service to start
+    for i in {1..30}; do
+        if [ -f "${WORK_DIR}/worker.pid" ] && kill -0 "$(cat "${WORK_DIR}/worker.pid")" 2>/dev/null; then
+            log "$GPU_NUM" "Service is running"
+            return 0
+        fi
+        sleep 1
+        if [ $i -eq 30 ]; then
+            log "$GPU_NUM" "ERROR: Service startup timeout"
+            stop "$GPU_NUM"  # Cleanup failed start
+            return 1
+        fi
+    done
+}
+
+stop() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/worker_gpu${GPU_NUM}"
+    
+    log "$GPU_NUM" "Stopping service..."
+    
+    # Check PID file
+    if [ -f "${WORK_DIR}/worker.pid" ]; then
+        local PID
+        PID=$(cat "${WORK_DIR}/worker.pid")
+        if kill -0 "$PID" 2>/dev/null; then
+            log "$GPU_NUM" "Stopping service (PID: $PID)"
+            kill "$PID"
+            sleep 2
+        else
+            log "$GPU_NUM" "Process not running but PID file exists"
+        fi
+        rm -f "${WORK_DIR}/worker.pid"
+    fi
+    
+    log "$GPU_NUM" "Service stopped successfully"
+    return 0
+}
+
+restart() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/worker_gpu${GPU_NUM}"
+    
+    log "$GPU_NUM" "Restarting service..."
+    
+    # Stop the service
+    if ! stop "$GPU_NUM"; then
+        log "$GPU_NUM" "Failed to stop service"
+        return 1
+    fi
+    
+    # Start the service
+    start "$GPU_NUM"
+    return $?
+}
+
+status() {
+    local GPU_NUM=$1
+    local WORK_DIR="${ROOT}/worker_gpu${GPU_NUM}"
+    
+    local STATUS="not running"
+    local DETAILS=()
+    
+    # Check PID file and process
+    if [ -f "${WORK_DIR}/worker.pid" ]; then
+        local PID
+        PID=$(cat "${WORK_DIR}/worker.pid")
+        if kill -0 "$PID" 2>/dev/null; then
+            STATUS="running"
+            DETAILS+=("PID: $PID")
+        else
+            STATUS="dead"
+            DETAILS+=("PID file exists but process is not running")
+        fi
+    fi
+    
+    # Output status
+    echo "Status: $STATUS"
+    [ ${#DETAILS[@]} -gt 0 ] && printf '%s\n' "${DETAILS[@]}"
+    
+    return 0
+}
+
+case "$1" in
+    start)
+        if [ -z "$2" ]; then
+            echo "Usage: $0 start <gpu_number>"
+            exit 1
+        fi
+        start "$2"
+        ;;
+    stop)
+        if [ -z "$2" ]; then
+            echo "Usage: $0 stop <gpu_number>"
+            exit 1
+        fi
+        stop "$2"
+        ;;
+    restart)
+        if [ -z "$2" ]; then
+            echo "Usage: $0 restart <gpu_number>"
+            exit 1
+        fi
+        restart "$2"
+        ;;
+    status)
+        if [ -z "$2" ]; then
+            echo "Usage: $0 status <gpu_number>"
+            exit 1
+        fi
+        status "$2"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status} <gpu_number>"
+        exit 1
+        ;;
+esac
+
+exit 0 

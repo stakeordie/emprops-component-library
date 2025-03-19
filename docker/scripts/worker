@@ -1,0 +1,91 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          emprops-worker
+# Required-Start:    $network redis-server
+# Required-Stop:     $network redis-server
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: EmProps Worker Service
+# Description:       Manages EmProps worker instances for ComfyUI
+### END INIT INFO
+
+NAME=emprops-worker
+DESC="EmProps Worker Service"
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit on any error
+set -e
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions
+. /lib/lsb/init-functions
+
+# Function to start the worker
+do_start() {
+    log_daemon_msg "Starting $DESC" "$NAME"
+    
+    # Start Redis if not running
+    if ! pgrep -f redis-server > /dev/null; then
+        service redis-server start
+    fi
+    
+    # Start workers for each GPU
+    for i in $(seq 0 $((NUM_GPUS-1))); do
+        export CUDA_VISIBLE_DEVICES=$i
+        export WORKER_ID="${MACHINE_ID:-default}-worker-$i"
+        export REDIS_API_HOST=localhost
+        export REDIS_API_PORT=6379
+        
+        cd ${ROOT}/emp-redis/worker
+        python main.py &
+        echo $! > /var/run/$NAME-$i.pid
+    done
+    
+    log_end_msg 0
+}
+
+# Function to stop the worker
+do_stop() {
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    
+    # Stop all worker instances
+    for i in $(seq 0 $((NUM_GPUS-1))); do
+        if [ -f /var/run/$NAME-$i.pid ]; then
+            kill $(cat /var/run/$NAME-$i.pid) 2>/dev/null || true
+            rm -f /var/run/$NAME-$i.pid
+        fi
+    done
+    
+    log_end_msg 0
+}
+
+# Function to restart the worker
+do_restart() {
+    do_stop
+    sleep 2
+    do_start
+}
+
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop)
+        do_stop
+        ;;
+    restart|force-reload)
+        do_restart
+        ;;
+    status)
+        status_of_proc -p /var/run/$NAME-0.pid "$NAME" && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|status}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0 

@@ -57,7 +57,7 @@ FROM middle AS shared
 RUN cd ${ROOT} && rm -rf ${COMFY_DIR}
 
 # Clone worker repository
-RUN git clone https://github.com/emprops/emp-redis.git ${ROOT}/emp-redis && \
+RUN git clone https://github.com/stakeordie/emp-redis.git ${ROOT}/emp-redis && \
     cd ${ROOT}/emp-redis && \
     pip install -r requirements.txt
 
