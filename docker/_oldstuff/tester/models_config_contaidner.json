@@ -1,9 +1,0 @@
-{
-    "models": [
-      {
-        "name": "rife47.pth",
-        "url": "https://github.com/styler00dollar/VSGAN-tensorrt-docker/releases/download/models/rife47.pth",
-        "path": "custom_nodes/ComfyUI-Frame-Interpolation/ckpts/rife/"
-      }
-    ]
-  }
