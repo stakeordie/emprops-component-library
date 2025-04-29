@@ -269,8 +269,9 @@
     "inputs": {
       "source_type": "public_download",
       "video": "untitled-4b472e1b-eaa9-472d-aea3-38131e3d63b4-4b472e1b-eaa9-472d-aea3-38131e3d63b4.mp4",
-      "s3_key": "",
-      "s3_bucket": "emprops-share",
+      "cloud_key": "",
+      "cloud_bucket": "emprops-share",
+      "cloud_provider": "google",
       "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/b8504506-6633-4087-bd2e-744d54cd5e20/0/42151/vid2vid.mp4",
       "force_rate": ["377", 0],
       "force_size": "Disabled",
@@ -733,11 +734,18 @@
       "save_metadata": true,
       "pingpong": true,
       "save_output": true,
-      "s3_prefix": "uploads",
-      "s3_bucket": "emprops-share",
-      "use_s3_upload": true,
-      "images": ["351", 0],
-      "audio": ["179", 2]
+      "cloud_prefix": "uploads",
+      "cloud_bucket": "emprops-share",
+      "use_cloud_upload": true,
+      "cloud_provider": "google",
+      "images": [
+        "8",
+        0
+      ],
+      "audio": [
+        "179",
+        2
+      ]
     },
     "class_type": "VHS_VideoCombine",
     "_meta": {
@@ -757,8 +765,9 @@
     "inputs": {
       "source_type": "public_download",
       "image": "example.png",
-      "s3_key": "",
-      "s3_bucket": "emprops-share",
+      "provider": "google",
+      "cloud_key": "",
+      "bucket": "emprops-share",
       "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/18d1b33b-9378-4f5a-953d-2435c843a20a/0/42152/txt2img-comfy.png"
     },
     "class_type": "EmProps_Image_Loader",

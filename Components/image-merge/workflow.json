@@ -257,14 +257,15 @@
   },
   "63": {
     "inputs": {
+      "provider": "google",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
       "images": ["8", 0]
     },
-    "class_type": "EmProps_S3_Saver",
+    "class_type": "EmProps_Text_Cloud_Storage_Saver",
     "_meta": {
-      "title": "EmProps S3 Saver"
+      "title": "EmProps Text Cloud Storage Saver"
     }
   }
 }

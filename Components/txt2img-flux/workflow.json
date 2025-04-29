@@ -72,14 +72,15 @@
   },
   "28": {
     "inputs": {
+      "provider": "google",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
       "images": ["8", 0]
     },
-    "class_type": "EmProps_S3_Saver",
+    "class_type": "EmProps_Cloud_Storage_Saver",
     "_meta": {
-      "title": "Save to S3 (EmProps)"
+      "title": "EmProps Cloud Storage Saver"
     }
   },
   "28:0": {

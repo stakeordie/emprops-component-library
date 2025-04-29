@@ -1,0 +1,45 @@
+{
+  "13": {
+    "inputs": {
+      "provider": "google",
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share"
+    },
+    "class_type": "EmProps_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Cloud Storage Saver"
+    }
+  },
+  "14": {
+    "inputs": {
+      "text": "",
+      "provider": "google",
+      "prefix": "uploads/",
+      "filename": "text.txt",
+      "bucket": "emprops-share"
+    },
+    "class_type": "EmProps_Text_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Text Cloud Storage Saver"
+    }
+  },
+  "15": {
+    "inputs": {
+      "frame_rate": 8,
+      "loop_count": 0,
+      "filename_prefix": "AnimateDiff",
+      "format": "image/gif",
+      "pingpong": false,
+      "save_output": true,
+      "cloud_prefix": "",
+      "cloud_bucket": "emprops-share",
+      "use_cloud_upload": false,
+      "cloud_provider": "google"
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine 🎥🅥🅗🅢"
+    }
+  }
+}

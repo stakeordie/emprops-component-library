@@ -125,22 +125,24 @@
   },
   "31": {
     "inputs": {
+      "provider": "google",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
       "images": ["8", 0]
     },
-    "class_type": "EmProps_S3_Saver",
+    "class_type": "EmProps_Cloud_Storage_Saver",
     "_meta": {
-      "title": "EmProps S3 Saver"
+      "title": "EmProps Cloud Storage Saver"
     }
   },
   "32": {
     "inputs": {
       "source_type": "public_download",
-      "image": "002baf4b-2847-43dc-a040-f9e626e17a60.jpeg",
-      "s3_key": "",
-      "s3_bucket": "emprops-share",
+      "image": "example.png",
+      "provider": "google",
+      "cloud_key": "",
+      "bucket": "emprops-share",
       "url": "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"
     },
     "class_type": "EmProps_Image_Loader",

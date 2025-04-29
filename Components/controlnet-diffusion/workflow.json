@@ -1049,22 +1049,24 @@
   },
   "419": {
     "inputs": {
+      "provider": "google",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
       "images": ["210", 0]
     },
-    "class_type": "EmProps_S3_Saver",
+    "class_type": "EmProps_Cloud_Storage_Saver",
     "_meta": {
-      "title": "Save to S3 (EmProps)"
+      "title": "EmProps Cloud Storage Saver"
     }
   },
   "420": {
     "inputs": {
       "source_type": "public_download",
-      "image": "25a3e5d6-7254-480f-89b5-413223346515.png",
-      "s3_key": "",
-      "s3_bucket": "emprops-share",
+      "image": "example.png",
+      "provider": "google",
+      "cloud_key": "",
+      "bucket": "emprops-share",
       "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/0b8d3b8b-561b-40a6-8fff-727db812ae4a/0/42154/txt2img-flux.png"
     },
     "class_type": "EmProps_Image_Loader",
@@ -1075,9 +1077,10 @@
   "421": {
     "inputs": {
       "source_type": "public_download",
-      "image": "25a3e5d6-7254-480f-89b5-413223346515.png",
-      "s3_key": "",
-      "s3_bucket": "emprops-share",
+      "image": "example.png",
+      "provider": "google",
+      "cloud_key": "",
+      "bucket": "emprops-share",
       "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/0b8d3b8b-561b-40a6-8fff-727db812ae4a/0/42154/txt2img-flux.png"
     },
     "class_type": "EmProps_Image_Loader",
