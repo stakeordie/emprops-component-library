@@ -69,7 +69,7 @@
   },
   "10": {
     "inputs": {
-      "provider": "google",
+      "provider": "azure",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",

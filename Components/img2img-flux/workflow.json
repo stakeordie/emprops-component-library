@@ -125,7 +125,7 @@
   },
   "31": {
     "inputs": {
-      "provider": "google",
+      "provider": "azure",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
@@ -140,7 +140,7 @@
     "inputs": {
       "source_type": "public_download",
       "image": "example.png",
-      "provider": "google",
+      "provider": "azure",
       "cloud_key": "",
       "bucket": "emprops-share",
       "url": "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"

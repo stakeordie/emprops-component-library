@@ -2,7 +2,10 @@
   "6": {
     "inputs": {
       "text": "",
-      "clip": ["11", 0]
+      "clip": [
+        "72",
+        0
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -11,51 +14,42 @@
   },
   "8": {
     "inputs": {
-      "samples": ["13", 0],
-      "vae": ["10", 0]
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "71",
+        0
+      ]
     },
     "class_type": "VAEDecode",
     "_meta": {
       "title": "VAE Decode"
     }
   },
-  "10": {
-    "inputs": {
-      "vae_name": "ae.safetensors"
-    },
-    "class_type": "VAELoader",
-    "_meta": {
-      "title": "Load VAE"
-    }
-  },
-  "11": {
-    "inputs": {
-      "clip_name1": "t5xxl_fp16.safetensors",
-      "clip_name2": "clip_l.safetensors",
-      "type": "flux"
-    },
-    "class_type": "DualCLIPLoader",
-    "_meta": {
-      "title": "DualCLIPLoader"
-    }
-  },
-  "12": {
-    "inputs": {
-      "unet_name": "flux1-dev-fp8.safetensors",
-      "weight_dtype": "default"
-    },
-    "class_type": "UNETLoader",
-    "_meta": {
-      "title": "Load Diffusion Model"
-    }
-  },
   "13": {
     "inputs": {
-      "noise": ["25", 0],
-      "guider": ["22", 0],
-      "sampler": ["16", 0],
-      "sigmas": ["17", 0],
-      "latent_image": ["27", 0]
+      "noise": [
+        "25",
+        0
+      ],
+      "guider": [
+        "22",
+        0
+      ],
+      "sampler": [
+        "16",
+        0
+      ],
+      "sigmas": [
+        "17",
+        0
+      ],
+      "latent_image": [
+        "27",
+        0
+      ]
     },
     "class_type": "SamplerCustomAdvanced",
     "_meta": {
@@ -76,7 +70,10 @@
       "scheduler": "simple",
       "steps": 20,
       "denoise": 1,
-      "model": ["30", 0]
+      "model": [
+        "30",
+        0
+      ]
     },
     "class_type": "BasicScheduler",
     "_meta": {
@@ -85,8 +82,14 @@
   },
   "22": {
     "inputs": {
-      "model": ["30", 0],
-      "conditioning": ["45", 0]
+      "model": [
+        "30",
+        0
+      ],
+      "conditioning": [
+        "45",
+        0
+      ]
     },
     "class_type": "BasicGuider",
     "_meta": {
@@ -95,7 +98,7 @@
   },
   "25": {
     "inputs": {
-      "noise_seed": 552832530760636
+      "noise_seed": 904574311662902
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -105,7 +108,10 @@
   "26": {
     "inputs": {
       "guidance": 3.5,
-      "conditioning": ["6", 0]
+      "conditioning": [
+        "6",
+        0
+      ]
     },
     "class_type": "FluxGuidance",
     "_meta": {
@@ -126,30 +132,30 @@
   "30": {
     "inputs": {
       "max_shift": 1.1500000000000001,
-      "base_shift": 0.5,
+      "base_shift": 0.5000000000000001,
       "width": 1024,
       "height": 1024,
-      "model": ["12", 0]
+      "model": [
+        "73",
+        0
+      ]
     },
     "class_type": "ModelSamplingFlux",
     "_meta": {
       "title": "ModelSamplingFlux"
     }
   },
-  "38": {
-    "inputs": {
-      "clip_name": "sigclip_vision_patch14_384.safetensors"
-    },
-    "class_type": "CLIPVisionLoader",
-    "_meta": {
-      "title": "Load CLIP Vision"
-    }
-  },
   "39": {
     "inputs": {
       "crop": "center",
-      "clip_vision": ["38", 0],
-      "image": ["56", 0]
+      "clip_vision": [
+        "74",
+        0
+      ],
+      "image": [
+        "56",
+        0
+      ]
     },
     "class_type": "CLIPVisionEncode",
     "_meta": {
@@ -158,62 +164,59 @@
   },
   "41": {
     "inputs": {
-      "strength": 1,
+      "strength": 1.0000000000000002,
       "strength_type": "multiply",
-      "conditioning": ["26", 0],
-      "style_model": ["42", 0],
-      "clip_vision_output": ["39", 0]
+      "conditioning": [
+        "26",
+        0
+      ],
+      "style_model": [
+        "75",
+        0
+      ],
+      "clip_vision_output": [
+        "39",
+        0
+      ]
     },
     "class_type": "StyleModelApply",
     "_meta": {
       "title": "Apply Style Model"
-    }
-  },
-  "42": {
-    "inputs": {
-      "style_model_name": "flux1-redux-dev.safetensors"
-    },
-    "class_type": "StyleModelLoader",
-    "_meta": {
-      "title": "Load Style Model"
-    }
-  },
-  "44": {
-    "inputs": {
-      "clip_name": "sigclip_vision_patch14_384.safetensors"
-    },
-    "class_type": "CLIPVisionLoader",
-    "_meta": {
-      "title": "Load CLIP Vision"
     }
   },
   "45": {
     "inputs": {
-      "strength": 1,
+      "strength": 1.0000000000000002,
       "strength_type": "multiply",
-      "conditioning": ["41", 0],
-      "style_model": ["46", 0],
-      "clip_vision_output": ["47", 0]
+      "conditioning": [
+        "41",
+        0
+      ],
+      "style_model": [
+        "77",
+        0
+      ],
+      "clip_vision_output": [
+        "47",
+        0
+      ]
     },
     "class_type": "StyleModelApply",
     "_meta": {
       "title": "Apply Style Model"
-    }
-  },
-  "46": {
-    "inputs": {
-      "style_model_name": "flux1-redux-dev.safetensors"
-    },
-    "class_type": "StyleModelLoader",
-    "_meta": {
-      "title": "Load Style Model"
     }
   },
   "47": {
     "inputs": {
       "crop": "center",
-      "clip_vision": ["44", 0],
-      "image": ["60", 0]
+      "clip_vision": [
+        "76",
+        0
+      ],
+      "image": [
+        "60",
+        0
+      ]
     },
     "class_type": "CLIPVisionEncode",
     "_meta": {
@@ -224,7 +227,7 @@
     "inputs": {
       "source_type": "public_download",
       "image": "example.png",
-      "provider": "google",
+      "provider": "azure",
       "cloud_key": "",
       "bucket": "emprops-share",
       "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/18d1b33b-9378-4f5a-953d-2435c843a20a/0/42152/txt2img-comfy.png"
@@ -238,7 +241,7 @@
     "inputs": {
       "source_type": "public_download",
       "image": "example.png",
-      "provider": "google",
+      "provider": "azure",
       "cloud_key": "",
       "bucket": "emprops-share",
       "url": "https://cdn.emprops.ai/generations/4e62f321-dc11-4f31-aad1-b9c0200d916a/18d1b33b-9378-4f5a-953d-2435c843a20a/0/42152/txt2img-comfy.png"
@@ -250,7 +253,10 @@
   },
   "62": {
     "inputs": {
-      "images": ["8", 0]
+      "images": [
+        "8",
+        0
+      ]
     },
     "class_type": "PreviewImage",
     "_meta": {
@@ -259,15 +265,229 @@
   },
   "63": {
     "inputs": {
-      "provider": "google",
+      "provider": "azure",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": ["8", 0]
+      "images": [
+        "8",
+        0
+      ]
     },
     "class_type": "EmProps_Cloud_Storage_Saver",
     "_meta": {
       "title": "EmProps Cloud Storage Saver"
+    }
+  },
+  "68": {
+    "inputs": {
+      "url": "https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/027bd76c3514d062a2190c84c1598a7fb7dd7ebb/models/vae/ae.safetensors",
+      "save_to": "vae",
+      "filename": "ae.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "71": {
+    "inputs": {
+      "vae_name": [
+        "68",
+        1
+      ]
+    },
+    "class_type": "EmProps_VAE_Loader",
+    "_meta": {
+      "title": "EmProps VAE Loader"
+    }
+  },
+  "72": {
+    "inputs": {
+      "clip_name1": [
+        "78",
+        1
+      ],
+      "clip_name2": [
+        "79",
+        1
+      ],
+      "type": "flux",
+      "device": "default"
+    },
+    "class_type": "EmProps_DualCLIP_Loader",
+    "_meta": {
+      "title": "EmProps DualCLIP Loader"
+    }
+  },
+  "73": {
+    "inputs": {
+      "unet_name": [
+        "81",
+        1
+      ],
+      "weight_dtype": "default"
+    },
+    "class_type": "EmProps_Diffusion_Model_Loader",
+    "_meta": {
+      "title": "EmProps Load Diffusion Model"
+    }
+  },
+  "74": {
+    "inputs": {
+      "clip_vision_name": [
+        "82",
+        1
+      ]
+    },
+    "class_type": "EmProps_CLIP_Vision_Loader",
+    "_meta": {
+      "title": "EmProps Load CLIP Vision"
+    }
+  },
+  "75": {
+    "inputs": {
+      "style_model_name": [
+        "85",
+        1
+      ]
+    },
+    "class_type": "EmProps_Style_Model_Loader",
+    "_meta": {
+      "title": "EmProps Load Style Model"
+    }
+  },
+  "76": {
+    "inputs": {
+      "clip_vision_name": [
+        "83",
+        1
+      ]
+    },
+    "class_type": "EmProps_CLIP_Vision_Loader",
+    "_meta": {
+      "title": "EmProps Load CLIP Vision"
+    }
+  },
+  "77": {
+    "inputs": {
+      "style_model_name": [
+        "84",
+        1
+      ]
+    },
+    "class_type": "EmProps_Style_Model_Loader",
+    "_meta": {
+      "title": "EmProps Load Style Model"
+    }
+  },
+  "78": {
+    "inputs": {
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors",
+      "save_to": "text_encoders",
+      "filename": "t5xxl_fp16.safetensors",
+      "token_provider": "None",
+      "token": false,
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "79": {
+    "inputs": {
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors",
+      "save_to": "text_encoders",
+      "filename": "clip_l.safetensors",
+      "token_provider": "None",
+      "token": false,
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "81": {
+    "inputs": {
+      "url": "https://huggingface.co/lllyasviel/flux1_dev/resolve/main/flux1-dev-fp8.safetensors",
+      "save_to": "diffusion_models",
+      "filename": "flux1-dev-fp8.safetensors",
+      "token_provider": "None",
+      "token": false,
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "82": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/sigclip_vision_384/resolve/main/sigclip_vision_patch14_384.safetensors",
+      "save_to": "clip_vision",
+      "filename": "sigclip_vision_patch14_384.safetensors",
+      "token_provider": "None",
+      "token": false,
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "83": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/sigclip_vision_384/resolve/main/sigclip_vision_patch14_384.safetensors",
+      "save_to": "clip_vision",
+      "filename": "sigclip_vision_patch14_384.safetensors",
+      "token_provider": "None",
+      "token": false,
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "84": {
+    "inputs": {
+      "url": "https://huggingface.co/black-forest-labs/FLUX.1-Redux-dev/resolve/main/flux1-redux-dev.safetensors",
+      "save_to": "style_models",
+      "filename": "flux1-redux-dev.safetensors",
+      "token_provider": "Hugging Face",
+      "token": "",
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "85": {
+    "inputs": {
+      "url": "https://huggingface.co/black-forest-labs/FLUX.1-Redux-dev/resolve/main/flux1-redux-dev.safetensors",
+      "save_to": "style_models",
+      "filename": "flux1-redux-dev.safetensors",
+      "token_provider": "Hugging Face",
+      "token": "",
+      "test_with_copy": "",
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
     }
   }
 }

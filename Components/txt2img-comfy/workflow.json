@@ -1,4 +1,16 @@
 {
+  "1": {
+    "inputs": {
+      "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/sd_xl_base_1.0_0.9vae.safetensors",
+      "save_to": "checkpoints",
+      "filename": "stable-diffusion-xl-1.0-0.9vae.safetensors",
+      "token": ""
+    },
+    "class_type": "AssetDownloader",
+    "_meta": {
+      "title": "Requires Asset"
+    }
+  },
   "3": {
     "inputs": {
       "seed": 870888277577344,
@@ -19,7 +31,7 @@
   },
   "4": {
     "inputs": {
-      "ckpt_name": "Juggernaut-XI-byRunDiffusion.safetensors"
+      "ckpt_name": "stable-diffusion-xl-1.0-0.9vae.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -69,7 +81,7 @@
   },
   "10": {
     "inputs": {
-      "provider": "google",
+      "provider": "azure",
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",

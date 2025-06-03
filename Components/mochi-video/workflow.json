@@ -102,7 +102,7 @@
       "cloud_prefix": "",
       "cloud_bucket": "emprops-share",
       "use_cloud_upload": true,
-      "cloud_provider": "google",
+      "cloud_provider": "azure",
       "images": [
         "8",
         0
