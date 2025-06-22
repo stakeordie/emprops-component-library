@@ -391,7 +391,7 @@
       "save_to": "text_encoders",
       "filename": "t5xxl_fp16.safetensors",
       "token_provider": "None",
-      "token": false,
+      "token": "",
       "test_with_copy": "",
       "source_filename": ""
     },
@@ -406,7 +406,7 @@
       "save_to": "text_encoders",
       "filename": "clip_l.safetensors",
       "token_provider": "None",
-      "token": false,
+      "token": "",
       "test_with_copy": "",
       "source_filename": ""
     },
@@ -421,7 +421,7 @@
       "save_to": "diffusion_models",
       "filename": "flux1-dev-fp8.safetensors",
       "token_provider": "None",
-      "token": false,
+      "token": "",
       "test_with_copy": "",
       "source_filename": ""
     },
@@ -436,7 +436,7 @@
       "save_to": "clip_vision",
       "filename": "sigclip_vision_patch14_384.safetensors",
       "token_provider": "None",
-      "token": false,
+      "token": "",
       "test_with_copy": "",
       "source_filename": ""
     },
@@ -451,7 +451,7 @@
       "save_to": "clip_vision",
       "filename": "sigclip_vision_patch14_384.safetensors",
       "token_provider": "None",
-      "token": false,
+      "token": "",
       "test_with_copy": "",
       "source_filename": ""
     },
