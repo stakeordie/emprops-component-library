@@ -23,7 +23,7 @@
       "name": "Prompt",
       "type": "prompt_editor",
       "display": true,
-      "group": ["main", "advanced"]
+      "group": ["basic", "advanced"]
     },
     {
       "id": "model",
@@ -32,7 +32,33 @@
       "default": "0",
       "conf_file": "hidream_model_types.json",
       "display": true,
-      "group": ["main", "advanced"]
+      "group": ["basic", "advanced"]
+    },
+    {
+      "id": "width",
+      "name": "Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": ["basic", "advanced"]
+    },
+    {
+      "id": "height",
+      "name": "Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": ["basic", "advanced"]
     }
   ]
 }

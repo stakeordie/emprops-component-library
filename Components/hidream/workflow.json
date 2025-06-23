@@ -249,7 +249,7 @@
       "title": "EmProps Asset Downloader"
     }
   },
-  "99": {
+  "105": {
     "inputs": {
       "provider": "azure",
       "prefix": "uploads/",
