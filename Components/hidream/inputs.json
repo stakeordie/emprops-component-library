@@ -8,7 +8,8 @@
   "53": {
     "width": {
       "value": "width",
-      "is_required": true
+      "is_required": true,
+      "default": 1024
     },
     "height": {
       "value": "height",
@@ -16,7 +17,7 @@
       "default": 1024
     }
   },
-  "104": {
+  "106": {
     "index": {
       "value": "model",
       "default": "0",
@@ -30,7 +31,7 @@
       "is_required": true
     }
   },
-  "105": {
+  "150": {
     "prefix": {
       "value": "prefix",
       "is_required": true

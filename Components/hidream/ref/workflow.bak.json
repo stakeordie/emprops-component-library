@@ -1,23 +1,11 @@
 {
   "3": {
     "inputs": {
-      "seed": 357124274333447,
-      "steps": [
-        "111",
-        0
-      ],
-      "cfg": [
-        "121",
-        0
-      ],
-      "sampler_name": [
-        "126",
-        0
-      ],
-      "scheduler": [
-        "125",
-        0
-      ],
+      "seed": 402150602119291,
+      "steps": 28,
+      "cfg": 1,
+      "sampler_name": "lcm",
+      "scheduler": "normal",
       "denoise": 1,
       "model": [
         "70",
@@ -28,7 +16,7 @@
         0
       ],
       "negative": [
-        "117",
+        "40",
         0
       ],
       "latent_image": [
@@ -83,10 +71,7 @@
   },
   "70": {
     "inputs": {
-      "shift": [
-        "107",
-        0
-      ],
+      "shift": 6.000000000000001,
       "model": [
         "83",
         0
@@ -264,6 +249,22 @@
       "title": "EmProps Asset Downloader"
     }
   },
+  "105": {
+    "inputs": {
+      "provider": "azure",
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "EmProps_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Cloud Storage Saver"
+    }
+  },
   "100": {
     "inputs": {
       "url": "https://huggingface.co/calcuis/hidream-gguf/resolve/main/hidream-i1-dev-q8_0.gguf",
@@ -281,10 +282,7 @@
   },
   "104": {
     "inputs": {
-      "index": [
-        "106",
-        0
-      ],
+      "index": 0,
       "value0": [
         "95",
         1
@@ -296,271 +294,6 @@
       "value2": [
         "85",
         1
-      ]
-    },
-    "class_type": "InversionDemoLazyIndexSwitch",
-    "_meta": {
-      "title": "Lazy Index Switch"
-    }
-  },
-  "150": {
-    "inputs": {
-      "provider": "azure",
-      "prefix": "uploads/",
-      "filename": "image.png",
-      "bucket": "emprops-share",
-      "images": [
-        "8",
-        0
-      ]
-    },
-    "class_type": "EmProps_Cloud_Storage_Saver",
-    "_meta": {
-      "title": "EmProps Cloud Storage Saver"
-    }
-  },
-  "106": {
-    "inputs": {
-      "value": 0
-    },
-    "class_type": "Int Input [Dream]",
-    "_meta": {
-      "title": "✍ Int Input"
-    }
-  },
-  "107": {
-    "inputs": {
-      "index": [
-        "106",
-        0
-      ],
-      "value0": [
-        "109",
-        0
-      ],
-      "value1": [
-        "110",
-        0
-      ],
-      "value2": [
-        "109",
-        0
-      ]
-    },
-    "class_type": "InversionDemoLazyIndexSwitch",
-    "_meta": {
-      "title": "Lazy Index Switch"
-    }
-  },
-  "109": {
-    "inputs": {
-      "value": 3
-    },
-    "class_type": "Float Input [Dream]",
-    "_meta": {
-      "title": "✍ Float Input"
-    }
-  },
-  "110": {
-    "inputs": {
-      "value": 6
-    },
-    "class_type": "Float Input [Dream]",
-    "_meta": {
-      "title": "✍ Float Input"
-    }
-  },
-  "111": {
-    "inputs": {
-      "index": [
-        "106",
-        0
-      ],
-      "value0": [
-        "114",
-        0
-      ],
-      "value1": [
-        "115",
-        0
-      ],
-      "value2": [
-        "116",
-        0
-      ]
-    },
-    "class_type": "InversionDemoLazyIndexSwitch",
-    "_meta": {
-      "title": "Lazy Index Switch"
-    }
-  },
-  "114": {
-    "inputs": {
-      "value": 16
-    },
-    "class_type": "Int Input [Dream]",
-    "_meta": {
-      "title": "✍ Int Input"
-    }
-  },
-  "115": {
-    "inputs": {
-      "value": 28
-    },
-    "class_type": "Int Input [Dream]",
-    "_meta": {
-      "title": "✍ Int Input"
-    }
-  },
-  "116": {
-    "inputs": {
-      "value": 50
-    },
-    "class_type": "Int Input [Dream]",
-    "_meta": {
-      "title": "✍ Int Input"
-    }
-  },
-  "117": {
-    "inputs": {
-      "index": [
-        "106",
-        0
-      ],
-      "value0": [
-        "118",
-        0
-      ],
-      "value1": [
-        "118",
-        0
-      ],
-      "value2": [
-        "40",
-        0
-      ]
-    },
-    "class_type": "InversionDemoLazyIndexSwitch",
-    "_meta": {
-      "title": "Lazy Index Switch"
-    }
-  },
-  "118": {
-    "inputs": {
-      "text": "",
-      "clip": [
-        "94",
-        0
-      ]
-    },
-    "class_type": "CLIPTextEncode",
-    "_meta": {
-      "title": "Negative Prompt"
-    }
-  },
-  "119": {
-    "inputs": {
-      "value": 1
-    },
-    "class_type": "Float Input [Dream]",
-    "_meta": {
-      "title": "✍ Float Input"
-    }
-  },
-  "120": {
-    "inputs": {
-      "value": 5
-    },
-    "class_type": "Float Input [Dream]",
-    "_meta": {
-      "title": "✍ Float Input"
-    }
-  },
-  "121": {
-    "inputs": {
-      "index": [
-        "106",
-        0
-      ],
-      "value0": [
-        "119",
-        0
-      ],
-      "value1": [
-        "119",
-        0
-      ],
-      "value2": [
-        "120",
-        0
-      ]
-    },
-    "class_type": "InversionDemoLazyIndexSwitch",
-    "_meta": {
-      "title": "Lazy Index Switch"
-    }
-  },
-  "122": {
-    "inputs": {
-      "sampler_name": "uni_pc",
-      "scheduler": "simple"
-    },
-    "class_type": "SeargeSamplerInputs",
-    "_meta": {
-      "title": "Sampler Settings"
-    }
-  },
-  "123": {
-    "inputs": {
-      "sampler_name": "lcm",
-      "scheduler": "normal"
-    },
-    "class_type": "SeargeSamplerInputs",
-    "_meta": {
-      "title": "Sampler Settings"
-    }
-  },
-  "125": {
-    "inputs": {
-      "index": [
-        "106",
-        0
-      ],
-      "value0": [
-        "123",
-        1
-      ],
-      "value1": [
-        "123",
-        1
-      ],
-      "value2": [
-        "122",
-        1
-      ]
-    },
-    "class_type": "InversionDemoLazyIndexSwitch",
-    "_meta": {
-      "title": "Lazy Index Switch"
-    }
-  },
-  "126": {
-    "inputs": {
-      "index": [
-        "106",
-        0
-      ],
-      "value0": [
-        "123",
-        0
-      ],
-      "value1": [
-        "123",
-        0
-      ],
-      "value2": [
-        "122",
-        0
       ]
     },
     "class_type": "InversionDemoLazyIndexSwitch",
