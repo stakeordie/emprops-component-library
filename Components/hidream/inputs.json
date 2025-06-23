@@ -1,0 +1,22 @@
+{
+  "3":{
+    "seed": {
+      "value": "seed",
+      "is_required": true
+    }
+  },
+  "104": {
+    "index": {
+      "value": "model",
+      "default": "0",
+      "is_required": true
+    }
+  },
+  "92":{
+    "text": {
+      "value": "prompt",
+      "default": "",
+      "is_required": true
+    }
+  }
+}

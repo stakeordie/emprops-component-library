@@ -98,7 +98,7 @@
   },
   "25": {
     "inputs": {
-      "noise_seed": 904574311662902
+      "noise_seed": 54724163445388
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -249,18 +249,6 @@
     "class_type": "EmProps_Image_Loader",
     "_meta": {
       "title": "EmProps Image Loader"
-    }
-  },
-  "62": {
-    "inputs": {
-      "images": [
-        "8",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
     }
   },
   "63": {

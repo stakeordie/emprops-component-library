@@ -1,43 +1,11 @@
 {
-  "2": {
-    "inputs": {
-      "ckpt_name": "juggernaut_reborn.safetensors"
-    },
-    "class_type": "CheckpointLoaderSimple",
-    "_meta": {
-      "title": "Load Checkpoint"
-    }
-  },
-  "3": {
-    "inputs": {
-      "lora_name": "more_details.safetensors",
-      "strength_model": 0.25,
-      "strength_clip": 0.25,
-      "model": ["2", 0],
-      "clip": ["2", 1]
-    },
-    "class_type": "LoraLoader",
-    "_meta": {
-      "title": "Load LoRA"
-    }
-  },
-  "4": {
-    "inputs": {
-      "lora_name": "SDXLrender_v2.0.safetensors",
-      "strength_model": 0.1,
-      "strength_clip": 0.1,
-      "model": ["3", 0],
-      "clip": ["3", 1]
-    },
-    "class_type": "LoraLoader",
-    "_meta": {
-      "title": "Load LoRA"
-    }
-  },
   "5": {
     "inputs": {
       "text": "masterpiece, best quality, highres, small little mischievious elves making toys",
-      "clip": ["4", 1]
+      "clip": [
+        "123",
+        1
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
@@ -47,26 +15,26 @@
   "6": {
     "inputs": {
       "text": "(worst quality, low quality, normal quality:1.5)",
-      "clip": ["4", 1]
+      "clip": [
+        "123",
+        1
+      ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
       "title": "CLIP Text Encode (Prompt)"
     }
   },
-  "7": {
-    "inputs": {
-      "model_name": "4xNomosUniDAT_otf.safetensors"
-    },
-    "class_type": "UpscaleModelLoader",
-    "_meta": {
-      "title": "Load Upscale Model"
-    }
-  },
   "8": {
     "inputs": {
-      "upscale_model": ["7", 0],
-      "image": ["46", 0]
+      "upscale_model": [
+        "120",
+        0
+      ],
+      "image": [
+        "46",
+        0
+      ]
     },
     "class_type": "ImageUpscaleWithModel",
     "_meta": {
@@ -75,11 +43,14 @@
   },
   "13": {
     "inputs": {
-      "b1": 1.05,
-      "b2": 1.08,
-      "s1": 0.9500000000000001,
-      "s2": 0.8,
-      "model": ["4", 0]
+      "b1": 1.0500000000000003,
+      "b2": 1.0800000000000003,
+      "s1": 0.9500000000000002,
+      "s2": 0.8000000000000002,
+      "model": [
+        "123",
+        0
+      ]
     },
     "class_type": "FreeU_V2",
     "_meta": {
@@ -89,7 +60,10 @@
   "14": {
     "inputs": {
       "scale": 1,
-      "model": ["13", 0]
+      "model": [
+        "13",
+        0
+      ]
     },
     "class_type": "PerturbedAttentionGuidance",
     "_meta": {
@@ -100,7 +74,10 @@
     "inputs": {
       "hard_mode": true,
       "boost": true,
-      "model": ["14", 0]
+      "model": [
+        "14",
+        0
+      ]
     },
     "class_type": "Automatic CFG",
     "_meta": {
@@ -110,35 +87,47 @@
   "16": {
     "inputs": {
       "method": "MultiDiffusion",
-      "tile_width": ["104", 1],
-      "tile_height": ["104", 2],
+      "tile_width": [
+        "104",
+        1
+      ],
+      "tile_height": [
+        "104",
+        2
+      ],
       "tile_overlap": 128,
       "tile_batch_size": 4,
-      "model": ["15", 0]
+      "model": [
+        "15",
+        0
+      ]
     },
     "class_type": "TiledDiffusion",
     "_meta": {
       "title": "Tiled Diffusion"
     }
   },
-  "17": {
-    "inputs": {
-      "control_net_name": "control_v11f1e_sd15_tile_fp16.safetensors"
-    },
-    "class_type": "ControlNetLoader",
-    "_meta": {
-      "title": "Load ControlNet Model"
-    }
-  },
   "18": {
     "inputs": {
-      "strength": 0.75,
+      "strength": 0.7500000000000001,
       "start_percent": 0,
       "end_percent": 1,
-      "positive": ["5", 0],
-      "negative": ["6", 0],
-      "control_net": ["17", 0],
-      "image": ["46", 0]
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "6",
+        0
+      ],
+      "control_net": [
+        "121",
+        0
+      ],
+      "image": [
+        "46",
+        0
+      ]
     },
     "class_type": "ControlNetApplyAdvanced",
     "_meta": {
@@ -158,7 +147,7 @@
     "inputs": {
       "model_type": "SDXL",
       "steps": 25,
-      "denoise": 0.75
+      "denoise": 0.7500000000000001
     },
     "class_type": "AlignYourStepsScheduler",
     "_meta": {
@@ -168,14 +157,32 @@
   "25": {
     "inputs": {
       "add_noise": true,
-      "noise_seed": 995494266086194,
+      "noise_seed": 162671468133241,
       "cfg": 8,
-      "model": ["96", 0],
-      "positive": ["18", 0],
-      "negative": ["18", 1],
-      "sampler": ["20", 0],
-      "sigmas": ["21", 0],
-      "latent_image": ["102", 0]
+      "model": [
+        "96",
+        0
+      ],
+      "positive": [
+        "18",
+        0
+      ],
+      "negative": [
+        "18",
+        1
+      ],
+      "sampler": [
+        "20",
+        0
+      ],
+      "sigmas": [
+        "21",
+        0
+      ],
+      "latent_image": [
+        "102",
+        0
+      ]
     },
     "class_type": "SamplerCustom",
     "_meta": {
@@ -184,13 +191,22 @@
   },
   "46": {
     "inputs": {
-      "width": ["86", 0],
-      "height": ["86", 0],
+      "width": [
+        "86",
+        0
+      ],
+      "height": [
+        "86",
+        0
+      ],
       "interpolation": "nearest",
       "method": "keep proportion",
       "condition": "downscale if bigger",
       "multiple_of": 0,
-      "image": ["113", 0]
+      "image": [
+        "113",
+        0
+      ]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -199,13 +215,22 @@
   },
   "85": {
     "inputs": {
-      "width": ["86", 0],
-      "height": ["86", 0],
+      "width": [
+        "86",
+        0
+      ],
+      "height": [
+        "86",
+        0
+      ],
       "interpolation": "lanczos",
       "method": "keep proportion",
       "condition": "always",
       "multiple_of": 8,
-      "image": ["8", 0]
+      "image": [
+        "8",
+        0
+      ]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -224,7 +249,10 @@
   "89": {
     "inputs": {
       "preset": "PLUS (high strength)",
-      "model": ["16", 0]
+      "model": [
+        "16",
+        0
+      ]
     },
     "class_type": "IPAdapterUnifiedLoader",
     "_meta": {
@@ -235,8 +263,11 @@
     "inputs": {
       "interpolation": "LANCZOS",
       "crop_position": "center",
-      "sharpening": 0.05,
-      "image": ["111", 0]
+      "sharpening": 0.05000000000000001,
+      "image": [
+        "111",
+        0
+      ]
     },
     "class_type": "PrepImageForClipVision",
     "_meta": {
@@ -245,7 +276,10 @@
   },
   "92": {
     "inputs": {
-      "weight": ["95", 0],
+      "weight": [
+        "95",
+        0
+      ],
       "weight_type": "composition precise",
       "combine_embeds": "concat",
       "start_at": 0,
@@ -253,9 +287,18 @@
       "embeds_scaling": "V only",
       "enhance_tiles": 2,
       "enhance_ratio": 1,
-      "model": ["89", 0],
-      "ipadapter": ["89", 1],
-      "image": ["90", 0]
+      "model": [
+        "89",
+        0
+      ],
+      "ipadapter": [
+        "89",
+        1
+      ],
+      "image": [
+        "90",
+        0
+      ]
     },
     "class_type": "IPAdapterClipVisionEnhancer",
     "_meta": {
@@ -264,7 +307,7 @@
   },
   "95": {
     "inputs": {
-      "value": 5
+      "value": 5.000000000000001
     },
     "class_type": "Eden_Float",
     "_meta": {
@@ -273,9 +316,18 @@
   },
   "96": {
     "inputs": {
-      "switch": ["97", 0],
-      "on_false": ["16", 0],
-      "on_true": ["92", 0]
+      "switch": [
+        "97",
+        0
+      ],
+      "on_false": [
+        "16",
+        0
+      ],
+      "on_true": [
+        "92",
+        0
+      ]
     },
     "class_type": "InversionDemoLazySwitch",
     "_meta": {
@@ -304,8 +356,14 @@
     "inputs": {
       "tile_size": 400,
       "fast": false,
-      "samples": ["25", 0],
-      "vae": ["2", 2]
+      "samples": [
+        "25",
+        0
+      ],
+      "vae": [
+        "119",
+        2
+      ]
     },
     "class_type": "VAEDecodeTiled_TiledDiffusion",
     "_meta": {
@@ -316,9 +374,18 @@
     "inputs": {
       "tile_size": 400,
       "fast": false,
-      "color_fix": ["99", 0],
-      "pixels": ["111", 0],
-      "vae": ["2", 2]
+      "color_fix": [
+        "99",
+        0
+      ],
+      "pixels": [
+        "111",
+        0
+      ],
+      "vae": [
+        "119",
+        2
+      ]
     },
     "class_type": "VAEEncodeTiled_TiledDiffusion",
     "_meta": {
@@ -333,7 +400,10 @@
       "method": "keep proportion",
       "condition": "always",
       "multiple_of": 8,
-      "image": ["113", 0]
+      "image": [
+        "113",
+        0
+      ]
     },
     "class_type": "ImageResize+",
     "_meta": {
@@ -351,9 +421,18 @@
   },
   "111": {
     "inputs": {
-      "boolean": ["110", 0],
-      "on_true": ["85", 0],
-      "on_false": ["46", 0]
+      "boolean": [
+        "110",
+        0
+      ],
+      "on_true": [
+        "85",
+        0
+      ],
+      "on_false": [
+        "46",
+        0
+      ]
     },
     "class_type": "easy ifElse",
     "_meta": {
@@ -366,7 +445,10 @@
       "prefix": "uploads/",
       "filename": "image.png",
       "bucket": "emprops-share",
-      "images": ["101", 0]
+      "images": [
+        "101",
+        0
+      ]
     },
     "class_type": "EmProps_Cloud_Storage_Saver",
     "_meta": {
@@ -385,6 +467,161 @@
     "class_type": "EmProps_Image_Loader",
     "_meta": {
       "title": "EmProps Image Loader"
+    }
+  },
+  "114": {
+    "inputs": {
+      "url": "https://huggingface.co/yungplin/More_details/resolve/main/more_details.safetensors",
+      "save_to": "loras",
+      "filename": "more_details.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "115": {
+    "inputs": {
+      "url": "https://huggingface.co/philz1337x/loras/resolve/main/SDXLrender_v2.0.safetensors",
+      "save_to": "loras",
+      "filename": "SDXLrender_v2.0.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "116": {
+    "inputs": {
+      "url": "https://huggingface.co/madriss/chkpts/resolve/d9ae35349b0cb67e06aebbeb94316827bcd6be4a/ComfyUI/models/checkpoints/juggernaut_reborn.safetensors",
+      "save_to": "checkpoints",
+      "filename": "juggernaut_reborn.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "117": {
+    "inputs": {
+      "url": "https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors/resolve/main/control_v11f1e_sd15_tile_fp16.safetensors",
+      "save_to": "controlnet",
+      "filename": "control_v11f1e_sd15_tile_fp16.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "118": {
+    "inputs": {
+      "url": "https://huggingface.co/Phips/4xNomosUniDAT_otf/resolve/main/4xNomosUniDAT_otf.safetensors",
+      "save_to": "upscale_models",
+      "filename": "4xNomosUniDAT_otf.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "119": {
+    "inputs": {
+      "ckpt_name": [
+        "116",
+        1
+      ]
+    },
+    "class_type": "EmProps_Checkpoint_Loader",
+    "_meta": {
+      "title": "EmProps Checkpoint Loader"
+    }
+  },
+  "120": {
+    "inputs": {
+      "upscaler_name": [
+        "118",
+        1
+      ]
+    },
+    "class_type": "EmProps_Load_Upscale_Model",
+    "_meta": {
+      "title": "EmProps Load Upscale Model"
+    }
+  },
+  "121": {
+    "inputs": {
+      "controlnet_name": [
+        "117",
+        1
+      ]
+    },
+    "class_type": "EmProps_ControlNet_Loader",
+    "_meta": {
+      "title": "EmProps ControlNet Loader"
+    }
+  },
+  "122": {
+    "inputs": {
+      "lora_name": [
+        "114",
+        1
+      ],
+      "strength_model": 0.25,
+      "strength_clip": 0.25,
+      "model": [
+        "119",
+        0
+      ],
+      "clip": [
+        "119",
+        1
+      ]
+    },
+    "class_type": "EmProps_Lora_Loader",
+    "_meta": {
+      "title": "EmProps LoRA Loader"
+    }
+  },
+  "123": {
+    "inputs": {
+      "lora_name": [
+        "115",
+        1
+      ],
+      "strength_model": 0.10,
+      "strength_clip": 0.10,
+      "model": [
+        "122",
+        0
+      ],
+      "clip": [
+        "122",
+        1
+      ]
+    },
+    "class_type": "EmProps_Lora_Loader",
+    "_meta": {
+      "title": "EmProps LoRA Loader"
     }
   }
 }

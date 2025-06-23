@@ -5,13 +5,6 @@
       "is_required": true
     }
   },
-  "2": {
-    "ckpt_name": {
-      "value": "model",
-      "is_required": false,
-      "default": "juggernaut_reborn.safetensors"
-    }
-  },
   "5": {
     "text": {
       "value": "prompt",

@@ -1,0 +1,271 @@
+{
+  "6": {
+    "inputs": {
+      "text": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque background",
+      "clip": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "13": {
+    "inputs": {
+      "noise": [
+        "25",
+        0
+      ],
+      "guider": [
+        "22",
+        0
+      ],
+      "sampler": [
+        "16",
+        0
+      ],
+      "sigmas": [
+        "17",
+        0
+      ],
+      "latent_image": [
+        "30",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "16": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "17": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": 5,
+      "denoise": 0.7200000000000002,
+      "model": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "22": {
+    "inputs": {
+      "model": [
+        "38",
+        0
+      ],
+      "conditioning": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "25": {
+    "inputs": {
+      "noise_seed": 148797139646731
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "29": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "megapixels": 1.0000000000000002,
+      "image": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "ImageScaleToTotalPixels"
+    }
+  },
+  "30": {
+    "inputs": {
+      "pixels": [
+        "29",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "31": {
+    "inputs": {
+      "provider": "azure",
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "EmProps_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Cloud Storage Saver"
+    }
+  },
+  "32": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "example.png",
+      "provider": "azure",
+      "cloud_key": "",
+      "bucket": "emprops-share",
+      "url": "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
+    }
+  },
+  "33": {
+    "inputs": {
+      "url": "https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/027bd76c3514d062a2190c84c1598a7fb7dd7ebb/models/vae/ae.safetensors",
+      "save_to": "vae",
+      "filename": "ae.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "34": {
+    "inputs": {
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors",
+      "save_to": "text_encoders",
+      "filename": "t5xxl_fp8_e4m3fn.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "35": {
+    "inputs": {
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors",
+      "save_to": "text_encoders",
+      "filename": "clip_l.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "36": {
+    "inputs": {
+      "url": "https://huggingface.co/lllyasviel/flux1_dev/resolve/main/flux1-dev-fp8.safetensors",
+      "save_to": "diffusion_models",
+      "filename": "flux1-dev-fp8.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "37": {
+    "inputs": {
+      "clip_name1": [
+        "34",
+        1
+      ],
+      "clip_name2": [
+        "35",
+        1
+      ],
+      "type": "flux",
+      "device": "default"
+    },
+    "class_type": "EmProps_DualCLIP_Loader",
+    "_meta": {
+      "title": "EmProps DualCLIP Loader"
+    }
+  },
+  "38": {
+    "inputs": {
+      "unet_name": [
+        "36",
+        1
+      ],
+      "weight_dtype": "fp8_e4m3fn"
+    },
+    "class_type": "EmProps_Diffusion_Model_Loader",
+    "_meta": {
+      "title": "EmProps Load Diffusion Model"
+    }
+  },
+  "39": {
+    "inputs": {
+      "vae_name": [
+        "33",
+        1
+      ]
+    },
+    "class_type": "EmProps_VAE_Loader",
+    "_meta": {
+      "title": "EmProps VAE Loader"
+    }
+  }
+}

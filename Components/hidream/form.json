@@ -1,0 +1,38 @@
+{
+  "config": {
+    "groupOrder": ["basic", "advanced"],
+    "maxNumberOfGenerations": 4,
+    "componentGroup": "image"
+  },
+  "fields": [
+    {
+      "id": "seed",
+      "name": "Seed",
+      "type": "optional_input",
+      "display": true,
+      "group": "advanced",
+      "input_type": "number",
+      "constraints": {
+        "min": 0,
+        "max": 999999,
+        "step": 1
+      }
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "display": true,
+      "group": ["main", "advanced"]
+    },
+    {
+      "id": "model",
+      "name": "Model",
+      "type": "select",
+      "default": "0",
+      "conf_file": "hidream_model_types.json",
+      "display": true,
+      "group": ["main", "advanced"]
+    }
+  ]
+}
