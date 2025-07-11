@@ -1,0 +1,124 @@
+{
+  "config": {
+    "groupOrder": ["Easy", "Advanced", "With Upscale"],
+    "maxNumberOfGenerations": 4,
+    "componentGroup": "image"
+  },
+  "fields": [
+    {
+      "id": "seed",
+      "name": "Seed",
+      "type": "optional_input",
+      "display": true,
+      "group": ["Advanced","With Upscale"],
+      "input_type": "number",
+      "constraints": {
+        "min": 0,
+        "max": 9999999,
+        "step": 1
+      }
+    },
+    {
+      "id": "image",
+      "name": "Image",
+      "type": "image_loader",
+      "display": true,
+      "group": ["Easy", "Advanced", "With Upscale"]
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "type": "prompt_editor",
+      "display": true,
+      "group": ["Easy", "Advanced", "With Upscale"]
+    },
+    {
+      "id": "is_match_size",
+      "name": "Derived Output Size From Input Image?",
+      "type": "select",
+      "conf_file": "match_image_size.json",
+      "display": true,
+      "default": 1,
+      "group": ["Easy", "Advanced", "With Upscale"]
+    },
+    {
+      "id": "width",
+      "name": "Output Width",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": ["Easy", "Advanced", "With Upscale"]
+    },
+    {
+      "id": "height",
+      "name": "Output Height",
+      "type": "slider",
+      "default": 1024,
+      "constraints": {
+        "min": 64,
+        "max": 1600,
+        "step": 64
+      },
+      "display": true,
+      "group": ["Easy", "Advanced", "With Upscale"]
+    },
+    {
+      "id": "steps",
+      "name": "Steps",
+      "type": "slider",
+      "default": 8,
+      "constraints": {
+        "min": 1,
+        "max": 30,
+        "step": 1
+      },
+      "display": true,
+      "group": ["Advanced", "With Upscale"]
+    },
+    {
+      "id": "denoising",
+      "name": "Denoising Strength",
+      "type": "slider",
+      "default": 0.7,
+      "constraints": {
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "display": true,
+      "group": ["Advanced", "With Upscale"]
+    },
+    {
+      "id": "sampler",
+      "name": "Sampler",
+      "type": "select",
+      "default": "euler_ancestral",
+      "conf_file": "samplers.json",
+      "display": true,
+      "group": ["Advanced", "With Upscale"]
+    },
+    {
+      "id": "scheduler",
+      "name": "Scheduler",
+      "type": "select",
+      "default": "beta",
+      "conf_file": "schedulers.json",
+      "display": true,
+      "group": ["Advanced", "With Upscale"]
+    },
+    {
+      "id": "is_upscale",
+      "name": "Upscale Image?",
+      "type": "select",
+      "conf_file": "boolean.json",
+      "display": true,
+      "defualt": false,
+      "group": ["Easy", "Advanced", "With Upscale"]
+    }
+  ]
+}

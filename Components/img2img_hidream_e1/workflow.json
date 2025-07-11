@@ -1,0 +1,340 @@
+{
+  "6": {
+    "inputs": {
+      "text": "the head of a bull on the body of a...",
+      "clip": [
+        "64",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "64",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "54",
+        0
+      ],
+      "vae": [
+        "65",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "44": {
+    "inputs": {
+      "upscale_method": "bilinear",
+      "width": 768,
+      "height": 768,
+      "crop": "center",
+      "image": [
+        "66",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Upscale Image"
+    }
+  },
+  "46": {
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "47": {
+    "inputs": {
+      "noise_seed": 657756038968711
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "49": {
+    "inputs": {
+      "scheduler": "normal",
+      "steps": 28,
+      "denoise": 1,
+      "model": [
+        "68",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "52": {
+    "inputs": {
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "vae": [
+        "65",
+        0
+      ],
+      "pixels": [
+        "44",
+        0
+      ]
+    },
+    "class_type": "InstructPixToPixConditioning",
+    "_meta": {
+      "title": "InstructPixToPixConditioning"
+    }
+  },
+  "53": {
+    "inputs": {
+      "cfg_conds": 5,
+      "cfg_cond2_negative": 2,
+      "model": [
+        "68",
+        0
+      ],
+      "cond1": [
+        "52",
+        0
+      ],
+      "cond2": [
+        "52",
+        1
+      ],
+      "negative": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "DualCFGGuider",
+    "_meta": {
+      "title": "DualCFGGuider"
+    }
+  },
+  "54": {
+    "inputs": {
+      "noise": [
+        "47",
+        0
+      ],
+      "guider": [
+        "53",
+        0
+      ],
+      "sampler": [
+        "46",
+        0
+      ],
+      "sigmas": [
+        "49",
+        0
+      ],
+      "latent_image": [
+        "52",
+        2
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "57": {
+    "inputs": {
+      "url": "https://huggingface.co/calcuis/hidream-gguf/resolve/main/hidream-e1-full-q8_0.gguf",
+      "save_to": "diffusion_models",
+      "filename": "hidream-e1-full-q8_0.gguf",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "58": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_l_hidream.safetensors",
+      "save_to": "text_encoders",
+      "filename": "clip_l_hidream.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "59": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_g_hidream.safetensors",
+      "save_to": "text_encoders",
+      "filename": "clip_g_hidream.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "60": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors",
+      "save_to": "text_encoders",
+      "filename": "t5xxl_fp8_e4m3fn_scaled.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "61": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/llama_3.1_8b_instruct_fp8_scaled.safetensors",
+      "save_to": "text_encoders",
+      "filename": "llama_3.1_8b_instruct_fp8_scaled.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "62": {
+    "inputs": {
+      "url": "https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/027bd76c3514d062a2190c84c1598a7fb7dd7ebb/models/vae/ae.safetensors",
+      "save_to": "vae",
+      "filename": "ae.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "64": {
+    "inputs": {
+      "clip_name1": [
+        "58",
+        1
+      ],
+      "clip_name2": [
+        "59",
+        1
+      ],
+      "clip_name3": [
+        "60",
+        1
+      ],
+      "clip_name4": [
+        "61",
+        1
+      ],
+      "device": "default"
+    },
+    "class_type": "EmProps_QuadrupleCLIP_Loader",
+    "_meta": {
+      "title": "EmProps QuadrupleCLIP Loader"
+    }
+  },
+  "65": {
+    "inputs": {
+      "vae_name": [
+        "62",
+        1
+      ]
+    },
+    "class_type": "EmProps_VAE_Loader",
+    "_meta": {
+      "title": "EmProps VAE Loader"
+    }
+  },
+  "66": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "example.png",
+      "provider": "azure",
+      "cloud_key": "",
+      "bucket": "emprops-share",
+      "url": "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg"
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
+    }
+  },
+  "67": {
+    "inputs": {
+      "provider": "azure",
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "EmProps_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Cloud Storage Saver"
+    }
+  },
+  "68": {
+    "inputs": {
+      "unet_name": [
+        "57",
+        1
+      ]
+    },
+    "class_type": "UnetLoaderGGUF",
+    "_meta": {
+      "title": "Unet Loader (GGUF)"
+    }
+  }
+}

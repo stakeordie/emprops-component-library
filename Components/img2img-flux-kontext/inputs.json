@@ -1,0 +1,80 @@
+{
+  "6": {
+    "text": {
+      "value": "prompt",
+      "default": "a candid photo of a deer sitting in the garden of eden, surrounded by mystical magical plants and a gorgeous picturesque background",
+      "is_required": true
+    }
+  },
+  "51": {
+    "steps": {
+      "value": "steps",
+      "is_required": false,
+      "default": 20
+    },
+    "sampler_name": {
+      "value": "sampler",
+      "default": "dpmpp_2m",
+      "is_required": false
+    },
+    "scheduler": {
+      "value": "scheduler",
+      "default": "karras",
+      "is_required": false
+    },
+    "denoise": {
+      "value": "denoising",
+      "is_required": false,
+      "default": 1
+    },
+    "cfg": {
+      "value": "cfg",
+      "is_required": false,
+      "default": 0.8
+    }
+  },
+  "217":{
+    "width": {
+      "value": "width",
+      "is_required": false,
+      "default": true
+    },
+    "height": {
+      "value": "height",
+      "is_required": false,
+      "default": true
+    }
+  },
+  "224": {
+    "url": {
+      "value": "image",
+      "is_required": true
+    }
+  },
+  "225": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
+  },
+  "233": {
+    "value": {
+      "value": "is_upscale",
+      "default": false
+    }
+  },
+  "248": {
+    "value": {
+      "value": "is_match_size",
+      "default": 0
+    }
+  }
+}

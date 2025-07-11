@@ -1,0 +1,45 @@
+{
+  "4": {
+    "seed_number": {
+      "value": "seed",
+      "is_required": true
+    },
+    "system_context": {
+      "value": "system_context",
+      "is_required": true
+    },
+    "prompt": {
+      "value": "prompt",
+      "is_required": true
+    },
+    "temperature": {
+      "value": "temperature",
+      "default": 0.2,
+      "is_required": true
+    },
+    "top_k": {
+      "value": "top_k",
+      "default": 40,
+      "is_required": true
+    },
+    "top_p": {
+      "value": "top_p",
+      "default": 0.9,
+      "is_required": true
+    }
+  },
+  "6": {
+    "prefix": {
+      "value": "prefix",
+      "is_required": true
+    },
+    "filename": {
+      "value": "filename",
+      "is_required": true
+    },
+    "bucket": {
+      "value": "bucket",
+      "is_required": true
+    }
+  }
+}

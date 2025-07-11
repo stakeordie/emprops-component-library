@@ -1,11 +1,11 @@
 function computeCost(context) {
-  let cost = 1;
+  let cost = 3;
   if(context.model == 0) {
-    cost = 1.5;
+    cost = 3;
   } else if (context.model == 1) {
-    cost = 2.5;
+    cost = 5;
   } else {
-    cost = 4;
+    cost = 11;
   }
   return { cost };
 }

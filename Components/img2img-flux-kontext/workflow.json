@@ -1,0 +1,554 @@
+{
+  "6": {
+    "inputs": {
+      "text": "But she ",
+      "clip": [
+        "213",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "11": {
+    "inputs": {
+      "guidance": 2.5,
+      "conditioning": [
+        "194",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "FluxGuidance"
+    }
+  },
+  "51": {
+    "inputs": {
+      "seed": 118204811832972,
+      "steps": 20,
+      "cfg": 1,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.8000000000000002,
+      "model": [
+        "210",
+        0
+      ],
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "195",
+        0
+      ],
+      "latent_image": [
+        "110",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "100": {
+    "inputs": {
+      "upscale_model": [
+        "220",
+        0
+      ],
+      "image": [
+        "168",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel",
+    "_meta": {
+      "title": "Upscale Image (using Model)"
+    }
+  },
+  "102": {
+    "inputs": {
+      "upscale_method": "lanczos",
+      "scale_by": 0.5,
+      "image": [
+        "100",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy",
+    "_meta": {
+      "title": "Upscale Image By"
+    }
+  },
+  "110": {
+    "inputs": {
+      "pixels": [
+        "102",
+        0
+      ],
+      "vae": [
+        "215",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "111": {
+    "inputs": {
+      "samples": [
+        "51",
+        0
+      ],
+      "vae": [
+        "215",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "144": {
+    "inputs": {
+      "anything": [
+        "111",
+        0
+      ]
+    },
+    "class_type": "easy cleanGpuUsed",
+    "_meta": {
+      "title": "Clean VRAM Used"
+    }
+  },
+  "163": {
+    "inputs": {
+      "seed": 5000,
+      "steps": 20,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "210",
+        0
+      ],
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "195",
+        0
+      ],
+      "latent_image": [
+        "218",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "164": {
+    "inputs": {
+      "samples": [
+        "163",
+        0
+      ],
+      "vae": [
+        "215",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "168": {
+    "inputs": {
+      "anything": [
+        "241",
+        0
+      ]
+    },
+    "class_type": "easy cleanGpuUsed",
+    "_meta": {
+      "title": "Clean VRAM Used"
+    }
+  },
+  "188": {
+    "inputs": {
+      "pixels": [
+        "196",
+        0
+      ],
+      "vae": [
+        "215",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode"
+    }
+  },
+  "194": {
+    "inputs": {
+      "conditioning": [
+        "6",
+        0
+      ],
+      "latent": [
+        "188",
+        0
+      ]
+    },
+    "class_type": "ReferenceLatent",
+    "_meta": {
+      "title": "ReferenceLatent"
+    }
+  },
+  "195": {
+    "inputs": {
+      "conditioning": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "ConditioningZeroOut"
+    }
+  },
+  "196": {
+    "inputs": {
+      "image": [
+        "224",
+        0
+      ]
+    },
+    "class_type": "FluxKontextImageScale",
+    "_meta": {
+      "title": "FluxKontextImageScale"
+    }
+  },
+  "207": {
+    "inputs": {
+      "width": [
+        "216",
+        0
+      ],
+      "height": [
+        "216",
+        1
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "209": {
+    "inputs": {
+      "url": "https://huggingface.co/Comfy-Org/flux1-kontext-dev_ComfyUI/resolve/main/split_files/diffusion_models/flux1-dev-kontext_fp8_scaled.safetensors",
+      "save_to": "diffusion_models",
+      "filename": "flux1-dev-kontext_fp8_scaled.safetensors",
+      "token_provider": "Hugging Face",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "210": {
+    "inputs": {
+      "unet_name": [
+        "209",
+        1
+      ],
+      "weight_dtype": "default"
+    },
+    "class_type": "EmProps_Diffusion_Model_Loader",
+    "_meta": {
+      "title": "EmProps Load Diffusion Model"
+    }
+  },
+  "211": {
+    "inputs": {
+      "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors",
+      "save_to": "text_encoders",
+      "filename": "t5xxl_fp16.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "212": {
+    "inputs": {
+      "url": "https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/027bd76c3514d062a2190c84c1598a7fb7dd7ebb/models/vae/ae.safetensors",
+      "save_to": "text_encoders",
+      "filename": "clip_l.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "213": {
+    "inputs": {
+      "clip_name1": [
+        "212",
+        1
+      ],
+      "clip_name2": [
+        "211",
+        1
+      ],
+      "type": "flux",
+      "device": "default"
+    },
+    "class_type": "EmProps_DualCLIP_Loader",
+    "_meta": {
+      "title": "EmProps DualCLIP Loader"
+    }
+  },
+  "214": {
+    "inputs": {
+      "url": "https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/027bd76c3514d062a2190c84c1598a7fb7dd7ebb/models/vae/ae.safetensors",
+      "save_to": "vae",
+      "filename": "ae.safetensors",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "215": {
+    "inputs": {
+      "vae_name": [
+        "214",
+        1
+      ]
+    },
+    "class_type": "EmProps_VAE_Loader",
+    "_meta": {
+      "title": "EmProps VAE Loader"
+    }
+  },
+  "216": {
+    "inputs": {
+      "image": [
+        "224",
+        0
+      ]
+    },
+    "class_type": "GetImageSize+",
+    "_meta": {
+      "title": "🔧 Get Image Size"
+    }
+  },
+  "217": {
+    "inputs": {
+      "width": 1280,
+      "height": 720,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "218": {
+    "inputs": {
+      "boolean": [
+        "247",
+        0
+      ],
+      "on_true": [
+        "207",
+        0
+      ],
+      "on_false": [
+        "217",
+        0
+      ]
+    },
+    "class_type": "easy ifElse",
+    "_meta": {
+      "title": "If else"
+    }
+  },
+  "219": {
+    "inputs": {
+      "url": "https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth?download",
+      "save_to": "upscale_models",
+      "filename": "4x_NMKD-Siax_200k.pth",
+      "token_provider": "None",
+      "token": "",
+      "test_with_copy": false,
+      "source_filename": ""
+    },
+    "class_type": "EmProps_Asset_Downloader",
+    "_meta": {
+      "title": "EmProps Asset Downloader"
+    }
+  },
+  "220": {
+    "inputs": {
+      "upscaler_name": [
+        "219",
+        1
+      ]
+    },
+    "class_type": "EmProps_Load_Upscale_Model",
+    "_meta": {
+      "title": "EmProps Load Upscale Model"
+    }
+  },
+  "224": {
+    "inputs": {
+      "source_type": "public_download",
+      "image": "UP_00006_.png",
+      "provider": "azure",
+      "cloud_key": "",
+      "bucket": "emprops-share",
+      "url": ""
+    },
+    "class_type": "EmProps_Image_Loader",
+    "_meta": {
+      "title": "EmProps Image Loader"
+    }
+  },
+  "225": {
+    "inputs": {
+      "provider": "azure",
+      "prefix": "uploads/",
+      "filename": "image.png",
+      "bucket": "emprops-share",
+      "images": [
+        "228",
+        0
+      ]
+    },
+    "class_type": "EmProps_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Cloud Storage Saver"
+    }
+  },
+  "228": {
+    "inputs": {
+      "boolean": [
+        "233",
+        0
+      ],
+      "on_true": [
+        "111",
+        0
+      ],
+      "on_false": [
+        "164",
+        0
+      ]
+    },
+    "class_type": "easy ifElse",
+    "_meta": {
+      "title": "If else"
+    }
+  },
+  "233": {
+    "inputs": {
+      "value": false
+    },
+    "class_type": "easy boolean",
+    "_meta": {
+      "title": "Boolean"
+    }
+  },
+  "241": {
+    "inputs": {
+      "continue": [
+        "233",
+        0
+      ],
+      "in": [
+        "164",
+        0
+      ]
+    },
+    "class_type": "easy blocker",
+    "_meta": {
+      "title": "Blocker"
+    }
+  },
+  "244": {
+    "inputs": {
+      "boolean": 1
+    },
+    "class_type": "Logic Boolean",
+    "_meta": {
+      "title": "Logic Boolean"
+    }
+  },
+  "245": {
+    "inputs": {
+      "text": "true",
+      "anything": [
+        "244",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Show Any"
+    }
+  },
+  "247": {
+    "inputs": {
+      "input1": [
+        "248",
+        0
+      ]
+    },
+    "class_type": "ConvertAny2Boolean",
+    "_meta": {
+      "title": "Convert to Boolean"
+    }
+  },
+  "248": {
+    "inputs": {
+      "value": 0
+    },
+    "class_type": "Int Input [Dream]",
+    "_meta": {
+      "title": "✍ Int Input"
+    }
+  }
+}

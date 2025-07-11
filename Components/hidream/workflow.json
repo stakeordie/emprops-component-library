@@ -268,7 +268,7 @@
     "inputs": {
       "url": "https://huggingface.co/calcuis/hidream-gguf/resolve/main/hidream-i1-dev-q8_0.gguf",
       "save_to": "diffusion_models",
-      "filename": "hidream-i1-fast-q8_0.gguf",
+      "filename": "hidream-i1-dev-q8_0.gguf",
       "token_provider": "None",
       "token": "",
       "test_with_copy": false,

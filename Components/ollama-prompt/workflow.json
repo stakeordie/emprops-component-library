@@ -1,0 +1,40 @@
+{
+  "4": {
+    "inputs": {
+      "model": "qwen2:7b (Q4_0, 4.4GB)",
+      "custom_model": "",
+      "api_host": "http://localhost:11434",
+      "timeout": 300,
+      "temperature": 0.2,
+      "top_k": 40,
+      "top_p": 0.9,
+      "repeat_penalty": 1.1,
+      "seed_number": 42,
+      "num_ctx": 2048,
+      "max_tokens": 200,
+      "keep_model_alive": -1,
+      "system_context": "",
+      "prompt": ""
+    },
+    "class_type": "OllamaTextDescriber",
+    "_meta": {
+      "title": "🦙 Ollama Text Describer 🦙"
+    }
+  },
+  "6": {
+    "inputs": {
+      "text": [
+        "4",
+        0
+      ],
+      "provider": "azure",
+      "prefix": "uploads/",
+      "filename": "text.txt",
+      "bucket": "emprops-share"
+    },
+    "class_type": "EmProps_Text_Cloud_Storage_Saver",
+    "_meta": {
+      "title": "EmProps Text Cloud Storage Saver"
+    }
+  }
+}
