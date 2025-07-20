@@ -276,6 +276,136 @@ async function listEnvironments() {
   }
 }
 
+async function detectComponentType(componentPath) {
+  const paths = getComponentPaths(path.basename(componentPath));
+  
+  // Check which files exist to determine component type
+  const hasWorkflow = await fs.pathExists(paths.workflow);
+  const hasApi = await fs.pathExists(paths.api);
+  const hasForm = await fs.pathExists(paths.form);
+  const hasCredits = await fs.pathExists(paths.credits);
+  
+  if (hasWorkflow && hasForm) {
+    return "comfy_workflow";
+  } else if (hasApi && hasForm) {
+    return "fetch_api";
+  } else if (hasCredits && !hasForm && !hasWorkflow && !hasApi) {
+    return "basic";
+  }
+  
+  return null;
+}
+
+async function addComponent(componentName) {
+  try {
+    const config = await getCurrentEnvironment();
+    const componentPath = path.join(componentsDir, componentName);
+    
+    // Check if component directory exists
+    if (!(await fs.pathExists(componentPath))) {
+      console.error(chalk.red(`Component directory "${componentName}" does not exist in Components/`));
+      return;
+    }
+    
+    // Check if component already exists in the API
+    const { data: existingComponent } = await fetchGetComponent(config, componentName);
+    if (existingComponent) {
+      console.error(chalk.red(`Component "${componentName}" already exists. Use 'ecli component apply' to update it.`));
+      return;
+    }
+    
+    // Auto-detect component type
+    const detectedType = await detectComponentType(componentPath);
+    if (!detectedType) {
+      console.error(chalk.red(`Could not determine component type for "${componentName}". Make sure it has the required files.`));
+      return;
+    }
+    
+    console.log(chalk.blue(`Detected component type: ${detectedType}`));
+    
+    // Get servers for selection
+    const { data: servers, error: fetchServersError } = await fetchGetServers(config);
+    if (fetchServersError) {
+      console.error(chalk.red(fetchServersError));
+      return;
+    }
+    
+    const serverChoices = servers
+      .map((server) => ({
+        name: server.name,
+        value: server.id,
+      }))
+      .concat({ name: "None", value: undefined });
+    
+    // Gather component metadata
+    let componentData;
+    try {
+      componentData = {
+        name: componentName,
+        label: await input({
+          message: "Enter the label of the component",
+          default: componentName,
+          required: true,
+        }),
+        description: await input({
+          message: "Enter the description of the component",
+          required: true,
+        }),
+        server_id: await select({
+          message: "Select the server",
+          choices: serverChoices,
+        }),
+        output_mime_type: await input({
+          message: "Enter the output mime type",
+          default: detectedType === "fetch_api" ? "application/json" : "image/png",
+        }),
+        type: detectedType,
+        order: await number({
+          message: "Enter the order of the component",
+          default: 0,
+        }),
+        display: false,
+      };
+    } catch (error) {
+      // User cancelled
+      return;
+    }
+    
+    // Create the component in the API
+    const { data: createdComponent, error: componentCreationError } = await fetchCreateComponent(
+      config,
+      componentData,
+    );
+    
+    if (componentCreationError) {
+      console.error(chalk.red(componentCreationError));
+      return;
+    }
+    
+    console.log(chalk.green(`Component "${componentName}" registered successfully!`));
+    console.log(chalk.blue(`Component ID: ${createdComponent.id}`));
+    
+    // Ask if user wants to apply the component files now
+    const shouldApply = await expand({
+      message: "Do you want to apply the component files now?",
+      default: "y",
+      choices: [
+        { key: "y", name: "Yes", value: "yes" },
+        { key: "n", name: "No", value: "no" },
+      ],
+    });
+    
+    if (shouldApply === "yes") {
+      await applyComponents(componentName);
+    } else {
+      console.log(chalk.yellow(`Remember to run 'ecli component apply ${componentName}' to upload the component files.`));
+    }
+    
+  } catch (error) {
+    console.error(chalk.red(`Failed to add component: ${error.message}`));
+  }
+}
+
 async function newComponent() {
   try {
     const config = await getCurrentEnvironment();
@@ -1123,6 +1253,11 @@ componentsCommand
   .command("new")
   .description("Create a new component")
   .action(newComponent);
+
+componentsCommand
+  .command("add <componentName>")
+  .description("Add an existing component from the Components folder")
+  .action(addComponent);
 
 componentsCommand
   .command("update <componentName>")
